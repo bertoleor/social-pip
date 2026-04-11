@@ -1,0 +1,26 @@
+{
+  "name": "@social-pip/database",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+	"scripts": {
+		"prisma:generate": "prisma generate",
+		"prisma:migrate": "prisma migrate dev",
+		"prisma:studio": "prisma studio",
+		"prisma:push": "prisma db push",
+		"prisma:seed": "tsx prisma/seed.ts",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage"
+	},
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  },
+	"devDependencies": {
+		"@vitest/coverage-v8": "^2.1.0",
+		"prisma": "^5.22.0",
+		"tsx": "^4.19.0",
+		"typescript": "^5.7.0",
+		"vitest": "^2.1.0"
+	}
+}

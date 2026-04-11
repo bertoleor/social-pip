@@ -1,0 +1,35 @@
+{
+  "name": "social-pip",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Social-Pip - Automatización de redes sociales 100% gratuita para Argentina/LATAM",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:desktop": "cd apps/desktop && npm run dev",
+    "dev:extension": "cd apps/extension && npm run dev",
+    "build": "turbo run build",
+    "build:desktop": "cd apps/desktop && npm run tauri build",
+    "build:extension": "cd apps/extension && npm run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:generate": "cd packages/database && npm run prisma:generate",
+    "db:migrate": "cd packages/database && npm run prisma:migrate",
+    "db:studio": "cd packages/database && npm run prisma:studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "author": "Social-Pip Team",
+  "license": "MIT"
+}

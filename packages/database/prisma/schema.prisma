@@ -1,0 +1,617 @@
+// Social-Pip Database Schema - Prisma
+// Compatible con SQLite (Tauri) y PostgreSQL (Cloud future)
+// Última actualización: Abril 2026 - Anti-Ban Fields Added
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS (as String for SQLite compatibility)
+// ============================================
+
+// Platform: FACEBOOK | INSTAGRAM | TIKTOK | TWITTER | LINKEDIN | THREADS | TELEGRAM | WHATSAPP | EMAIL
+// PostStatus: DRAFT | SCHEDULED | PROCESSING | PUBLISHED | FAILED | RETRY
+// ScheduleStatus: PENDING | RUNNING | COMPLETED | FAILED | CANCELLED
+// AccountStatus: ACTIVE | INACTIVE | WARMING_UP | RESTRICTED | BANNED | NEEDS_REAUTH | COOLDOWN
+// ActionType: POST_FEED | POST_STORY | POST_REEL | POST_GROUP | POST_MARKETPLACE | SEND_MESSAGE
+// RiskLevel: LOW | MEDIUM | HIGH | CRITICAL
+
+// ============================================
+// MODELS
+// ============================================
+
+model Account {
+  id            String   @id @default(cuid())
+  name          String
+  platform      String   // FACEBOOK | INSTAGRAM | TIKTOK | TWITTER | LINKEDIN | THREADS | TELEGRAM | WHATSAPP | EMAIL
+  username      String?
+  displayName   String?
+  avatarUrl     String?
+
+  chromeProfilePath String?
+
+  status        String   @default("ACTIVE") // ACTIVE | INACTIVE | WARMING_UP | RESTRICTED | BANNED | NEEDS_REAUTH | COOLDOWN
+
+  // Anti-Ban Fields
+  warmupProgress     Int       @default(0)
+  warmupStartedAt    DateTime?
+  restrictionsCount  Int       @default(0)
+  lastRestrictionAt  DateTime?
+  dailyPostsCount    Int       @default(0)
+  hourlyPostsCount   Int       @default(0)
+  lastPostAt         DateTime?
+  lastResetDate      DateTime?
+  lastHourlyReset    DateTime?
+  cooldownUntil      DateTime? // Fecha hasta la cual no se puede postear (por bloqueo)
+  
+  // Risk Assessment
+  riskLevel          String    @default("LOW") // LOW | MEDIUM | HIGH | CRITICAL
+  riskFactors        String    @default("[]") // JSON array of risk factors
+  lastRiskUpdate     DateTime?
+  
+  // Session Info
+  sessionValid       Boolean   @default(true)
+  sessionExpiresAt   DateTime?
+  lastSuccessfulAuth DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastUsedAt    DateTime?
+
+  posts Post[]
+  schedules Schedule[]
+  logs PostLog[]
+  antiBanEvents AntiBanEvent[]
+  activityStats ActivityStat[]
+  postSessions PostSession[]
+
+  @@unique([platform, username])
+  @@index([platform, status])
+  @@index([status, cooldownUntil])
+}
+
+model Post {
+  id            String   @id @default(cuid())
+  content       String
+  mediaUrls     String   @default("[]")
+
+  platform      String   // FACEBOOK | INSTAGRAM | TIKTOK | TWITTER | LINKEDIN | THREADS | TELEGRAM | WHATSAPP | EMAIL
+  status        String   @default("DRAFT") // DRAFT | SCHEDULED | PROCESSING | PUBLISHED | FAILED | RETRY
+
+  altCaptions   String   @default("[]")
+  currentCaption String?
+
+  hashtags      String   @default("[]")
+
+  scheduledAt   DateTime?
+  variance      Int      @default(15)
+  
+  // Publishing Info
+  publishedAt   DateTime?
+  externalId    String?
+  postUrl       String?
+  errorMessage  String?
+  
+  // Retry Info
+  retryCount    Int      @default(0)
+  maxRetries    Int      @default(3)
+  lastRetryAt   DateTime?
+  nextRetryAt   DateTime?
+  
+  // Quality Metrics
+  aiGenerated   Boolean  @default(false)
+  aiModelUsed   String?
+  promptTokens  Int?
+  completionTokens Int?
+  
+  // Platform-specific metadata
+  platformData  String   @default("{}") // JSON for platform-specific fields
+
+  accountId     String
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  schedule      Schedule[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([platform, status])
+  @@index([accountId, status])
+  @@index([status, scheduledAt])
+  @@index([status, nextRetryAt])
+}
+
+model Schedule {
+  id            String   @id @default(cuid())
+
+  scheduledAt   DateTime
+  variance      Int      @default(15)
+
+  status        String   @default("PENDING") // PENDING | RUNNING | COMPLETED | FAILED | CANCELLED
+
+  cronExpression String?
+
+  attempts      Int      @default(0)
+  maxAttempts   Int      @default(3)
+
+  result        String?
+  errorMessage  String?
+  
+  // Timing
+  startedAt     DateTime?
+  completedAt   DateTime?
+  durationMs    Int?
+
+  postId        String
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  accountId     String
+  account       Account  @relation(fields: [accountId], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, scheduledAt])
+  @@index([accountId, scheduledAt])
+}
+
+model Group {
+  id String @id @default(cuid())
+
+  platform String // FACEBOOK | INSTAGRAM | TIKTOK | TWITTER | LINKEDIN | THREADS | TELEGRAM | WHATSAPP
+  name String
+  url String
+  sector String?
+
+  status String @default("active")
+
+  lastPostedAt DateTime?
+  postsCount Int @default(0)
+  requiresApproval Boolean @default(false)
+
+  // Anti-ban for groups
+  minTimeBetweenPosts Int @default(1800) // 30 min default
+  lastPostAttemptAt DateTime?
+  failedAttempts Int @default(0)
+
+  // Facebook Group Scraper (Phase 3)
+  memberCount Int?
+  privacy String? // public | private
+  lastScrapedAt DateTime?
+
+  accountId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs PostJob[]
+
+  @@unique([platform, url])
+  @@index([accountId, status])
+}
+
+model Template {
+  id String @id @default(cuid())
+  name String
+  sector String
+
+  platforms String
+
+  content String
+  variants String @default("[]")
+
+  imagePaths String @default("[]")
+
+  includeLink Boolean @default(false)
+  linkUrl String?
+
+  // AI Enhancement
+  aiEnhanced Boolean @default(false)
+  promptTemplate String?
+
+  // Spintax & Usage Tracking (Phase 2 - Facebook Publishing)
+  variationsCount Int? // Cached count of spintax variations
+  category String? // Optional category for organization
+  tags String @default("[]") // JSON array of tags
+  lastUsedAt DateTime? // When this template was last used
+  useCount Int @default(0) // How many times this template has been used
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions PostSession[]
+
+  @@index([sector])
+  @@index([platforms])
+  @@index([category])
+}
+
+model PostLog {
+  id              String   @id @default(cuid())
+
+  taskId          String?
+
+  platform        String   // FACEBOOK | INSTAGRAM | TIKTOK | TWITTER | LINKEDIN | THREADS | TELEGRAM | WHATSAPP | EMAIL
+  action          String   // POST_FEED | POST_STORY | POST_REEL | POST_GROUP | POST_MARKETPLACE | SEND_MESSAGE
+  target          String?
+
+  status          String
+  contentPreview  String?  @default("")
+  postUrl         String?
+  errorMessage    String?
+
+  durationMs      Int?
+  
+  // Additional context
+  errorCode       String?  // E001, E002, etc.
+  errorCategory   String?  // rate_limit, auth_failed, network, etc.
+  retryAttempt    Int      @default(0)
+  
+  // Request/Response tracking
+  requestPayload  String?
+  responsePayload String?
+
+  accountId       String
+  account         Account  @relation(fields: [accountId], references: [id])
+
+  timestamp       DateTime  @default(now())
+
+  @@index([platform, timestamp])
+  @@index([accountId, timestamp])
+  @@index([status, timestamp])
+  @@index([errorCode, timestamp])
+}
+
+model AntiBanEvent {
+  id            String   @id @default(cuid())
+
+  eventType     String   // rate_limit_warning, rate_limit_exceeded, account_restricted, account_banned, cooldown_started, cooldown_ended, auth_expired, suspicious_activity
+  severity      String   @default("INFO") // INFO | WARNING | ERROR | CRITICAL
+  details       String?
+  
+  // Context
+  platform      String?
+  action        String?
+  triggerSource String?  // What triggered this event
+  
+  // Resolution
+  resolved      Boolean  @default(false)
+  resolvedAt    DateTime?
+  resolution    String?
+  
+  // Impact tracking
+  postsAffected Int      @default(0)
+  accountsAffected Int   @default(1)
+
+  accountId     String
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  timestamp     DateTime  @default(now())
+
+  @@index([accountId, timestamp])
+  @@index([eventType, timestamp])
+  @@index([severity, resolved])
+}
+
+// ============================================
+// ANTI-BAN CONFIGURATION (per platform)
+// ============================================
+
+model PlatformConfig {
+  id              String   @id @default(cuid())
+
+  platform        String   @unique // FACEBOOK | INSTAGRAM | TIKTOK | TWITTER | LINKEDIN | THREADS | TELEGRAM | WHATSAPP | EMAIL
+
+  // Daily Limits
+  maxPostsPerDay     Int      @default(20)
+  maxPostsPerHour    Int      @default(5)
+  
+  // Delays (in seconds)
+  minDelaySeconds    Int      @default(60)
+  maxDelaySeconds    Int      @default(240)
+  minDelayBetweenAccounts Int @default(300) // 5 min between different accounts
+  
+  // Batch Processing
+  batchSize          Int      @default(5)
+  batchBreakMinutes  Int      @default(20)
+  
+  // Content Limits
+  maxImages          Int      @default(10)
+  maxVideoMinutes    Int      @default(60)
+  maxTextLength      Int      @default(280)
+  
+  // Feature Support
+  supportsStories    Boolean  @default(true)
+  supportsCarousel   Boolean  @default(true)
+  supportsReels      Boolean  @default(false)
+  maxHashtags        Int      @default(30)
+  supportsLinks      Boolean  @default(true)
+  
+  // Anti-Ban Specific (NEW)
+  cooldownAfterBlockHours Int @default(24) // Hours to wait after a block
+  maxConsecutiveFailures  Int @default(3) // Failures before cooldown
+  warmupPeriodDays       Int @default(14) // Days for account warmup
+  maxPostsDuringWarmup   Int @default(3)  // Max posts/day during warmup
+  
+  // Time Windows (for safe posting)
+  allowedStartHour    Int      @default(9)  // 9 AM
+  allowedEndHour      Int      @default(21) // 9 PM
+  timezone           String   @default("America/Argentina/Buenos_Aires")
+  
+  // Risk Thresholds
+  riskThresholdMedium Int      @default(50)  // % of daily limit to trigger MEDIUM risk
+  riskThresholdHigh   Int      @default(75)  // % of daily limit to trigger HIGH risk
+  riskThresholdCritical Int    @default(90)  // % of daily limit to trigger CRITICAL risk
+  
+  // Rate Limit Info
+  rateLimitWindow     Int      @default(3600) // Window in seconds
+  rateLimitMax        Int      @default(200)  // Max requests per window
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+// ============================================
+// ACTIVITY STATISTICS (Hourly/Daily tracking)
+// ============================================
+
+model ActivityStat {
+  id            String   @id @default(cuid())
+  
+  accountId     String
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  // Time period
+  date          DateTime  // Date of the stat (day)
+  hour          Int?      // Hour of the day (0-23), null for daily aggregate
+  
+  // Counts
+  postsAttempted  Int    @default(0)
+  postsSuccessful Int    @default(0)
+  postsFailed     Int    @default(0)
+  
+  // Errors breakdown
+  rateLimitErrors  Int   @default(0)
+  authErrors       Int   @default(0)
+  networkErrors    Int   @default(0)
+  validationErrors Int   @default(0)
+  platformErrors   Int   @default(0)
+  
+  // Performance
+  avgPublishTimeMs Int?
+  totalTokensUsed  Int   @default(0)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([accountId, date, hour])
+  @@index([accountId, date])
+  @@index([date])
+}
+
+// ============================================
+// SETTINGS
+// ============================================
+
+model Settings {
+  key         String   @id
+  value       String
+  description String?
+
+  updatedAt   DateTime  @updatedAt
+
+  @@index([key])
+}
+
+// ============================================
+// AI INTEGRATION MODELS
+// ============================================
+
+// AIProvider: NVIDIA_NIM | OLLAMA | OPENROUTER
+// AICapability: CAPTION_GENERATION | IMAGE_PROMPT | HASHTAG_SUGGESTION | RESPONSE_SUGGESTION
+
+model AIConfig {
+  id            String   @id @default(cuid())
+
+  provider      String   // NVIDIA_NIM | OLLAMA | OPENROUTER
+  modelName     String
+
+  // Para NVIDIA NIM
+  apiKey        String?
+  endpoint      String?
+
+  // Para Ollama
+  ollamaUrl     String?  @default("http://localhost:11434")
+  
+  // Para OpenRouter
+  openRouterUrl String?  @default("https://openrouter.ai/api/v1")
+
+  isEnabled     Boolean  @default(false)
+  isDefault     Boolean  @default(false)
+
+  temperature   Float    @default(0.7)
+  maxTokens     Int      @default(500)
+  topP          Float    @default(0.95)
+
+  // Sistema prompt base
+  systemPrompt  String   @default("Eres un copywriter argentino profesional. Escribís captions cortos, persuasivos y naturales para redes sociales. Usás emojis适量. El tono es cercano pero profesional.")
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([provider, modelName])
+}
+
+model AIGenerationLog {
+  id            String   @id @default(cuid())
+
+  capability    String   // CAPTION_GENERATION | IMAGE_PROMPT | HASHTAG_SUGGESTION | RESPONSE_SUGGESTION
+  input         String   // Lo que se envió al modelo
+  output        String   // Lo que respondió el modelo
+
+  modelUsed     String
+  provider      String   // NVIDIA_NIM | OLLAMA | OPENROUTER
+
+  tokensUsed    Int?
+  promptTokens  Int?
+  completionTokens Int?
+  durationMs    Int?
+
+  success       Boolean  @default(true)
+  errorMessage  String?
+  
+  // Quality metrics
+  outputLength  Int?
+  qualityScore  Float?   // 0-1 rating if manually reviewed
+
+  createdAt     DateTime  @default(now())
+
+  @@index([provider, createdAt])
+  @@index([capability, createdAt])
+  @@index([success, createdAt])
+}
+
+// ============================================
+// EMAIL CONFIGURATION (NEW)
+// ============================================
+
+model EmailConfig {
+  id            String   @id @default(cuid())
+  
+  provider      String   // RESEND | BREVO | SENDGRID | SMTP
+  
+  // API Keys
+  apiKey        String?
+  
+  // SMTP fallback
+  smtpHost      String?
+  smtpPort      Int?
+  smtpUser      String?
+  smtpPassword  String?
+  
+  // Settings
+  fromEmail     String
+  fromName      String?
+  replyTo       String?
+  
+  isEnabled     Boolean  @default(false)
+  isDefault     Boolean  @default(false)
+  
+  // Rate limits
+  dailyLimit    Int      @default(100)
+  hourlyLimit   Int      @default(20)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@unique([provider])
+}
+
+// ============================================
+// WEBHOOK CONFIGURATION (NEW)
+// ============================================
+
+model WebhookConfig {
+  id String @id @default(cuid())
+
+  name String
+  url String
+  secret String? // For HMAC verification
+
+  events String @default("[]") // JSON array of events to trigger on
+
+  isEnabled Boolean @default(false)
+  lastTriggered DateTime?
+
+  // Retry config
+  maxRetries Int @default(3)
+  retryDelayMs Int @default(1000)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name])
+}
+
+// ============================================
+// POSTING SESSION MODELS (Phase 4 - Facebook Publishing)
+// ============================================
+
+model PostSession {
+  id String @id @default(cuid())
+
+  status String @default("pending") // pending | running | completed | cancelled | failed
+
+  // Configuration
+  templateId String?
+  template Template? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  accountId String
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  // Progress tracking
+  totalJobs Int @default(0)
+  completedJobs Int @default(0)
+  successfulJobs Int @default(0)
+  failedJobs Int @default(0)
+
+  // Timing
+  startedAt DateTime?
+  completedAt DateTime?
+  cancelledAt DateTime?
+
+  // Error tracking
+  lastError String?
+  errorCategory String?
+
+  // Configuration snapshot
+  configSnapshot String @default("{}") // JSON of posting configuration
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs PostJob[]
+
+  @@index([status])
+  @@index([accountId, status])
+}
+
+model PostJob {
+  id String @id @default(cuid())
+
+  sessionId String
+  session PostSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  groupId String
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  platform String @default("facebook_groups")
+  priority Int @default(99)
+
+  content String
+  postUrl String?
+
+  status String @default("pending")
+  errorMessage String?
+  errorCategory String?
+
+  startedAt DateTime?
+  completedAt DateTime?
+  durationMs Int?
+
+  retryCount Int @default(0)
+  maxRetries Int @default(3)
+  nextRetryAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sessionId, status])
+  @@index([sessionId, priority])
+  @@index([status])
+}

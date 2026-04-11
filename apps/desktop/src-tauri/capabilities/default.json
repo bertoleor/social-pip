@@ -1,0 +1,16 @@
+{
+  "$schema": "https://schema.tauri.app/config/2/capability",
+  "identifier": "default",
+  "description": "Default capabilities for Social-Pip",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:allow-open",
+    "fs:default",
+    "dialog:default",
+    "notification:default",
+    "sql:default",
+    "log:default",
+    "opener:default"
+  ]
+}
