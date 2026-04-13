@@ -1,6 +1,6 @@
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { Platform, Task, TaskStatus } from "@social-pip/types";
-// removed unused import
-// removed unused import
 import { TaskQueue } from "./TaskQueue";
 
 const mockTask: Task = {

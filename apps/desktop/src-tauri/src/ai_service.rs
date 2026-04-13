@@ -1,13 +1,16 @@
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum AIProvider {
-    NVIDIA_NIM,
-    OLLAMA,
+    #[serde(rename = "NVIDIA_NIM")]
+    NvidiaNim,
+    #[serde(rename = "OLLAMA")]
+    Ollama,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub enum AICapability {
     CaptionGeneration,
     ImagePrompt,
@@ -32,7 +35,7 @@ pub struct AIConfig {
 impl Default for AIConfig {
     fn default() -> Self {
         Self {
-            provider: AIProvider::OLLAMA,
+            provider: AIProvider::Ollama,
             model_name: "llama3.2".to_string(),
             api_key: None,
             endpoint: None,
@@ -143,14 +146,14 @@ impl AIService {
 
         let prompt = self.build_caption_prompt(&request);
 
-        let (caption, tokens) = match self.config.provider {
-            AIProvider::NVIDIA_NIM => {
-                self.call_nvidia(&prompt).await?
-            }
-            AIProvider::OLLAMA => {
-                self.call_ollama(&prompt).await?
-            }
-        };
+let (caption, tokens) = match self.config.provider {
+        AIProvider::NvidiaNim => {
+            self.call_nvidia(&prompt).await?
+        }
+        AIProvider::Ollama => {
+            self.call_ollama(&prompt).await?
+        }
+    };
 
         let duration = start.elapsed().as_millis() as u64;
 
@@ -298,6 +301,10 @@ impl AIService {
     pub fn get_provider(&self) -> &AIProvider {
         &self.config.provider
     }
+
+    pub fn get_config(&self) -> &AIConfig {
+        &self.config
+    }
 }
 
 // Prompt templates por sector para captions
@@ -331,10 +338,10 @@ pub fn get_sector_prompt(sector: &str) -> &'static str {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_default_config() {
-        let config = AIConfig::default();
-        assert_eq!(config.provider, AIProvider::OLLAMA);
+#[test]
+fn test_default_config() {
+    let config = AIConfig::default();
+    assert_eq!(config.provider, AIProvider::Ollama);
         assert_eq!(config.model_name, "llama3.2");
         assert!(!config.is_enabled);
     }

@@ -5,43 +5,54 @@ mod anti_ban;
 mod ai_service;
 mod scheduler;
 mod commands;
+mod error_handler;
+mod circuit_breaker;
+mod dead_letter_queue;
+mod spintax;
+mod native_messaging;
 
 use commands::account::{
     get_accounts, get_account, create_account, update_account, delete_account,
-    Account, AccountFilter, CreateAccountInput, UpdateAccountInput, Platform, AccountStatus,
 };
 
 use commands::post::{
     get_posts, get_post, create_post, update_post, delete_post,
-    Post, PostFilter, PostStatus, CreatePostInput, UpdatePostInput,
 };
 
 use commands::scheduler::{
     get_schedules, get_schedule, create_schedule, update_schedule, cancel_schedule, delete_schedule,
-    Schedule, ScheduleFilter, ScheduleStatus, CreateScheduleInput, UpdateScheduleInput,
 };
 
 use commands::task::{
     get_tasks, get_task, create_task, update_task_status, cancel_task, retry_task, delete_task,
-    Task, TaskFilter, TaskStatus, TaskType, CreateTaskInput,
 };
 
 use commands::posting::{
     start_posting_session, cancel_posting_session, get_posting_session_status,
     update_post_job_status, get_session_anti_ban_stats, get_next_posting_delay,
     can_post_to_group, record_posting_action, list_posting_sessions, delete_posting_session,
-    PostSession, PostJob, PostJobStatus, SessionStatus, ErrorCategory,
-    StartSessionInput, SessionCompleteResult, UpdateJobResult,
+    start_multi_platform_session, get_platform_delay, get_platform_config,
+    check_batch_break_needed, get_batch_break_duration, reset_batch, check_risk_event,
+    get_post_jobs, retry_failed_job,
 };
 
 use commands::media::{
     get_image_metadata, validate_image, get_platform_media_constraints,
-    ImageMetadata, ValidationResult, PlatformConstraints,
+};
+
+use commands::error::{
+    get_error_stats, get_dlq_entries, retry_dlq_entry, get_circuit_breaker_status,
+};
+
+use commands::template::{
+    generate_spintax_preview, validate_template_content,
+    create_template, get_template, update_template, delete_template, list_templates,
 };
 
 use ai_service::{AIService, AIConfig, CaptionRequest, CaptionResponse, get_sector_prompt};
-use anti_ban::{get_platform_config, AntiBanEngine, AntiBanStats};
-use alert_system::{AlertEngine, Alert, AlertStats, AlertType, Severity};
+use anti_ban::{AntiBanEngine, AntiBanStats};
+use alert_system::{AlertEngine, Alert, AlertStats, AlertType};
+use error_handler::Severity;
 
 #[derive(Default)]
 pub struct AppState {
@@ -71,7 +82,7 @@ pub struct TaskResponse {
 
 #[tauri::command]
 fn init_anti_ban(platform: String, state: tauri::State<AppState>) -> Result<AntiBanStats, String> {
-    let config = get_platform_config(&platform);
+    let config = get_platform_config(platform);
     let engine = AntiBanEngine::new(config);
     let stats = engine.get_stats();
 
@@ -91,8 +102,8 @@ fn check_can_post(platform: String, action_type: String, state: tauri::State<App
             Err(_) => Ok(false),
         }
     } else {
-        let config = get_platform_config(&platform);
-        let engine = AntiBanEngine::new(config);
+        let config = get_platform_config(platform);
+        let mut engine = AntiBanEngine::new(config);
         let can = engine.can_execute(&action_type).is_ok();
         *guard = Some(engine);
         Ok(can)
@@ -106,7 +117,7 @@ fn get_next_delay(platform: String, state: tauri::State<AppState>) -> Result<u64
     if let Some(ref mut engine) = *guard {
         Ok(engine.next_action_delay_ms())
     } else {
-        let config = get_platform_config(&platform);
+        let config = get_platform_config(platform);
         let engine = AntiBanEngine::new(config);
         let delay = engine.next_action_delay_ms();
         *guard = Some(engine);
@@ -128,7 +139,7 @@ fn record_post_action(
         engine.record_action(action_type, success, delay_used_ms);
         Ok(engine.get_stats())
     } else {
-        let config = get_platform_config(&platform);
+        let config = get_platform_config(platform);
         let mut engine = AntiBanEngine::new(config);
         engine.record_action(action_type, success, delay_used_ms);
         let stats = engine.get_stats();
@@ -138,7 +149,7 @@ fn record_post_action(
 }
 
 #[tauri::command]
-fn should_break(platform: String, state: tauri::State<AppState>) -> Result<bool, String> {
+fn should_break(_platform: String, state: tauri::State<AppState>) -> Result<bool, String> {
     let mut guard = state.anti_ban.lock().map_err(|e| e.to_string())?;
 
     if let Some(ref mut engine) = *guard {
@@ -159,7 +170,7 @@ fn get_typing_delay(platform: String, text: String, state: tauri::State<AppState
     if let Some(ref mut engine) = *guard {
         Ok(engine.typing_delay_ms(&text))
     } else {
-        let config = get_platform_config(&platform);
+        let config = get_platform_config(platform);
         let engine = AntiBanEngine::new(config);
         let delays = engine.typing_delay_ms(&text);
         *guard = Some(engine);
@@ -192,9 +203,15 @@ async fn generate_caption(
     sector: Option<String>,
     state: tauri::State<'_, AppState>,
 ) -> Result<CaptionResponse, String> {
-    let guard = state.ai_service.lock().map_err(|e| e.to_string())?;
+    // Extract config and drop the lock before await
+    let config = {
+        let guard = state.ai_service.lock().map_err(|e| e.to_string())?;
+        guard.as_ref()
+            .map(|s| s.get_config().clone())
+    };
 
-    if let Some(ref service) = *guard {
+    if let Some(config) = config {
+        let service = AIService::new(config);
         let request = CaptionRequest {
             content,
             platform,
@@ -377,6 +394,16 @@ fn clear_old_alerts(days: u32, state: tauri::State<AppState>) -> Result<u32, Str
 }
 
 fn main() {
+    // Check for native messaging mode
+    let args: Vec<String> = std::env::args().collect();
+    
+    if args.contains(&"--native-messaging".to_string()) {
+        // Run as native messaging host for Chrome extension
+        run_native_messaging_mode();
+        return;
+    }
+
+    // Normal GUI mode
     tauri::Builder::default()
         .plugin(tauri_plugin_log::Builder::new()
             .target(tauri_plugin_log::Target::new(
@@ -430,29 +457,111 @@ fn main() {
             resolve_alert,
             get_alert_stats,
             clear_old_alerts,
-        get_tasks,
-        get_task,
-        create_task,
-        update_task_status,
-        cancel_task,
-        retry_task,
-        delete_task,
-        // Posting session commands
-        start_posting_session,
-        cancel_posting_session,
-        get_posting_session_status,
-        update_post_job_status,
-        get_session_anti_ban_stats,
-        get_next_posting_delay,
-        can_post_to_group,
-        record_posting_action,
-list_posting_sessions,
-    delete_posting_session,
-    // Media commands
-    get_image_metadata,
-    validate_image,
-    get_platform_media_constraints,
-    ])
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+            get_tasks,
+            get_task,
+            create_task,
+            update_task_status,
+            cancel_task,
+            retry_task,
+            delete_task,
+            // Posting session commands
+            start_posting_session,
+            cancel_posting_session,
+            get_posting_session_status,
+            update_post_job_status,
+            get_session_anti_ban_stats,
+            get_next_posting_delay,
+            can_post_to_group,
+            record_posting_action,
+            list_posting_sessions,
+            delete_posting_session,
+            start_multi_platform_session,
+            get_platform_delay,
+            get_platform_config,
+            check_batch_break_needed,
+            get_batch_break_duration,
+            reset_batch,
+            check_risk_event,
+            get_post_jobs,
+            retry_failed_job,
+            // Media commands
+            get_image_metadata,
+            validate_image,
+            get_platform_media_constraints,
+            // Error handling commands
+            get_error_stats,
+            get_dlq_entries,
+            retry_dlq_entry,
+            get_circuit_breaker_status,
+            // Template commands
+            generate_spintax_preview,
+            validate_template_content,
+            create_template,
+            get_template,
+            update_template,
+            delete_template,
+            list_templates,
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+
+/// Run in native messaging mode for Chrome extension communication
+fn run_native_messaging_mode() {
+    use native_messaging::{NativeMessage, NativeResponse, run_native_messaging_host};
+
+    // Initialize anti-ban engine with default config
+    let config = get_platform_config("facebook".to_string());
+    let engine = std::sync::Arc::new(std::sync::Mutex::new(AntiBanEngine::new(config)));
+
+    // Create handler closure
+    let handler = |message: NativeMessage| -> NativeResponse {
+        let engine_clone = engine.clone();
+        
+        match message {
+            NativeMessage::CheckCanPost { platform, action } => {
+                let config = get_platform_config(platform);
+                let mut guard = engine_clone.lock().unwrap();
+                *guard = AntiBanEngine::new(config);
+                let can = guard.can_execute(&action).is_ok();
+                NativeResponse::Bool(can)
+            }
+            NativeMessage::GetNextDelay { platform } => {
+                let config = get_platform_config(platform);
+                let mut guard = engine_clone.lock().unwrap();
+                *guard = AntiBanEngine::new(config);
+                let delay = guard.next_action_delay_ms();
+                NativeResponse::Number(delay)
+            }
+            NativeMessage::RecordPostAction { platform, action, success, delay_used_ms } => {
+                let config = get_platform_config(platform);
+                let mut guard = engine_clone.lock().unwrap();
+                *guard = AntiBanEngine::new(config);
+                guard.record_action(action, success, delay_used_ms);
+                NativeResponse::Ack { success: true }
+            }
+            NativeMessage::ShouldBreak { platform: _ } => {
+                let mut guard = engine_clone.lock().unwrap();
+                let should = guard.should_take_batch_break();
+                if should {
+                    guard.reset_batch();
+                }
+                NativeResponse::Bool(should)
+            }
+            NativeMessage::TaskResult { result } => {
+                log::info!("Task result received: {:?}", result);
+                NativeResponse::Ack { success: true }
+            }
+            NativeMessage::Ping => {
+                NativeResponse::Pong { pong: true }
+            }
+        }
+    };
+
+    // Run the native messaging loop
+    if let Err(e) = run_native_messaging_host(handler) {
+        log::error!("Native messaging error: {}", e);
+        eprintln!("Native messaging error: {}", e);
+        std::process::exit(1);
+    }
 }

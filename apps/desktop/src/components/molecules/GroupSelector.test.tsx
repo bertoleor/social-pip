@@ -1,5 +1,5 @@
-// removed unused import
-// removed unused import
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { GroupSelector } from "./GroupSelector";
 
 const mockGroups = [
@@ -51,17 +51,17 @@ describe("GroupSelector", () => {
 			expect(screen.getByText("500 members")).toBeInTheDocument();
 		});
 
-		it("shows privacy badges", () => {
-			render(
-				<GroupSelector
-					groups={mockGroups}
-					selectedIds={[]}
-					onChange={() => {}}
-				/>,
-			);
-			expect(screen.getByText("public")).toBeInTheDocument();
-			expect(screen.getByText("private")).toBeInTheDocument();
-		});
+it("shows privacy badges", () => {
+    render(
+      <GroupSelector
+        groups={mockGroups}
+        selectedIds={[]}
+        onChange={() => {}}
+      />,
+    );
+    expect(screen.getAllByText("public")).toHaveLength(2);
+    expect(screen.getByText("private")).toBeInTheDocument();
+  });
 
 		it("shows empty state when no groups", () => {
 			render(
@@ -72,71 +72,70 @@ describe("GroupSelector", () => {
 	});
 
 	describe("selection", () => {
-		it("shows checkboxes for each group", () => {
-			render(
-				<GroupSelector
-					groups={mockGroups}
-					selectedIds={[]}
-					onChange={() => {}}
-				/>,
-			);
-			const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-			expect(checkboxes).toHaveLength(4); // 3 groups + 1 search checkbox
-		});
+it("shows checkboxes for each group", () => {
+    render(
+      <GroupSelector
+        groups={mockGroups}
+        selectedIds={[]}
+        onChange={() => {}}
+      />,
+    );
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    expect(checkboxes).toHaveLength(3);
+  });
 
-		it("calls onChange when group is selected", () => {
-			const onChange = vi.fn();
-			render(
-				<GroupSelector
-					groups={mockGroups}
-					selectedIds={[]}
-					onChange={onChange}
-				/>,
-			);
+it("calls onChange when group is selected", () => {
+    const onChange = vi.fn();
+    render(
+      <GroupSelector
+        groups={mockGroups}
+        selectedIds={[]}
+        onChange={onChange}
+      />,
+    );
 
-			const firstCheckbox = document.querySelectorAll(
-				'input[type="checkbox"]',
-			)[1];
-			fireEvent.click(firstCheckbox!);
+    const firstCheckbox = document.querySelectorAll(
+      'input[type="checkbox"]',
+    )[0];
+    fireEvent.click(firstCheckbox!);
 
-			expect(onChange).toHaveBeenCalledWith(["1"]);
-		});
+    expect(onChange).toHaveBeenCalledWith(["1"]);
+  });
 
-		it("shows selected groups as checked", () => {
-			render(
-				<GroupSelector
-					groups={mockGroups}
-					selectedIds={["1", "2"]}
-					onChange={() => {}}
-				/>,
-			);
-			const checkboxes = Array.from(
-				document.querySelectorAll('input[type="checkbox"]'),
-			);
-			const groupCheckboxes = checkboxes.slice(1); // Skip search checkbox
+  it("shows selected groups as checked", () => {
+    render(
+      <GroupSelector
+        groups={mockGroups}
+        selectedIds={["1", "2"]}
+        onChange={() => {}}
+      />,
+    );
+    const checkboxes = Array.from(
+      document.querySelectorAll('input[type="checkbox"]'),
+    );
 
-			expect(groupCheckboxes[0]).toBeChecked();
-			expect(groupCheckboxes[1]).toBeChecked();
-			expect(groupCheckboxes[2]).not.toBeChecked();
-		});
+    expect(checkboxes[0]).toBeChecked();
+    expect(checkboxes[1]).toBeChecked();
+    expect(checkboxes[2]).not.toBeChecked();
+  });
 
-		it("toggles selection when clicking checked group", () => {
-			const onChange = vi.fn();
-			render(
-				<GroupSelector
-					groups={mockGroups}
-					selectedIds={["1"]}
-					onChange={onChange}
-				/>,
-			);
+  it("toggles selection when clicking checked group", () => {
+    const onChange = vi.fn();
+    render(
+      <GroupSelector
+        groups={mockGroups}
+        selectedIds={["1"]}
+        onChange={onChange}
+      />,
+    );
 
-			const firstCheckbox = document.querySelectorAll(
-				'input[type="checkbox"]',
-			)[1];
-			fireEvent.click(firstCheckbox!);
+    const firstCheckbox = document.querySelectorAll(
+      'input[type="checkbox"]',
+    )[0];
+    fireEvent.click(firstCheckbox!);
 
-			expect(onChange).toHaveBeenCalledWith([]);
-		});
+    expect(onChange).toHaveBeenCalledWith([]);
+  });
 	});
 
 	describe("search/filter", () => {

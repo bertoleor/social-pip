@@ -159,30 +159,36 @@ export const useQuickPostStore = create<QuickPostState>((set, get) => ({
 			throw new Error("Missing required selections");
 		}
 
-		// Get template content or use custom content
+		const mediaValidationState = postingStore.getMediaValidationState();
+		if (mediaValidationState === "invalid") {
+			throw new Error("Media validation failed - fix errors before posting");
+		}
+
 		let content: string | undefined;
 		if (selectedTemplateId) {
 			const template = templateStore.templates.find(
 				(t) => t.id === selectedTemplateId,
 			);
 			if (template) {
-				// Use preview content (already resolved spintax)
 				content = templateStore.preview?.content ?? template.content;
 			}
 		}
 
-		// Start posting session
+		const mediaPaths = postingStore.mediaFiles.map((f) => f.path);
+
 		await postingStore.startSession({
 			templateId: selectedTemplateId ?? undefined,
 			accountId: selectedAccountId,
 			groupIds: selectedGroupIds,
 			content,
+			mediaPaths: mediaPaths.length > 0 ? mediaPaths : undefined,
 		});
 
-		// Increment template use count
 		if (selectedTemplateId) {
 			await templateStore.incrementUseCount(selectedTemplateId);
 		}
+
+		postingStore.clearMedia();
 	},
 
 	updateCanPost: () => {

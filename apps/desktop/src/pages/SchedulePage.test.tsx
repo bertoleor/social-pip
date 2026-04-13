@@ -1,11 +1,40 @@
 import { render, screen } from "@testing-library/react";
-/**
- * @fileoverview Schedule page tests
- */
-import { describe, expect, it } from "vitest";
+import { vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import SchedulePage from "./SchedulePage";
 
+vi.mock("@/hooks/useSchedule", () => ({
+	useSchedule: vi.fn(),
+}));
+
+vi.mock("@/components/Schedule/Calendar", () => ({
+	Calendar: () => <div data-testid="calendar" />,
+}));
+
+vi.mock("@/components/Schedule/DayModal", () => ({
+	DayModal: () => null,
+}));
+
+import { useSchedule } from "@/hooks/useSchedule";
+
+const mockUseSchedule = vi.mocked(useSchedule);
+
 describe("SchedulePage", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		mockUseSchedule.mockReturnValue({
+			schedules: [],
+			selectedSchedule: null,
+			loading: false,
+			error: null,
+			schedulePost: vi.fn(),
+			cancelSchedule: vi.fn(),
+			updateSchedule: vi.fn(),
+			selectSchedule: vi.fn(),
+			refresh: vi.fn(),
+		});
+	});
+
 	describe("rendering", () => {
 		it("renders the page container", () => {
 			render(<SchedulePage />);

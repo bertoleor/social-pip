@@ -1,6 +1,7 @@
 import { useAlertsStore } from "@/stores/alertsStore";
 import { invoke } from "@tauri-apps/api/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { AlertList } from "./AlertList";
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -8,6 +9,20 @@ vi.mock("@tauri-apps/api/core", () => ({
 }));
 
 const mockInvoke = vi.mocked(invoke);
+
+const mockAcknowledgeAlert = vi.fn();
+const mockResolveAlert = vi.fn();
+const mockLoadAlerts = vi.fn();
+
+vi.mock("@/stores/alertsStore", () => ({
+  useAlertsStore: vi.fn(() => ({
+    alerts: [],
+    loading: false,
+    acknowledgeAlert: mockAcknowledgeAlert,
+    resolveAlert: mockResolveAlert,
+    loadAlerts: mockLoadAlerts,
+  })),
+}));
 
 const mockAlert = {
   id: "alert-1",
@@ -39,20 +54,27 @@ const mockCriticalAlert = {
   resolved_at: null,
 };
 
+const createMockStore = (overrides = {}) => {
+  const defaultStore = {
+    alerts: [],
+    loading: false,
+    acknowledgeAlert: mockAcknowledgeAlert,
+    resolveAlert: mockResolveAlert,
+    loadAlerts: mockLoadAlerts,
+    ...overrides,
+  };
+  vi.mocked(useAlertsStore).mockReturnValue(defaultStore as unknown as ReturnType<typeof useAlertsStore>);
+  return defaultStore;
+};
+
 describe("AlertList", () => {
   beforeEach(() => {
-    useAlertsStore.setState({
-      alerts: [],
-      stats: null,
-      loading: false,
-      error: null,
-    });
     vi.clearAllMocks();
   });
 
   describe("loading state", () => {
     it("shows loading spinner initially when loading", () => {
-      useAlertsStore.setState({ loading: true, alerts: [] });
+      createMockStore({ loading: true, alerts: [] });
 
       render(<AlertList />);
 
@@ -62,9 +84,7 @@ describe("AlertList", () => {
 
   describe("empty state", () => {
     it("shows empty state when no alerts", async () => {
-      mockInvoke.mockResolvedValueOnce([]);
-      
-      useAlertsStore.setState({ alerts: [], loading: false });
+      createMockStore({ alerts: [], loading: false });
 
       render(<AlertList />);
 
@@ -76,7 +96,7 @@ describe("AlertList", () => {
 
   describe("rendering alerts", () => {
     it("renders alerts after loading", async () => {
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList />);
 
@@ -86,7 +106,7 @@ describe("AlertList", () => {
     });
 
     it("displays severity badge with correct color", async () => {
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList />);
 
@@ -97,7 +117,7 @@ describe("AlertList", () => {
     });
 
     it("displays critical severity with red color", async () => {
-      useAlertsStore.setState({ alerts: [mockCriticalAlert], loading: false });
+      createMockStore({ alerts: [mockCriticalAlert], loading: false });
 
       render(<AlertList />);
 
@@ -108,7 +128,7 @@ describe("AlertList", () => {
     });
 
     it("displays platform badge", async () => {
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList />);
 
@@ -118,7 +138,7 @@ describe("AlertList", () => {
     });
 
     it("displays relative timestamp", async () => {
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList />);
 
@@ -130,7 +150,7 @@ describe("AlertList", () => {
 
   describe("actions", () => {
     it("shows acknowledge button for unacknowledged alerts", async () => {
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList showAcknowledge />);
 
@@ -140,9 +160,8 @@ describe("AlertList", () => {
     });
 
     it("calls acknowledge when button clicked", async () => {
-      mockInvoke.mockResolvedValueOnce(undefined);
-      
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      mockAcknowledgeAlert.mockResolvedValueOnce(undefined);
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList showAcknowledge />);
 
@@ -153,14 +172,12 @@ describe("AlertList", () => {
       fireEvent.click(screen.getByRole("button", { name: /acknowledge/i }));
 
       await waitFor(() => {
-        expect(mockInvoke).toHaveBeenCalledWith("acknowledge_alert", {
-          alertId: "alert-1",
-        });
+        expect(mockAcknowledgeAlert).toHaveBeenCalledWith("alert-1");
       });
     });
 
     it("shows resolve button for unresolved alerts", async () => {
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList />);
 
@@ -170,9 +187,8 @@ describe("AlertList", () => {
     });
 
     it("calls resolve when button clicked", async () => {
-      mockInvoke.mockResolvedValueOnce(undefined);
-      
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      mockResolveAlert.mockResolvedValueOnce(undefined);
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList />);
 
@@ -183,42 +199,36 @@ describe("AlertList", () => {
       fireEvent.click(screen.getByRole("button", { name: /resolve/i }));
 
       await waitFor(() => {
-        expect(mockInvoke).toHaveBeenCalledWith("resolve_alert", {
-          alertId: "alert-1",
-        });
+        expect(mockResolveAlert).toHaveBeenCalledWith("alert-1");
       });
     });
   });
 
   describe("props", () => {
     it("respects limit prop", async () => {
-      mockInvoke.mockResolvedValueOnce([]);
+      mockLoadAlerts.mockResolvedValueOnce(undefined);
+      createMockStore({ alerts: [], loading: false });
 
       render(<AlertList limit={5} />);
 
       await waitFor(() => {
-        expect(mockInvoke).toHaveBeenCalledWith("get_alerts", {
-          limit: 5,
-          severityFilter: null,
-        });
+        expect(mockLoadAlerts).toHaveBeenCalledWith(5, null);
       });
     });
 
     it("respects severityFilter prop", async () => {
-      mockInvoke.mockResolvedValueOnce([]);
+      mockLoadAlerts.mockResolvedValueOnce(undefined);
+      createMockStore({ alerts: [], loading: false });
 
       render(<AlertList severityFilter="CRITICAL" />);
 
       await waitFor(() => {
-        expect(mockInvoke).toHaveBeenCalledWith("get_alerts", {
-          limit: 50,
-          severityFilter: "CRITICAL",
-        });
+        expect(mockLoadAlerts).toHaveBeenCalledWith(50, "CRITICAL");
       });
     });
 
     it("hides acknowledge button when showAcknowledge is false", async () => {
-      useAlertsStore.setState({ alerts: [mockAlert], loading: false });
+      createMockStore({ alerts: [mockAlert], loading: false });
 
       render(<AlertList showAcknowledge={false} />);
 

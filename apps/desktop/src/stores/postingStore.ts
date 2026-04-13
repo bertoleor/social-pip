@@ -1,34 +1,36 @@
-import type { MediaFile, MediaValidationResult } from "@social-pip/types";
+import type {
+	MediaFile,
+	MediaValidationResult,
+	PlatformTarget,
+} from "@social-pip/types";
 import { invoke } from "@tauri-apps/api/core";
-/**
- * @fileoverview Posting store - Zustand state management for posting sessions
- */
 import { create } from "zustand";
 
-// Types matching Prisma models
 export interface PostSession {
-  id: string;
-  status: "pending" | "running" | "completed" | "cancelled" | "failed";
-  templateId?: string;
-  accountId: string;
-  totalJobs: number;
-  completedJobs: number;
-  successfulJobs: number;
-  failedJobs: number;
-  startedAt?: Date;
-  completedAt?: Date;
-  cancelledAt?: Date;
-  lastError?: string;
-  errorCategory?: string;
-  configSnapshot: string;
-  createdAt: Date;
-  updatedAt: Date;
+	id: string;
+	status: "pending" | "running" | "completed" | "cancelled" | "failed";
+	templateId?: string;
+	accountId: string;
+	totalJobs: number;
+	completedJobs: number;
+	successfulJobs: number;
+	failedJobs: number;
+	startedAt?: Date;
+	completedAt?: Date;
+	cancelledAt?: Date;
+	lastError?: string;
+	errorCategory?: string;
+	configSnapshot: string;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 export interface PostJob {
 	id: string;
 	sessionId: string;
 	groupId: string;
+	platform: string;
+	priority: number;
 	content: string;
 	postUrl?: string;
 	status: "pending" | "processing" | "success" | "failed" | "skipped";
@@ -49,6 +51,14 @@ export interface StartSessionInput {
 	accountId: string;
 	groupIds: string[];
 	content?: string;
+	mediaPaths?: string[];
+}
+
+export interface StartMultiPlatformSessionInput {
+	accountId: string;
+	platforms: PlatformTarget[];
+	templateId?: string;
+	content?: string;
 }
 
 export interface SessionCompleteResult {
@@ -59,7 +69,6 @@ export interface SessionCompleteResult {
 	skippedCount: number;
 }
 
-// Status types for type safety
 export type PostJobStatus = PostJob["status"];
 export type PostSessionStatus = PostSession["status"];
 
@@ -68,12 +77,19 @@ export interface PostingState {
 	jobs: PostJob[];
 	isProcessing: boolean;
 	error: string | null;
+	mediaFiles: MediaFile[];
+	mediaValidation: Map<string, MediaValidationResult>;
+	platformTargets: PlatformTarget[];
 
 	startSession: (input: StartSessionInput) => Promise<PostSession>;
+	startMultiPlatformSession: (
+		input: StartMultiPlatformSessionInput,
+	) => Promise<PostSession>;
 	cancelSession: () => Promise<void>;
 	getSessionStatus: (sessionId: string) => Promise<void>;
 	refreshJobs: () => Promise<void>;
 	clearError: () => void;
+	setPlatformTargets: (targets: PlatformTarget[]) => void;
 
 	updateJobStatus: (
 		jobId: string,
@@ -88,6 +104,12 @@ export interface PostingState {
 		sessionId: string,
 		result: SessionCompleteResult,
 	) => void;
+
+	addMediaFiles: (files: MediaFile[]) => void;
+	removeMediaFile: (id: string) => void;
+	clearMedia: () => void;
+	setMediaValidation: (fileId: string, result: MediaValidationResult) => void;
+	getMediaValidationState: () => "valid" | "invalid" | "partial";
 }
 
 export const usePostingStore = create<PostingState>((set, get) => ({
@@ -95,6 +117,13 @@ export const usePostingStore = create<PostingState>((set, get) => ({
 	jobs: [],
 	isProcessing: false,
 	error: null,
+	mediaFiles: [],
+	mediaValidation: new Map(),
+	platformTargets: [],
+
+	setPlatformTargets: (targets: PlatformTarget[]) => {
+		set({ platformTargets: targets });
+	},
 
 	startSession: async (input: StartSessionInput) => {
 		set({ isProcessing: true, error: null });
@@ -106,6 +135,7 @@ export const usePostingStore = create<PostingState>((set, get) => ({
 					account_id: input.accountId,
 					group_ids: input.groupIds,
 					content: input.content,
+					media_paths: input.mediaPaths,
 				},
 			});
 
@@ -113,6 +143,48 @@ export const usePostingStore = create<PostingState>((set, get) => ({
 				currentSession: session,
 				jobs: [],
 				isProcessing: true,
+			});
+
+			return session;
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
+			set({
+				error: errorMessage,
+				isProcessing: false,
+			});
+			throw error;
+		}
+	},
+
+	startMultiPlatformSession: async (input: StartMultiPlatformSessionInput) => {
+		set({ isProcessing: true, error: null });
+
+		try {
+			const platforms = input.platforms.map((p) => ({
+				platform: p.platform,
+				account_id: p.accountId,
+				targets: p.targets,
+				priority: p.priority,
+			}));
+
+			const session = await invoke<PostSession>(
+				"start_multi_platform_session",
+				{
+					config: {
+						account_id: input.accountId,
+						platforms,
+						template_id: input.templateId,
+						content: input.content,
+					},
+				},
+			);
+
+			set({
+				currentSession: session,
+				jobs: [],
+				isProcessing: true,
+				platformTargets: input.platforms,
 			});
 
 			return session;
@@ -242,5 +314,67 @@ export const usePostingStore = create<PostingState>((set, get) => ({
 					: state.currentSession,
 			isProcessing: false,
 		}));
+	},
+
+	addMediaFiles: (files: MediaFile[]) => {
+		set((state) => {
+			const existingIds = new Set(state.mediaFiles.map((f) => f.id));
+			const newFiles = files.filter((f) => !existingIds.has(f.id));
+			return {
+				mediaFiles: [...state.mediaFiles, ...newFiles],
+			};
+		});
+	},
+
+	removeMediaFile: (id: string) => {
+		set((state) => {
+			const newValidation = new Map(state.mediaValidation);
+			newValidation.delete(id);
+			return {
+				mediaFiles: state.mediaFiles.filter((f) => f.id !== id),
+				mediaValidation: newValidation,
+			};
+		});
+	},
+
+	clearMedia: () => {
+		set({
+			mediaFiles: [],
+			mediaValidation: new Map(),
+		});
+	},
+
+	setMediaValidation: (fileId: string, result: MediaValidationResult) => {
+		set((state) => {
+			const newValidation = new Map(state.mediaValidation);
+			newValidation.set(fileId, result);
+			return {
+				mediaValidation: newValidation,
+			};
+		});
+	},
+
+	getMediaValidationState: () => {
+		const { mediaFiles, mediaValidation } = get();
+
+		if (mediaFiles.length === 0) {
+			return "valid";
+		}
+
+		let hasInvalid = false;
+		let hasPending = false;
+
+		for (const file of mediaFiles) {
+			const result = mediaValidation.get(file.id);
+			if (!result) {
+				hasPending = true;
+			} else if (!result.valid) {
+				hasInvalid = true;
+			}
+		}
+
+		if (hasInvalid) return "invalid";
+		if (hasPending) return "partial";
+		return "valid";
 	},
 }));

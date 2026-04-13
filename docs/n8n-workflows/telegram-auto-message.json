@@ -1,0 +1,128 @@
+{
+  "name": "SP - Telegram Auto Message",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9,12,15,18 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Social-Pip Telegram Pre-Send Check\n// Telegram Bot API has generous limits\nconst item = $input.first().json;\n\nconst TELEGRAM_MAX_PER_MINUTE = 30;\nconst TELEGRAM_MAX_PER_SECOND = 1;\nconst TELEGRAM_MAX_MSG_LENGTH = 4096;\n\nconst accountStats = {\n  messagesToday: item.messagesToday || 0,\n  lastMessageAt: item.lastMessageAt ? new Date(item.lastMessageAt) : null,\n  botStatus: item.botStatus || 'ACTIVE'\n};\n\nconst errors = [];\n\n// Telegram has no strict daily limits for bots\n// But we implement our own reasonable limits\nif (accountStats.messagesToday >= 500) {\n  errors.push(`Daily limit reached: ${accountStats.messagesToday}/500`);\n}\n\n// Rate limit: 1 message per second\nif (accountStats.lastMessageAt) {\n  const timeSinceLastMsg = Date.now() - accountStats.lastMessageAt.getTime();\n  if (timeSinceLastMsg < 1000) {\n    errors.push('Wait at least 1 second between messages');\n  }\n}\n\n// Message length check\nif (item.content && item.content.length > TELEGRAM_MAX_MSG_LENGTH) {\n  errors.push(`Message too long: ${item.content.length}/${TELEGRAM_MAX_MSG_LENGTH}`);\n}\n\n// Bot status\nif (accountStats.botStatus === 'DISABLED' || accountStats.botStatus === 'BANNED') {\n  errors.push(`Bot status: ${accountStats.botStatus}`);\n}\n\nif (errors.length > 0) {\n  return { json: { valid: false, errors, accountStats } };\n}\n\nreturn { json: { valid: true, message: item, accountStats } };"
+      },
+      "id": "validate-telegram",
+      "name": "Validate Telegram Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ]
+        }
+      },
+      "id": "check-valid",
+      "name": "Is Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chatId }}",
+        "text": "={{ $json.message.content }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "send-telegram",
+      "name": "Send Telegram Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-credentials",
+          "name": "Social-Pip Telegram Bot"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (result.error) {\n  return {\n    json: {\n      success: false,\n      error: result.error,\n      errorCode: result.error_code || 'UNKNOWN',\n      platform: 'telegram'\n    }\n  };\n}\n\nreturn {\n  json: {\n    success: true,\n    messageId: result.message_id,\n    chatId: result.chat.id,\n    publishedAt: new Date().toISOString(),\n    platform: 'telegram'\n  }\n};"
+      },
+      "id": "parse-result",
+      "name": "Parse Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/logs",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"platform\": \"telegram\",\n  \"action\": \"SEND_MESSAGE\",\n  \"status\": {{ $json.success ? '\"success\"' : '\"failed\"' }},\n  \"errorMessage\": \"{{ $json.error || '' }}\",\n  \"accountId\": \"{{ $json.chatId || '' }}\"\n}"
+      },
+      "id": "log-result",
+      "name": "Log Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_ADMIN_CHAT_ID }}",
+        "text": "=⚠️ Telegram Send Failed\n\nError: {{ $json.errors.join(', ') }}"
+      },
+      "id": "notify-failed",
+      "name": "Notify Failed",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 400]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [[{ "node": "Validate Telegram Rules", "type": "main", "index": 0 }]]
+    },
+    "Validate Telegram Rules": {
+      "main": [[{ "node": "Is Valid?", "type": "main", "index": 0 }]]
+    },
+    "Is Valid?": {
+      "main": [
+        [{ "node": "Send Telegram Message", "type": "main", "index": 0 }],
+        [{ "node": "Notify Failed", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send Telegram Message": {
+      "main": [[{ "node": "Parse Result", "type": "main", "index": 0 }]]
+    },
+    "Parse Result": {
+      "main": [[{ "node": "Log Result", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "social-pip" }, { "name": "telegram" }, { "name": "messaging" }]
+}

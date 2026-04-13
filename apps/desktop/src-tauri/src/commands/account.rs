@@ -158,7 +158,7 @@ fn default_status() -> String {
 }
 
 /// Input for updating an existing account
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct UpdateAccountInput {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -332,31 +332,31 @@ pub async fn update_account(id: String, data: UpdateAccountInput) -> Result<Acco
         account.name = name.trim().to_string();
     }
 
-    // Update username if provided
+// Update username if provided
     if let Some(ref username) = data.username {
         if !username.is_empty() {
             let username_regex = regex::Regex::new(r"^[a-zA-Z0-9_]+$")
-                .map_err(|e| format!("Regex error: {}", e))?;
+            .map_err(|e| format!("Regex error: {}", e))?;
             if !username_regex.is_match(username) {
                 return Err("Username can only contain letters, numbers, and underscores".to_string());
             }
         }
-        account.username = username.clone().filter(|u| !u.is_empty());
+        account.username = if username.is_empty() { None } else { Some(username.clone()) };
     }
 
     // Update display_name if provided
     if let Some(ref display_name) = data.display_name {
-        account.display_name = display_name.clone().filter(|d| !d.is_empty());
+        account.display_name = if display_name.is_empty() { None } else { Some(display_name.clone()) };
     }
 
     // Update avatar_url if provided
     if let Some(ref avatar_url) = data.avatar_url {
-        account.avatar_url = avatar_url.clone().filter(|a| !a.is_empty());
+        account.avatar_url = if avatar_url.is_empty() { None } else { Some(avatar_url.clone()) };
     }
 
     // Update chrome_profile_path if provided
     if let Some(ref chrome_profile_path) = data.chrome_profile_path {
-        account.chrome_profile_path = chrome_profile_path.clone().filter(|c| !c.is_empty());
+        account.chrome_profile_path = if chrome_profile_path.is_empty() { None } else { Some(chrome_profile_path.clone()) };
     }
 
     // Update status if provided

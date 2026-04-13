@@ -22,31 +22,35 @@ describe("PostLimitIndicator", () => {
 		});
 	});
 
-	describe("color coding", () => {
-		it("shows green for 0-80% usage", () => {
-			render(<PostLimitIndicator current={5} limit={10} type="daily" />);
-			const container = screen.getByText("5/10").closest("div");
-			expect(container?.querySelector(".bg-green-500")).toBeInTheDocument();
-		});
+describe("color coding", () => {
+    it("shows green for 0-80% usage", () => {
+      render(<PostLimitIndicator current={5} limit={10} type="daily" />);
+      const progressBar = document.querySelector('[role="progressbar"]');
+      const fill = progressBar?.querySelector("div");
+      expect(fill).toHaveClass("bg-green-500");
+    });
 
-		it("shows yellow for 80-95% usage", () => {
-			render(<PostLimitIndicator current={9} limit={10} type="daily" />);
-			const container = screen.getByText("9/10").closest("div");
-			expect(container?.querySelector(".bg-yellow-500")).toBeInTheDocument();
-		});
+    it("shows yellow for 80-95% usage", () => {
+      render(<PostLimitIndicator current={9} limit={10} type="daily" />);
+      const progressBar = document.querySelector('[role="progressbar"]');
+      const fill = progressBar?.querySelector("div");
+      expect(fill).toHaveClass("bg-yellow-500");
+    });
 
-		it("shows red for 95-100% usage", () => {
-			render(<PostLimitIndicator current={10} limit={10} type="daily" />);
-			const container = screen.getByText("10/10").closest("div");
-			expect(container?.querySelector(".bg-red-500")).toBeInTheDocument();
-		});
+    it("shows red for 95-100% usage", () => {
+      render(<PostLimitIndicator current={10} limit={10} type="daily" />);
+      const progressBar = document.querySelector('[role="progressbar"]');
+      const fill = progressBar?.querySelector("div");
+      expect(fill).toHaveClass("bg-red-500");
+    });
 
-		it("shows red for over limit", () => {
-			render(<PostLimitIndicator current={11} limit={10} type="daily" />);
-			const container = screen.getByText("11/10").closest("div");
-			expect(container?.querySelector(".bg-red-500")).toBeInTheDocument();
-		});
-	});
+    it("shows red for over limit", () => {
+      render(<PostLimitIndicator current={11} limit={10} type="daily" />);
+      const progressBar = document.querySelector('[role="progressbar"]');
+      const fill = progressBar?.querySelector("div");
+      expect(fill).toHaveClass("bg-red-500");
+    });
+  });
 
 	describe("progress bar", () => {
 		it("renders progress bar with correct width", () => {

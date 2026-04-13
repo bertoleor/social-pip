@@ -1,9 +1,9 @@
-import type { Template } from '@social-pip/types'
-// removed unused import
-// removed unused import
+import type { Template, MediaFile } from '@social-pip/types'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { QuickPostPanel } from './QuickPostPanel'
+import { VALID_JPG_FIXTURE, INVALID_SIZE_FIXTURE } from '@/__fixtures__/media'
+import { vi, describe, it, expect } from 'vitest'
 
-// Mock stores
 vi.mock('@/stores/quickPostStore', () => ({
   useQuickPostStore: vi.fn(() => ({
     selectedTemplateId: null,
@@ -40,11 +40,19 @@ vi.mock('@/stores/templateStore', () => ({
   })),
 }))
 
-vi.mock('@/stores/accountStore', () => ({
-  useAccountStore: vi.fn(() => ({
+vi.mock('@/stores/accountsStore', () => ({
+  useAccountsStore: vi.fn(() => ({
     accounts: [],
     selectedAccountId: null,
     selectAccount: vi.fn(),
+  })),
+}))
+
+vi.mock('@/stores/postingStore', () => ({
+  usePostingStore: vi.fn(() => ({
+    mediaFiles: [],
+    getMediaValidationState: vi.fn(() => 'valid'),
+    clearMedia: vi.fn(),
   })),
 }))
 
@@ -108,13 +116,13 @@ describe('QuickPostPanel', () => {
       expect(postButton).toBeDisabled()
     })
 
-    it('shows warning message when present', () => {
+    it('shows warning message when present', async () => {
       const { useQuickPostStore } = await import('@/stores/quickPostStore')
       vi.mocked(useQuickPostStore).mockReturnValue({
         ...useQuickPostStore(),
         warningMessage: 'Account risk level is CRITICAL',
       })
-      
+
       render(<QuickPostPanel />)
       expect(screen.getByText(/Account risk level is CRITICAL/)).toBeInTheDocument()
     })
@@ -123,12 +131,20 @@ describe('QuickPostPanel', () => {
   describe('risk indicator', () => {
     it('shows RiskBadge when account is selected', async () => {
       const { useQuickPostStore } = await import('@/stores/quickPostStore')
+      const { useAccountsStore } = await import('@/stores/accountsStore')
+
       vi.mocked(useQuickPostStore).mockReturnValue({
         ...useQuickPostStore(),
         selectedAccountId: 'account_1',
         accountRiskLevel: 'MEDIUM',
       })
-      
+
+      vi.mocked(useAccountsStore).mockReturnValue({
+        accounts: [{ id: 'account_1', name: 'Test Account', platform: 'facebook' }],
+        selectedAccountId: 'account_1',
+        selectAccount: vi.fn(),
+      })
+
       render(<QuickPostPanel />)
       expect(screen.getByText('MEDIUM')).toBeInTheDocument()
     })
@@ -155,9 +171,10 @@ describe('QuickPostPanel', () => {
       vi.mocked(useTemplateStore).mockReturnValue({
         ...useTemplateStore(),
         templates: [mockTemplate],
-        preview: { content: '{Hello|Hi} World', variations: 2 },
+        preview: { content: '{Hello|Hi} World', variation: 1, seed: 123 },
+        previewVariations: 2,
       })
-      
+
       render(<QuickPostPanel />)
       expect(screen.getByText('2 variations')).toBeInTheDocument()
     })
@@ -204,6 +221,113 @@ describe('QuickPostPanel', () => {
       render(<QuickPostPanel className="custom-panel" />)
       const container = document.querySelector('.custom-panel')
       expect(container).toBeInTheDocument()
+    })
+  })
+
+  describe('media integration', () => {
+    it('shows media upload section when account is selected', async () => {
+      const { useQuickPostStore } = await import('@/stores/quickPostStore')
+      const { useAccountsStore } = await import('@/stores/accountsStore')
+      
+      vi.mocked(useQuickPostStore).mockReturnValue({
+        ...useQuickPostStore(),
+        selectedAccountId: 'account_1',
+        canPost: true,
+      })
+      
+      vi.mocked(useAccountsStore).mockReturnValue({
+        accounts: [{ id: 'account_1', name: 'Test Account', platform: 'facebook' }],
+        selectedAccountId: 'account_1',
+        selectAccount: vi.fn(),
+      })
+
+      render(<QuickPostPanel />)
+      expect(screen.getByText('Add Media')).toBeInTheDocument()
+    })
+
+    it('does not show media upload section when no account selected', () => {
+      render(<QuickPostPanel />)
+      expect(screen.queryByText('Add Media')).not.toBeInTheDocument()
+    })
+
+    it('disables post button when media has validation errors', async () => {
+      const { useQuickPostStore } = await import('@/stores/quickPostStore')
+      const { usePostingStore } = await import('@/stores/postingStore')
+      
+      vi.mocked(useQuickPostStore).mockReturnValue({
+        ...useQuickPostStore(),
+        selectedAccountId: 'account_1',
+        selectedTemplateId: 'template_1',
+        selectedGroupIds: ['group_1'],
+        canPost: true,
+      })
+      
+      vi.mocked(usePostingStore).mockReturnValue({
+        mediaFiles: [INVALID_SIZE_FIXTURE],
+        getMediaValidationState: vi.fn(() => 'invalid'),
+        clearMedia: vi.fn(),
+      })
+
+      render(<QuickPostPanel />)
+      const postButton = screen.getByRole('button', { name: /fix media validation/i })
+      expect(postButton).toBeDisabled()
+    })
+
+    it('shows remove all media button when media is attached', async () => {
+      const { useQuickPostStore } = await import('@/stores/quickPostStore')
+      const { useAccountsStore } = await import('@/stores/accountsStore')
+      const { usePostingStore } = await import('@/stores/postingStore')
+      
+      vi.mocked(useQuickPostStore).mockReturnValue({
+        ...useQuickPostStore(),
+        selectedAccountId: 'account_1',
+        canPost: true,
+      })
+      
+      vi.mocked(useAccountsStore).mockReturnValue({
+        accounts: [{ id: 'account_1', name: 'Test Account', platform: 'facebook' }],
+        selectedAccountId: 'account_1',
+        selectAccount: vi.fn(),
+      })
+      
+      vi.mocked(usePostingStore).mockReturnValue({
+        mediaFiles: [VALID_JPG_FIXTURE],
+        getMediaValidationState: vi.fn(() => 'valid'),
+        clearMedia: vi.fn(),
+      })
+
+      render(<QuickPostPanel />)
+      expect(screen.getByText('Remove all media')).toBeInTheDocument()
+    })
+
+    it('calls clearMedia when remove all media is clicked', async () => {
+      const mockClearMedia = vi.fn()
+      const { useQuickPostStore } = await import('@/stores/quickPostStore')
+      const { useAccountsStore } = await import('@/stores/accountsStore')
+      const { usePostingStore } = await import('@/stores/postingStore')
+      
+      vi.mocked(useQuickPostStore).mockReturnValue({
+        ...useQuickPostStore(),
+        selectedAccountId: 'account_1',
+        canPost: true,
+      })
+      
+      vi.mocked(useAccountsStore).mockReturnValue({
+        accounts: [{ id: 'account_1', name: 'Test Account', platform: 'facebook' }],
+        selectedAccountId: 'account_1',
+        selectAccount: vi.fn(),
+      })
+      
+      vi.mocked(usePostingStore).mockReturnValue({
+        mediaFiles: [VALID_JPG_FIXTURE],
+        getMediaValidationState: vi.fn(() => 'valid'),
+        clearMedia: mockClearMedia,
+      })
+
+      render(<QuickPostPanel />)
+      const removeButton = screen.getByText('Remove all media')
+      fireEvent.click(removeButton)
+      expect(mockClearMedia).toHaveBeenCalled()
     })
   })
 })

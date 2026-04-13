@@ -1,50 +1,38 @@
-import "@testing-library/jest-dom";
-import { vi } from "vitest";
+import "@testing-library/jest-dom"
+import { vi } from "vitest"
+import "./utils/assertions"
 
 vi.mock("@tauri-apps/api/core", () => ({
-	invoke: vi.fn(),
-}));
+	invoke: vi.fn().mockResolvedValue({}),
+}))
 
-class MockAbortSignal {
-	aborted = false;
-	private _listeners: Array<() => void> = [];
+Object.defineProperty(window, "matchMedia", {
+	writable: true,
+	value: vi.fn().mockImplementation((query: string) => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addListener: vi.fn(),
+		removeListener: vi.fn(),
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		dispatchEvent: vi.fn(),
+	})),
+})
 
-	static abort(): MockAbortSignal {
-		const signal = new MockAbortSignal();
-		signal.aborted = true;
-		return signal;
-	}
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+	observe: vi.fn(),
+	unobserve: vi.fn(),
+	disconnect: vi.fn(),
+}))
 
-	static timeout(_ms: number): MockAbortSignal {
-		const signal = new MockAbortSignal();
-		return signal;
-	}
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+	observe: vi.fn(),
+	unobserve: vi.fn(),
+	disconnect: vi.fn(),
+}))
 
-	addEventListener(_type: string, listener: () => void): void {
-		this._listeners.push(listener);
-	}
-
-	removeEventListener(_type: string, listener: () => void): void {
-		this._listeners = this._listeners.filter((l) => l !== listener);
-	}
-
-	_abort(): void {
-		this.aborted = true;
-		for (const listener of this._listeners) {
-			listener();
-		}
-	}
-}
-
-class MockAbortController {
-	signal = new MockAbortSignal() as unknown as AbortSignal;
-
-	abort(): void {
-		(this.signal as unknown as MockAbortSignal)._abort();
-	}
-}
-
-globalThis.AbortSignal =
-	MockAbortSignal as unknown as typeof globalThis.AbortSignal;
-globalThis.AbortController =
-	MockAbortController as unknown as typeof globalThis.AbortController;
+vi.mock("@tauri-apps/api/event", () => ({
+	listen: vi.fn().mockResolvedValue(() => vi.fn()),
+	emit: vi.fn(),
+}))

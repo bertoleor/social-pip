@@ -1,0 +1,143 @@
+{
+  "name": "SP - LinkedIn Auto Post",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9,12,15,18 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger (Weekdays)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Social-Pip LinkedIn Pre-Publish Check\n// LinkedIn is the MOST restrictive - professional platform\nconst item = $input.first().json;\n\nconst LINKEDIN_MAX_DAILY = 3;\nconst LINKEDIN_MIN_DELAY_MS = 60 * 60 * 1000; // 60 minutes (longest)\nconst LINKEDIN_MAX_CHARS = 1300;\nconst LINKEDIN_MAX_HASHTAGS = 5;\n\nconst accountStats = {\n  postsToday: item.postsToday || 0,\n  lastPostAt: item.lastPostAt ? new Date(item.lastPostAt) : null,\n  accountStatus: item.accountStatus || 'ACTIVE'\n};\n\nconst errors = [];\n\n// LinkedIn has the strictest daily limit\nif (accountStats.postsToday >= LINKEDIN_MAX_DAILY) {\n  errors.push(`Daily limit reached: ${accountStats.postsToday}/${LINKEDIN_MAX_DAILY}`);\n}\n\n// Longest delay requirement\nif (accountStats.lastPostAt) {\n  const timeSinceLastPost = Date.now() - accountStats.lastPostAt.getTime();\n  if (timeSinceLastPost < LINKEDIN_MIN_DELAY_MS) {\n    const waitMinutes = Math.ceil((LINKEDIN_MIN_DELAY_MS - timeSinceLastPost) / 60000);\n    errors.push(`Wait ${waitMinutes} more minutes before next post.`);\n  }\n}\n\n// LinkedIn-specific content checks\nif (item.content) {\n  if (item.content.length > LINKEDIN_MAX_CHARS) {\n    errors.push(`Content too long: ${item.content.length}/${LINKEDIN_MAX_CHARS}`);\n  }\n  \n  const hashtags = (item.content.match(/#/g) || []).length;\n  if (hashtags > LINKEDIN_MAX_HASHTAGS) {\n    errors.push(`Too many hashtags: ${hashtags}/${LINKEDIN_MAX_HASHTAGS} (LinkedIn recommends 3-5)`);\n  }\n  \n  // Check for professional tone\n  const unprofessionalWords = ['amazing', 'incredible', 'awesome', 'lol', 'omg'];\n  const contentLower = item.content.toLowerCase();\n  const foundUnprofessional = unprofessionalWords.filter(w => contentLower.includes(w));\n  if (foundUnprofessional.length > 0) {\n    errors.push(`Consider more professional tone. Found: ${foundUnprofessional.join(', ')}`);\n  }\n}\n\n// Check account status\nif (['BANNED', 'RESTRICTED', 'SUSPENDED'].includes(accountStats.accountStatus)) {\n  errors.push(`Account status: ${accountStats.accountStatus}`);\n}\n\nif (errors.length > 0) {\n  return { json: { valid: false, errors, accountStats } };\n}\n\nreturn { json: { valid: true, post: item, accountStats } };"
+      },
+      "id": "validate-linkedin",
+      "name": "Validate LinkedIn Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ]
+        }
+      },
+      "id": "check-valid",
+      "name": "Is Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/linkedin/post",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-API-Key", "value": "={{ $env.SOCIAL_PIP_API_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"accountId\": \"{{ $json.post.accountId }}\",\n  \"content\": \"{{ $json.post.content }}\",\n  \"mediaUrls\": {{ JSON.stringify($json.post.mediaUrls || []) }},\n  \"visibility\": \"PUBLIC\"\n}"
+      },
+      "id": "publish-linkedin",
+      "name": "Publish to LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 200],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (result.error) {\n  return {\n    json: {\n      success: false,\n      error: result.error,\n      errorCode: result.errorCode || 'UNKNOWN',\n      platform: 'linkedin'\n    }\n  };\n}\n\nreturn {\n  json: {\n    success: true,\n    postId: result.id,\n    postUrl: `https://linkedin.com/posts/${result.id}`,\n    publishedAt: new Date().toISOString(),\n    platform: 'linkedin'\n  }\n};"
+      },
+      "id": "parse-result",
+      "name": "Parse Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/logs",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"platform\": \"linkedin\",\n  \"action\": \"POST_FEED\",\n  \"status\": {{ $json.success ? '\"success\"' : '\"failed\"' }},\n  \"postUrl\": \"{{ $json.postUrl || '' }}\",\n  \"errorMessage\": \"{{ $json.error || '' }}\",\n  \"accountId\": \"{{ $json.accountId || '' }}\"\n}"
+      },
+      "id": "log-result",
+      "name": "Log Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "=🚫 LinkedIn Post Blocked\n\nReason: {{ $json.errors.join(', ') }}\n\n💼 LinkedIn has the strictest limits (3 posts/day)"
+      },
+      "id": "notify-blocked",
+      "name": "Notify Blocked",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "=💼 LinkedIn Post Published\n\n{{ $json.postUrl }}\n\nPublished: {{ $json.publishedAt }}"
+      },
+      "id": "notify-success",
+      "name": "Notify Success",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1250, 50]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Weekdays)": {
+      "main": [[{ "node": "Validate LinkedIn Rules", "type": "main", "index": 0 }]]
+    },
+    "Validate LinkedIn Rules": {
+      "main": [[{ "node": "Is Valid?", "type": "main", "index": 0 }]]
+    },
+    "Is Valid?": {
+      "main": [
+        [{ "node": "Publish to LinkedIn", "type": "main", "index": 0 }],
+        [{ "node": "Notify Blocked", "type": "main", "index": 0 }]
+      ]
+    },
+    "Publish to LinkedIn": {
+      "main": [[{ "node": "Parse Result", "type": "main", "index": 0 }]]
+    },
+    "Parse Result": {
+      "main": [[{ "node": "Log Result", "type": "main", "index": 0 }]]
+    },
+    "Log Result": {
+      "main": [[{ "node": "Notify Success", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "social-pip" }, { "name": "linkedin" }, { "name": "auto-post" }]
+}

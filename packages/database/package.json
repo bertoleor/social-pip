@@ -13,12 +13,12 @@
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage"
 	},
-  "dependencies": {
+"dependencies": {
     "@prisma/client": "^5.22.0"
   },
-	"devDependencies": {
-		"@vitest/coverage-v8": "^2.1.0",
-		"prisma": "^5.22.0",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.0",
+    "prisma": "^5.22.0",
 		"tsx": "^4.19.0",
 		"typescript": "^5.7.0",
 		"vitest": "^2.1.0"

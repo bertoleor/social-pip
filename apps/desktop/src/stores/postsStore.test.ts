@@ -15,7 +15,7 @@ describe("postsStore", () => {
 		platform: "facebook",
 		status: "draft",
 		altCaptions: [],
-		hashtags: .test,
+  hashtags: [],
 		variance: 15,
 		accountId: "account_1",
 		createdAt: new Date("2026-04-10T10:00:00Z"),

@@ -1,0 +1,143 @@
+{
+  "name": "SP - Email Auto Send",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Social-Pip Email Pre-Send Check\n// Using free providers: Resend, Brevo, SendGrid\nconst item = $input.first().json;\n\n// Free tier limits\nconst RESEND_FREE_DAILY = 100;\nconst BREVO_FREE_DAILY = 300;\nconst SENDGRID_FREE_DAILY = 100;\n\nconst config = {\n  provider: item.provider || 'resend',\n  emailsToday: item.emailsToday || 0,\n  lastEmailAt: item.lastEmailAt ? new Date(item.lastEmailAt) : null\n};\n\n// Get provider limits\nconst limits = {\n  resend: RESEND_FREE_DAILY,\n  brevo: BREVO_FREE_DAILY,\n  sendgrid: SENDGRID_FREE_DAILY\n};\n\nconst errors = [];\nconst dailyLimit = limits[config.provider] || 100;\n\nif (config.emailsToday >= dailyLimit) {\n  errors.push(`Daily limit reached: ${config.emailsToday}/${dailyLimit} (${config.provider})`);\n}\n\n// Rate limit: 1 email per second to avoid spam filters\nif (config.lastEmailAt) {\n  const timeSinceLastEmail = Date.now() - config.lastEmailAt.getTime();\n  if (timeSinceLastEmail < 1000) {\n    errors.push('Wait at least 1 second between emails');\n  }\n}\n\n// Validate email fields\nif (!item.to) {\n  errors.push('Missing recipient email');\n}\n\nif (!item.subject) {\n  errors.push('Missing email subject');\n}\n\nif (!item.content && !item.htmlContent) {\n  errors.push('Missing email content');\n}\n\n// Basic email validation\nconst emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\nif (item.to && !emailRegex.test(item.to)) {\n  errors.push('Invalid recipient email format');\n}\n\nif (errors.length > 0) {\n  return { json: { valid: false, errors, config } };\n}\n\nreturn { json: { valid: true, email: item, config } };"
+      },
+      "id": "validate-email",
+      "name": "Validate Email Rules",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ]
+        }
+      },
+      "id": "check-valid",
+      "name": "Is Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/email/send",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-API-Key", "value": "={{ $env.SOCIAL_PIP_API_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"provider\": \"{{ $json.config.provider }}\",\n  \"to\": \"{{ $json.email.to }}\",\n  \"subject\": \"{{ $json.email.subject }}\",\n  \"content\": \"{{ $json.email.content || '' }}\",\n  \"htmlContent\": \"{{ $json.email.htmlContent || '' }}\",\n  \"from\": \"{{ $json.email.from || 'noreply@social-pip.com' }}\"\n}"
+      },
+      "id": "send-email",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 200],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\nif (result.error) {\n  return {\n    json: {\n      success: false,\n      error: result.error,\n      errorCode: result.errorCode || 'UNKNOWN',\n      platform: 'email'\n    }\n  };\n}\n\nreturn {\n  json: {\n    success: true,\n    messageId: result.id,\n    to: result.to,\n    provider: result.provider,\n    publishedAt: new Date().toISOString(),\n    platform: 'email'\n  }\n};"
+      },
+      "id": "parse-result",
+      "name": "Parse Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/logs",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"platform\": \"email\",\n  \"action\": \"SEND_MESSAGE\",\n  \"status\": {{ $json.success ? '\"success\"' : '\"failed\"' }},\n  \"errorMessage\": \"{{ $json.error || '' }}\",\n  \"accountId\": \"{{ $json.to || '' }}\"\n}"
+      },
+      "id": "log-result",
+      "name": "Log Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "=📧 Email Failed\n\nErrors: {{ $json.errors.join(', ') }}"
+      },
+      "id": "notify-failed",
+      "name": "Notify Failed",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "=📧 Email Sent\n\nTo: {{ $json.to }}\nProvider: {{ $json.provider }}\nMessage ID: {{ $json.messageId }}"
+      },
+      "id": "notify-success",
+      "name": "Notify Success",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1250, 50]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [[{ "node": "Validate Email Rules", "type": "main", "index": 0 }]]
+    },
+    "Validate Email Rules": {
+      "main": [[{ "node": "Is Valid?", "type": "main", "index": 0 }]]
+    },
+    "Is Valid?": {
+      "main": [
+        [{ "node": "Send Email", "type": "main", "index": 0 }],
+        [{ "node": "Notify Failed", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send Email": {
+      "main": [[{ "node": "Parse Result", "type": "main", "index": 0 }]]
+    },
+    "Parse Result": {
+      "main": [[{ "node": "Log Result", "type": "main", "index": 0 }]]
+    },
+    "Log Result": {
+      "main": [[{ "node": "Notify Success", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "social-pip" }, { "name": "email" }, { "name": "messaging" }]
+}

@@ -1,7 +1,3 @@
-/**
- * QuickPostPanel - Main posting interface
- */
-
 import { Button } from "@/components/atoms/Button";
 import { PostLimitIndicator } from "@/components/atoms/PostLimitIndicator";
 import { RiskBadge } from "@/components/atoms/RiskBadge";
@@ -10,12 +6,15 @@ import {
 	type GroupForSelection,
 	GroupSelector,
 } from "@/components/molecules/GroupSelector";
+import { MediaUploader } from "@/components/molecules/MediaUploader";
 import { SpintaxPreview } from "@/components/molecules/SpintaxPreview";
 import { TemplateSelector } from "@/components/molecules/TemplateSelector";
 import { cn } from "@/lib/utils";
 import { useAccountsStore } from "@/stores/accountsStore";
+import { usePostingStore } from "@/stores/postingStore";
 import { useQuickPostStore } from "@/stores/quickPostStore";
 import { useTemplateStore } from "@/stores/templateStore";
+import type { Platform } from "@social-pip/types";
 import { useEffect } from "react";
 
 // ============================================================================
@@ -33,7 +32,6 @@ export interface QuickPostPanelProps {
 export function QuickPostPanel({
 	className,
 }: QuickPostPanelProps): React.ReactElement {
-	// Store state
 	const {
 		selectedTemplateId,
 		selectedGroupIds,
@@ -66,6 +64,7 @@ export function QuickPostPanel({
 		cycleVariation,
 	} = useTemplateStore();
 	const { accounts } = useAccountsStore();
+	const { mediaFiles, getMediaValidationState, clearMedia } = usePostingStore();
 
 	// Fetch groups on mount
 	useEffect(() => {
@@ -96,7 +95,9 @@ export function QuickPostPanel({
 		}
 	}, [selectedAccountId, checkAccountSafety]);
 
-	// Format estimated time
+	const selectedAccount = accounts.find((a) => a.id === selectedAccountId);
+	const selectedPlatform: Platform = selectedAccount?.platform ?? "facebook";
+
 	const formatEstimatedTime = (seconds: number): string => {
 		if (seconds < 60) return `${seconds}s`;
 		const minutes = Math.floor(seconds / 60);
@@ -116,12 +117,20 @@ export function QuickPostPanel({
 		selectTemplate(template.id);
 	};
 
-	// Handle Post button click
 	const handlePostClick = () => {
-		if (canPost) {
+		const mediaState = getMediaValidationState();
+		if (canPost && mediaState !== "invalid") {
 			void startPosting();
 		}
 	};
+
+	const handleClearMedia = () => {
+		clearMedia();
+	};
+
+	const mediaState = getMediaValidationState();
+	const hasInvalidMedia = mediaState === "invalid";
+	const canSubmitPost = canPost && !hasInvalidMedia;
 
 	// Convert groups to GroupForSelection format
 	const groupsForSelection: GroupForSelection[] = groups.map((g) => ({
@@ -233,6 +242,23 @@ export function QuickPostPanel({
 				/>
 			</Card>
 
+			{/* Media Upload */}
+			{selectedAccountId && (
+				<Card className="p-4 space-y-3">
+					<h3 className="font-medium text-gray-900">Add Media</h3>
+					<MediaUploader platform={selectedPlatform} />
+					{mediaFiles.length > 0 && (
+						<button
+							type="button"
+							onClick={handleClearMedia}
+							className="text-sm text-gray-500 hover:text-gray-700 underline"
+						>
+							Remove all media
+						</button>
+					)}
+				</Card>
+			)}
+
 			{/* Estimated Time */}
 			{estimatedTime > 0 && selectedGroupIds.length > 0 && (
 				<div className="flex items-center justify-between text-sm text-gray-600">
@@ -247,13 +273,15 @@ export function QuickPostPanel({
 			<Button
 				variant="primary"
 				size="lg"
-				disabled={!canPost}
+				disabled={!canSubmitPost}
 				onClick={handlePostClick}
 				className="w-full"
 			>
-				{canPost
-					? "Post to Selected Groups"
-					: "Complete All Selections to Post"}
+				{hasInvalidMedia
+					? "Fix media validation errors"
+					: canSubmitPost
+						? "Post to Selected Groups"
+						: "Complete All Selections to Post"}
 			</Button>
 
 			{/* Selection Summary */}

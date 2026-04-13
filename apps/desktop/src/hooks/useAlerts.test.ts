@@ -18,20 +18,22 @@ const mockAlertStats = {
   last_hour: 2,
 };
 
-const mockAlert = {
+const createMockAlert = (message: string) => ({
   id: "alert-1",
   alert_type: "PostPublished",
   severity: "INFO",
   platform: "facebook",
   account_id: "acc-1",
-  message: "Post published successfully",
+  message,
   details: null,
   timestamp: new Date().toISOString(),
   acknowledged: false,
   acknowledged_at: null,
   resolved: false,
   resolved_at: null,
-};
+});
+
+const mockAlert = createMockAlert("Post published successfully");
 
 describe("useAlerts", () => {
   beforeEach(() => {
@@ -106,29 +108,30 @@ describe("useAlerts", () => {
       });
     });
 
-    it("adds new alert to the list", async () => {
-      mockInvoke.mockResolvedValueOnce(mockAlertStats);
-      mockInvoke.mockResolvedValueOnce(mockAlert);
+  it("adds new alert to the list", async () => {
+    const testAlert = createMockAlert("Test message");
+    mockInvoke.mockResolvedValueOnce(mockAlertStats);
+    mockInvoke.mockResolvedValueOnce(testAlert);
 
-      const { result } = renderHook(() => useAlerts());
+    const { result } = renderHook(() => useAlerts());
 
-      await waitFor(() => {
-        expect(result.current.stats).toEqual(mockAlertStats);
-      });
-
-      await act(async () => {
-        await result.current.createAlert(
-          "post_published",
-          "INFO",
-          "Test message"
-        );
-      });
-
-      await waitFor(() => {
-        expect(result.current.alerts).toHaveLength(1);
-        expect(result.current.alerts[0].message).toBe("Test message");
-      });
+    await waitFor(() => {
+      expect(result.current.stats).toEqual(mockAlertStats);
     });
+
+    await act(async () => {
+      await result.current.createAlert(
+        "post_published",
+        "INFO",
+        "Test message"
+      );
+    });
+
+    await waitFor(() => {
+      expect(result.current.alerts).toHaveLength(1);
+      expect(result.current.alerts[0]?.message).toBe("Test message");
+    });
+  });
   });
 
   describe("acknowledgeAlert", () => {

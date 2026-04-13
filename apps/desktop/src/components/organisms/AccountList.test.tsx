@@ -1,90 +1,81 @@
 import type { Account } from "@social-pip/types";
 import {
-	act,
-	fireEvent,
-	render,
-	screen,
-	waitFor,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
 } from "@testing-library/react";
-/**
- * @fileoverview Tests for AccountList organism
- */
-// removed unused import
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { AccountList } from "./AccountList";
 
-// Mock accounts for testing
 const mockAccounts: Account[] = [
-	{
-		id: "acc_001",
-		platform: "facebook",
-		name: "Facebook Account",
-		username: "fbuser",
-		status: "active",
-		warmupProgress: 0,
-		restrictionsCount: 0,
-		dailyPostsCount: 0,
-		createdAt: new Date("2024-01-01T00:00:00Z"),
-		updatedAt: new Date("2024-01-01T00:00:00Z"),
-	},
-	{
-		id: "acc_002",
-		platform: "instagram",
-		name: "Instagram Account",
-		username: "iguser",
-		displayName: "IG Display",
-		status: "active",
-		warmupProgress: 0,
-		restrictionsCount: 0,
-		dailyPostsCount: 0,
-		createdAt: new Date("2024-01-02T00:00:00Z"),
-		updatedAt: new Date("2024-01-02T00:00:00Z"),
-	},
-	{
-		id: "acc_003",
-		platform: "twitter",
-		name: "Twitter Account",
-		username: "twuser",
-		status: "inactive",
-		warmupProgress: 0,
-		restrictionsCount: 0,
-		dailyPostsCount: 0,
-		createdAt: new Date("2024-01-03T00:00:00Z"),
-		updatedAt: new Date("2024-01-03T00:00:00Z"),
-	},
-	{
-		id: "acc_004",
-		platform: "facebook",
-		name: "Another Facebook",
-		username: "fbuser2",
-		status: "active",
-		warmupProgress: 0,
-		restrictionsCount: 0,
-		dailyPostsCount: 0,
-		createdAt: new Date("2024-01-04T00:00:00Z"),
-		updatedAt: new Date("2024-01-04T00:00:00Z"),
-	},
-	{
-		id: "acc_005",
-		platform: "tiktok",
-		name: "TikTok Account",
-		username: "ttuser",
-		status: "active",
-		warmupProgress: 0,
-		restrictionsCount: 0,
-		dailyPostsCount: 0,
-		createdAt: new Date("2024-01-05T00:00:00Z"),
-		updatedAt: new Date("2024-01-05T00:00:00Z"),
-	},
+  {
+    id: "acc_001",
+    platform: "facebook",
+    name: "Facebook Account",
+    username: "fbuser",
+    status: "active",
+    warmupProgress: 0,
+    restrictionsCount: 0,
+    dailyPostsCount: 0,
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2024-01-01T00:00:00Z"),
+  },
+  {
+    id: "acc_002",
+    platform: "instagram",
+    name: "Instagram Account",
+    username: "iguser",
+    displayName: "IG Display",
+    status: "active",
+    warmupProgress: 0,
+    restrictionsCount: 0,
+    dailyPostsCount: 0,
+    createdAt: new Date("2024-01-02T00:00:00Z"),
+    updatedAt: new Date("2024-01-02T00:00:00Z"),
+  },
+  {
+    id: "acc_003",
+    platform: "twitter",
+    name: "Twitter Account",
+    username: "twuser",
+    status: "inactive",
+    warmupProgress: 0,
+    restrictionsCount: 0,
+    dailyPostsCount: 0,
+    createdAt: new Date("2024-01-03T00:00:00Z"),
+    updatedAt: new Date("2024-01-03T00:00:00Z"),
+  },
+  {
+    id: "acc_004",
+    platform: "facebook",
+    name: "Another Facebook",
+    username: "fbuser2",
+    status: "active",
+    warmupProgress: 0,
+    restrictionsCount: 0,
+    dailyPostsCount: 0,
+    createdAt: new Date("2024-01-04T00:00:00Z"),
+    updatedAt: new Date("2024-01-04T00:00:00Z"),
+  },
+  {
+    id: "acc_005",
+    platform: "tiktok",
+    name: "TikTok Account",
+    username: "ttuser",
+    status: "active",
+    warmupProgress: 0,
+    restrictionsCount: 0,
+    dailyPostsCount: 0,
+    createdAt: new Date("2024-01-05T00:00:00Z"),
+    updatedAt: new Date("2024-01-05T00:00:00Z"),
+  },
 ];
 
 describe("AccountList", () => {
-	beforeEach(() => {
-		vi.useFakeTimers();
-	});
-
-	afterEach(() => {
-		vi.useRealTimers();
-	});
+  beforeEach(() => {
+    vi.useRealTimers();
+  });
 
 	describe("grid rendering", () => {
 		it("renders grid with all 5 accounts", () => {
@@ -128,59 +119,52 @@ describe("AccountList", () => {
 		});
 	});
 
-	describe("search functionality", () => {
-		it("filters by username (debounced 300ms)", async () => {
-			render(<AccountList accounts={mockAccounts} />);
+  describe("search functionality", () => {
+    it("filters by username (debounced 300ms)", async () => {
+      render(<AccountList accounts={mockAccounts} />);
 
-			// Type in search
-			const searchInput = screen.getByLabelText("Search accounts");
-			fireEvent.change(searchInput, { target: { value: "fbuser" } });
+      const searchInput = screen.getByLabelText("Search accounts");
+      fireEvent.change(searchInput, { target: { value: "fbuser" } });
 
-			// Before debounce, should still show all
-			expect(screen.getByText("Instagram Account")).toBeDefined();
+      expect(screen.getByText("Instagram Account")).toBeDefined();
 
-			// Fast-forward 300ms and wrap in act
-			await act(async () => {
-				vi.advanceTimersByTime(300);
-			});
+      await waitFor(
+        () => {
+          expect(screen.getByText("Facebook Account")).toBeDefined();
+          expect(screen.queryByText("Instagram Account")).toBeNull();
+        },
+        { timeout: 1000 }
+      );
+    });
 
-			// After debounce, should only show matching accounts
-			await waitFor(() => {
-				expect(screen.getByText("Facebook Account")).toBeDefined();
-				expect(screen.queryByText("Instagram Account")).toBeNull();
-			});
-		});
+    it("search is case-insensitive", async () => {
+      render(<AccountList accounts={mockAccounts} />);
 
-		it("search is case-insensitive", async () => {
-			render(<AccountList accounts={mockAccounts} />);
+      const searchInput = screen.getByLabelText("Search accounts");
+      fireEvent.change(searchInput, { target: { value: "FBUSER" } });
 
-			const searchInput = screen.getByLabelText("Search accounts");
-			fireEvent.change(searchInput, { target: { value: "FBUSER" } });
+      await waitFor(
+        () => {
+          expect(screen.getByText("Facebook Account")).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
 
-			await act(async () => {
-				vi.advanceTimersByTime(300);
-			});
+    it("searches in displayName as well", async () => {
+      render(<AccountList accounts={mockAccounts} />);
 
-			await waitFor(() => {
-				expect(screen.getByText("Facebook Account")).toBeDefined();
-			});
-		});
+      const searchInput = screen.getByLabelText("Search accounts");
+      fireEvent.change(searchInput, { target: { value: "IG Display" } });
 
-		it("searches in displayName as well", async () => {
-			render(<AccountList accounts={mockAccounts} />);
-
-			const searchInput = screen.getByLabelText("Search accounts");
-			fireEvent.change(searchInput, { target: { value: "IG Display" } });
-
-			await act(async () => {
-				vi.advanceTimersByTime(300);
-			});
-
-			await waitFor(() => {
-				expect(screen.getByText("Instagram Account")).toBeDefined();
-			});
-		});
-	});
+      await waitFor(
+        () => {
+          expect(screen.getByText("Instagram Account")).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+  });
 
 	describe("empty state", () => {
 		it("shows empty state when no accounts match filter", () => {

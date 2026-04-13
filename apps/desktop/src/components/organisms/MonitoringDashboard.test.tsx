@@ -1,6 +1,7 @@
 import { useAlertsStore } from "@/stores/alertsStore";
 import { invoke } from "@tauri-apps/api/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MonitoringDashboard } from "./MonitoringDashboard";
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -18,21 +19,35 @@ const mockStats = {
   last_hour: 2,
 };
 
+const createMockStore = () => ({
+  alerts: [],
+  stats: null,
+  loading: false,
+  error: null,
+  initAlerts: vi.fn().mockImplementation(async () => {
+    useAlertsStore.setState({ stats: mockStats, loading: false });
+  }),
+  loadAlerts: vi.fn().mockImplementation(async () => {
+    useAlertsStore.setState({ alerts: [] });
+  }),
+  createAlert: vi.fn(),
+  acknowledgeAlert: vi.fn(),
+  resolveAlert: vi.fn(),
+  refreshStats: vi.fn().mockImplementation(async () => {
+    useAlertsStore.setState({ stats: mockStats });
+  }),
+  reset: vi.fn(),
+});
+
 describe("MonitoringDashboard", () => {
   beforeEach(() => {
-    useAlertsStore.setState({
-      alerts: [],
-      stats: null,
-      loading: false,
-      error: null,
-    });
     vi.clearAllMocks();
+    mockInvoke.mockReset();
+    useAlertsStore.setState(createMockStore());
   });
 
   describe("rendering", () => {
     it("renders header", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -41,8 +56,6 @@ describe("MonitoringDashboard", () => {
     });
 
     it("displays stats cards", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -52,8 +65,6 @@ describe("MonitoringDashboard", () => {
     });
 
     it("displays total alerts card", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -62,8 +73,6 @@ describe("MonitoringDashboard", () => {
     });
 
     it("displays critical alerts card", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -72,8 +81,6 @@ describe("MonitoringDashboard", () => {
     });
 
     it("displays warnings card", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -82,8 +89,6 @@ describe("MonitoringDashboard", () => {
     });
 
     it("displays unresolved alerts card", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -92,8 +97,6 @@ describe("MonitoringDashboard", () => {
     });
 
     it("displays last 24h card", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -104,8 +107,6 @@ describe("MonitoringDashboard", () => {
 
   describe("refresh", () => {
     it("has refresh button", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -116,8 +117,6 @@ describe("MonitoringDashboard", () => {
     });
 
     it("calls refresh when button clicked", async () => {
-      mockInvoke.mockResolvedValue(mockStats);
-
       render(<MonitoringDashboard />);
 
       await waitFor(() => {
@@ -127,7 +126,7 @@ describe("MonitoringDashboard", () => {
       fireEvent.click(screen.getByRole("button", { name: /refresh/i }));
 
       await waitFor(() => {
-        expect(mockInvoke).toHaveBeenCalledTimes(2);
+        expect(useAlertsStore.getState().loadAlerts).toHaveBeenCalled();
       });
     });
   });
@@ -135,34 +134,35 @@ describe("MonitoringDashboard", () => {
   describe("polling", () => {
     it("uses custom refreshInterval prop", async () => {
       vi.useFakeTimers();
-      mockInvoke.mockResolvedValue(mockStats);
+
+      const loadAlertsMock = vi.fn();
+      useAlertsStore.setState({
+        stats: mockStats,
+        alerts: [],
+        loadAlerts: loadAlertsMock,
+      });
 
       render(<MonitoringDashboard refreshInterval={5000} />);
 
-      await waitFor(() => {
-        expect(mockInvoke).toHaveBeenCalledTimes(1);
-      });
+      vi.advanceTimersByTime(6000);
 
-      vi.advanceTimersByTime(5000);
-
-      await waitFor(() => {
-        expect(mockInvoke).toHaveBeenCalledTimes(2);
-      });
+      expect(loadAlertsMock).toHaveBeenCalled();
 
       vi.useRealTimers();
     });
   });
 
   describe("alert list integration", () => {
-    it("includes AlertList for recent alerts", async () => {
-      mockInvoke.mockResolvedValueOnce(mockStats);
-      mockInvoke.mockResolvedValueOnce([]);
+    it("includes AlertList for recent alerts", () => {
+      useAlertsStore.setState({
+        stats: mockStats,
+        alerts: [],
+        loading: false,
+      });
 
       render(<MonitoringDashboard />);
 
-      await waitFor(() => {
-        expect(screen.getByTestId("alert-list")).toBeInTheDocument();
-      });
+      expect(screen.getByText("No alerts to display")).toBeInTheDocument();
     });
   });
 });

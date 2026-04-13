@@ -1,35 +1,35 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { Post } from "@social-pip/types";
-// removed unused import
-// removed unused import
 import { PostList } from "./PostList";
 
 const mockPosts: Post[] = [
-	{
-		id: "post_1",
-		content: "First post",
-		mediaUrls: [],
-		platform: "facebook",
-		status: "draft",
-		altCaptions: [],
-		hashtags: .test,
-		variance: 15,
-		accountId: "account_1",
-		createdAt: new Date("2026-04-10T10:00:00Z"),
-		updatedAt: new Date("2026-04-10T10:00:00Z"),
-	},
-	{
-		id: "post_2",
-		content: "Second post",
-		mediaUrls: [],
-		platform: "instagram",
-		status: "scheduled",
-		altCaptions: [],
-		hashtags: .photo,
-		variance: 15,
-		accountId: "account_1",
-		createdAt: new Date("2026-04-10T11:00:00Z"),
-		updatedAt: new Date("2026-04-10T11:00:00Z"),
-	},
+  {
+    id: "post_1",
+    content: "First post",
+    mediaUrls: [],
+    platform: "facebook",
+    status: "draft",
+    altCaptions: [],
+    hashtags: ["test"],
+    variance: 15,
+    accountId: "account_1",
+    createdAt: new Date("2026-04-10T10:00:00Z"),
+    updatedAt: new Date("2026-04-10T10:00:00Z"),
+  },
+  {
+    id: "post_2",
+    content: "Second post",
+    mediaUrls: [],
+    platform: "instagram",
+    status: "scheduled",
+    altCaptions: [],
+    hashtags: ["photo"],
+    variance: 15,
+    accountId: "account_1",
+    createdAt: new Date("2026-04-10T11:00:00Z"),
+    updatedAt: new Date("2026-04-10T11:00:00Z"),
+  },
 ];
 
 describe("PostList", () => {

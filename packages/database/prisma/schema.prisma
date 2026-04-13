@@ -8,7 +8,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
 }
 
 // ============================================
@@ -537,6 +537,199 @@ model WebhookConfig {
   updatedAt DateTime @updatedAt
 
   @@unique([name])
+}
+
+// ============================================
+// ERROR HANDLING SYSTEM v2.0 - Enterprise-Grade Error Handling
+// ============================================
+
+// ============================================
+// OUTBOX PATTERN (NEW v2.0)
+// Guarantees task delivery with crash recovery.
+// Tasks persist BEFORE execution, enabling recovery after Tauri crash.
+// ============================================
+
+model Outbox {
+  id String @id @default(cuid())
+
+  // Idempotency - prevents duplicate task execution
+  idempotencyKey String @unique // Hash-based unique key
+
+  // Aggregate reference (what entity this task relates to)
+  aggregateType String // "Post", "Account", "Batch"
+  aggregateId String // Target entity ID
+
+  // Event metadata
+  eventType String // "PostCreated", "PostRetry"
+  payload String // JSON of full task data
+  traceId String // OpenTelemetry trace ID
+
+  // Saga correlation (optional)
+  sagaId String? // Parent saga if applicable
+
+  // Status tracking
+  status String @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
+
+  // Timing
+  createdAt DateTime @default(now())
+  processedAt DateTime?
+
+  // Retry configuration
+  retryCount Int @default(0)
+  maxRetries Int @default(3)
+  nextRetryAt DateTime?
+
+  // Error tracking
+  lastError String?
+
+  @@index([status, createdAt])
+  @@index([aggregateType, aggregateId])
+}
+
+// ============================================
+// SAGA EXECUTION (NEW v2.0)
+// Handles multi-step operations with automatic compensation on failure.
+// ============================================
+
+model SagaExecution {
+  id String @id @default(cuid())
+
+  // Definition reference
+  name String // Saga definition name
+
+  // State machine: RUNNING → COMPLETED | COMPENSATING → COMPENSATED | FAILED | TIMED_OUT
+  state String @default("RUNNING") // RUNNING | COMPLETED | COMPENSATING | FAILED | COMPENSATED | TIMED_OUT
+
+  // Progress tracking
+  currentStep Int @default(0)
+  completedSteps String @default("[]") // JSON array of step indices
+
+  // Context preservation (for crash recovery)
+  context String @default("{}") // JSON of saga variables
+
+  // Tracing
+  traceId String
+
+  // Timing
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+
+  // Error tracking
+  lastError String?
+
+  // Overall timeout (sum of step timeouts should be less than this)
+  timeoutMs Int
+
+  // Relations
+  steps SagaStep[]
+
+  @@index([state, startedAt])
+  @@index([traceId])
+}
+
+model SagaStep {
+  id String @id @default(cuid())
+
+  // Parent saga
+  sagaId String
+  saga SagaExecution @relation(fields: [sagaId], references: [id], onDelete: Cascade)
+
+  // Step identification
+  name String
+  stepOrder Int
+
+  // Status: PENDING | RUNNING | COMPLETED | COMPENSATED | FAILED
+  status String @default("PENDING")
+
+  // Results
+  actionResult String? // JSON of action result
+  compensationResult String? // JSON of compensation result (if ran)
+
+  // Timing
+  startedAt DateTime?
+  completedAt DateTime?
+
+  // Error tracking
+  errorMessage String?
+
+  @@index([sagaId, stepOrder])
+}
+
+// ============================================
+// ERROR GROUP (NEW v2.0)
+// Reduces error noise via fingerprinting and deduplication.
+// ============================================
+
+model ErrorGroup {
+  id String @id @default(cuid())
+
+  // Fingerprint (xxHash of error signature)
+  fingerprint String @unique
+
+  // Error classification
+  errorType String // UnifiedError variant
+  platform String?
+  accountId String?
+  normalizedMessage String
+
+  // Occurrence tracking
+  firstOccurrence DateTime @default(now())
+  lastOccurrence DateTime @default(now())
+  count Int @default(1)
+
+  // Sample storage (DLQ entry IDs for investigation)
+  sampleIds String @default("[]") // JSON array of DLQ entry IDs
+
+  // Status
+  status String @default("ACTIVE") // ACTIVE | RESOLVED | IGNORED
+  resolvedAt DateTime?
+
+  @@index([fingerprint])
+  @@index([status, lastOccurrence])
+}
+
+// ============================================
+// DEAD LETTER QUEUE v2.0 (MODIFIED)
+// Now includes OpenTelemetry trace correlation and saga linkage.
+// ============================================
+
+model DeadLetterQueue {
+  id              String        @id @default(cuid())
+
+  // Task reference
+  originalTaskId  String?
+  taskType        String        // post | message | story | reel
+
+  // Original task data
+  payload         String        // JSON of original task data
+
+  // Error classification
+  unifiedError    String        // Serialized UnifiedError variant
+  recoveryStrategy String       // Assigned strategy
+  errorMessage    String
+  errorContext    String        // JSON: { account_id, platform, etc }
+
+  // v2.0 fields - OpenTelemetry & Saga correlation
+  traceId         String?
+  spanId          String?
+  sagaId          String?
+  fullErrorContext String?      // Complete ErrorContext JSON
+  errorGroupId    String?       // Link to ErrorGroup
+
+  // Retry tracking
+  retryCount      Int           @default(0)
+  manuallyRetried Boolean       @default(false)
+
+  // Resolution
+  resolvedAt      DateTime?
+
+  createdAt       DateTime      @default(now())
+
+  @@index([taskType, createdAt])
+  @@index([resolvedAt])
+  @@index([traceId])
+  @@index([sagaId])
+  @@index([errorGroupId])
 }
 
 // ============================================

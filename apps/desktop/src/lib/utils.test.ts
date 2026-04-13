@@ -76,9 +76,9 @@ describe("cn() utility", () => {
 			expect(cn(["px-4", "py-2"], "bg-white")).toBe("px-4 py-2 bg-white");
 		});
 
-		it("handles nested arrays", () => {
-			expect(cn(["base", .nested], "end")).toBe("base nested end");
-		});
+	it("handles nested arrays", () => {
+		expect(cn(["base", "nested"], "end")).toBe("base nested end");
+	});
 
 		it("handles objects with boolean values", () => {
 			expect(

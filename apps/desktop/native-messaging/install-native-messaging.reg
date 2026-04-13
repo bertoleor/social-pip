@@ -1,0 +1,10 @@
+Windows Registry Editor Version 5.00
+
+; Social-Pip Native Messaging Host Registration
+; This file registers the native messaging host for Chrome extension communication
+;
+; IMPORTANT: Replace EXTENSION_ID with your actual Chrome extension ID before running
+; The extension ID can be found in chrome://extensions when developer mode is enabled
+
+[HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\com.social_pip.app]
+@="E:\\social-pip\\apps\\desktop\\native-messaging\\com.social_pip.app.json"

@@ -1,7 +1,9 @@
 import { PlatformIcon } from "@/components/atoms/PlatformIcon";
 import { PostStatusBadge } from "@/components/atoms/PostStatusBadge";
 import { Card } from "@/components/molecules/Card";
+import { MediaPreview } from "@/components/molecules/MediaPreview";
 import { cn } from "@/lib/utils";
+import { usePostingStore } from "@/stores/postingStore";
 import type { Post } from "@social-pip/types";
 import { Clock, FileText } from "lucide-react";
 
@@ -24,6 +26,8 @@ export function PostPreview({
 	post,
 	className,
 }: PostPreviewProps): React.ReactElement {
+	const { mediaFiles } = usePostingStore();
+
 	if (post === undefined) {
 		return (
 			<div className={cn("p-8 text-center text-gray-500", className)}>
@@ -34,6 +38,8 @@ export function PostPreview({
 
 	const scheduledStr = formatScheduledDate(post.scheduledAt);
 	const charCount = post.content.length;
+	const hasAttachedMedia = mediaFiles.length > 0;
+	const hasPostMedia = post.mediaUrls.length > 0;
 
 	return (
 		<Card className={cn("p-4", className)}>
@@ -57,7 +63,9 @@ export function PostPreview({
 					</p>
 				</div>
 
-				{post.mediaUrls.length > 0 && (
+				{hasAttachedMedia && <MediaPreview />}
+
+				{hasPostMedia && !hasAttachedMedia && (
 					<div className="grid grid-cols-2 gap-2">
 						{post.mediaUrls.slice(0, 4).map((url, index) => (
 							<img

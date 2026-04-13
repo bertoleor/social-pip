@@ -1,9 +1,6 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { Account } from "@social-pip/types";
-// removed unused import
-/**
- * @fileoverview Tests for AccountCard molecule
- */
-// removed unused import
 import { AccountCard } from "./AccountCard";
 
 // Mock account for testing

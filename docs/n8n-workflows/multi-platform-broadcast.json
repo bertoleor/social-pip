@@ -1,0 +1,244 @@
+{
+  "name": "SP - Multi-Platform Broadcast",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "social-pip-broadcast",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "social-pip-broadcast"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse and validate multi-platform broadcast request\nconst input = $input.first().json;\n\n// Required fields\nconst requiredFields = ['content', 'platforms'];\nconst errors = [];\n\nfor (const field of requiredFields) {\n  if (!input[field]) {\n    errors.push(`Missing required field: ${field}`);\n  }\n}\n\n// Validate platforms array\nconst validPlatforms = ['facebook', 'instagram', 'twitter', 'linkedin', 'tiktok', 'telegram', 'whatsapp', 'email'];\n\nif (input.platforms && Array.isArray(input.platforms)) {\n  for (const platform of input.platforms) {\n    if (!validPlatforms.includes(platform.toLowerCase())) {\n      errors.push(`Invalid platform: ${platform}`);\n    }\n  }\n} else if (input.platforms) {\n  errors.push('platforms must be an array');\n}\n\nif (errors.length > 0) {\n  return {\n    json: {\n      success: false,\n      errors: errors,\n      message: 'Validation failed'\n    }\n  };\n}\n\n// Split into separate items for each platform\nreturn input.platforms.map(platform => ({\n  json: {\n    platform: platform.toLowerCase(),\n    content: input.content,\n    mediaUrls: input.mediaUrls || [],\n    hashtags: input.hashtags || [],\n    accountId: input.accountId,\n    settings: input.settings?.[platform] || {}\n  }\n}));"
+      },
+      "id": "parse-request",
+      "name": "Parse Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "facebook",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "facebook"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "instagram",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "instagram"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "twitter",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "twitter"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "linkedin",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "linkedin"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "route-platform",
+      "name": "Route by Platform",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/facebook/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"accountId\": \"{{ $json.accountId }}\",\n  \"content\": \"{{ $json.content }}\",\n  \"mediaUrls\": {{ JSON.stringify($json.mediaUrls) }}\n}"
+      },
+      "id": "publish-facebook",
+      "name": "Post to Facebook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 100],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/instagram/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"accountId\": \"{{ $json.accountId }}\",\n  \"content\": \"{{ $json.content }}\",\n  \"mediaUrls\": {{ JSON.stringify($json.mediaUrls) }}\n}"
+      },
+      "id": "publish-instagram",
+      "name": "Post to Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 200],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/twitter/tweet",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"accountId\": \"{{ $json.accountId }}\",\n  \"content\": \"{{ $json.content.substring(0, 280) }}\"\n}"
+      },
+      "id": "publish-twitter",
+      "name": "Post to Twitter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 300],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/linkedin/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"accountId\": \"{{ $json.accountId }}\",\n  \"content\": \"{{ $json.content }}\"\n}"
+      },
+      "id": "publish-linkedin",
+      "name": "Post to LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 400],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "aggregate-results",
+      "name": "Aggregate Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compile results from all platforms\nconst items = $input.all();\n\nconst results = items.map(item => ({\n  platform: item.json.platform || 'unknown',\n  success: !item.json.error,\n  postId: item.json.id || item.json.messageId,\n  postUrl: item.json.url || item.json.postUrl,\n  error: item.json.error || null\n}));\n\nconst successful = results.filter(r => r.success).length;\nconst failed = results.filter(r => !r.success).length;\n\nreturn {\n  json: {\n    totalPlatforms: results.length,\n    successful,\n    failed,\n    results,\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "id": "compile-results",
+      "name": "Compile Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "=📢 Multi-Platform Broadcast Complete\n\n✅ Successful: {{ $json.successful }}\n❌ Failed: {{ $json.failed }}\n📊 Total: {{ $json.totalPlatforms }}\n\nResults:\n{{ $json.results.map(r => `${r.platform}: ${r.success ? '✅' : '❌ ' + r.error}`).join('\\n') }}"
+      },
+      "id": "notify-summary",
+      "name": "Notify Summary",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1450, 150]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [[{ "node": "Parse Request", "type": "main", "index": 0 }]]
+    },
+    "Parse Request": {
+      "main": [[{ "node": "Route by Platform", "type": "main", "index": 0 }]]
+    },
+    "Route by Platform": {
+      "main": [
+        [{ "node": "Post to Facebook", "type": "main", "index": 0 }],
+        [{ "node": "Post to Instagram", "type": "main", "index": 0 }],
+        [{ "node": "Post to Twitter", "type": "main", "index": 0 }],
+        [{ "node": "Post to LinkedIn", "type": "main", "index": 0 }]
+      ]
+    },
+    "Post to Facebook": {
+      "main": [[{ "node": "Aggregate Results", "type": "main", "index": 0 }]]
+    },
+    "Post to Instagram": {
+      "main": [[{ "node": "Aggregate Results", "type": "main", "index": 1 }]]
+    },
+    "Post to Twitter": {
+      "main": [[{ "node": "Aggregate Results", "type": "main", "index": 2 }]]
+    },
+    "Post to LinkedIn": {
+      "main": [[{ "node": "Aggregate Results", "type": "main", "index": 3 }]]
+    },
+    "Aggregate Results": {
+      "main": [[{ "node": "Compile Results", "type": "main", "index": 0 }]]
+    },
+    "Compile Results": {
+      "main": [
+        [
+          { "node": "Respond to Webhook", "type": "main", "index": 0 },
+          { "node": "Notify Summary", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [
+    { "name": "social-pip" },
+    { "name": "multi-platform" },
+    { "name": "broadcast" }
+  ]
+}

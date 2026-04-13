@@ -1,6 +1,6 @@
 import type { Post } from "@social-pip/types";
-import { render, screen } from "@testing-library/react";
-// removed unused import
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { PostPreview } from "./PostPreview";
 
 const mockPost: Post = {

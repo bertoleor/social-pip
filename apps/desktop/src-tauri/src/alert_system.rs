@@ -1,30 +1,75 @@
 use chrono::{DateTime, Duration, Utc};
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, VecDeque};
+use std::sync::Mutex;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum Severity {
-    Info,
-    Warning,
-    Error,
-    Critical,
+use crate::dead_letter_queue::{DeadLetterEntry, DeadLetterQueueManager};
+use crate::error_handler::{RecoveryStrategy, Severity, UnifiedError};
+
+// ============================================
+// IN-MEMORY STORAGE
+// ============================================
+
+static ALERT_STORAGE: Lazy<Mutex<VecDeque<Alert>>> =
+    Lazy::new(|| Mutex::new(VecDeque::with_capacity(1000)));
+
+// ============================================
+// SLO THRESHOLDS
+// ============================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SloThreshold {
+    pub metric: SloMetric,
+    pub threshold: f64,
+    pub alert_severity: Severity,
 }
 
-impl std::fmt::Display for Severity {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Severity::Info => write!(f, "INFO"),
-            Severity::Warning => write!(f, "WARNING"),
-            Severity::Error => write!(f, "ERROR"),
-            Severity::Critical => write!(f, "CRITICAL"),
-        }
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SloMetric {
+    ErrorBudgetBurnRate,
+    SuccessRate,
+    LatencyP99,
+}
+
+impl Default for SloMetric {
+    fn default() -> Self {
+        SloMetric::SuccessRate
     }
 }
 
-impl Default for Severity {
-    fn default() -> Self {
-        Severity::Info
+impl SloThreshold {
+    pub fn error_budget_burn_10pct() -> Self {
+        Self {
+            metric: SloMetric::ErrorBudgetBurnRate,
+            threshold: 0.10,
+            alert_severity: Severity::Critical,
+        }
+    }
+
+    pub fn error_budget_burn_5pct() -> Self {
+        Self {
+            metric: SloMetric::ErrorBudgetBurnRate,
+            threshold: 0.05,
+            alert_severity: Severity::Warning,
+        }
+    }
+
+    pub fn success_rate_below_95pct() -> Self {
+        Self {
+            metric: SloMetric::SuccessRate,
+            threshold: 0.95,
+            alert_severity: Severity::Warning,
+        }
+    }
+
+    pub fn success_rate_below_90pct() -> Self {
+        Self {
+            metric: SloMetric::SuccessRate,
+            threshold: 0.90,
+            alert_severity: Severity::Critical,
+        }
     }
 }
 
@@ -106,6 +151,12 @@ pub struct Alert {
     pub acknowledged_at: Option<DateTime<Utc>>,
     pub resolved: bool,
     pub resolved_at: Option<DateTime<Utc>>,
+    /// OpenTelemetry trace ID for investigation (v2.0)
+    pub trace_id: Option<String>,
+    /// Link to ErrorGroup for aggregation (v2.0)
+    pub error_group_id: Option<String>,
+    /// Count of similar errors (default: 1, higher if aggregated) (v2.0)
+    pub aggregated_count: u32,
 }
 
 impl Alert {
@@ -123,6 +174,9 @@ impl Alert {
             acknowledged_at: None,
             resolved: false,
             resolved_at: None,
+            trace_id: None,
+            error_group_id: None,
+            aggregated_count: 1,
         }
     }
 
@@ -141,6 +195,21 @@ impl Alert {
         self
     }
 
+    pub fn with_trace_id(mut self, trace_id: String) -> Self {
+        self.trace_id = Some(trace_id);
+        self
+    }
+
+    pub fn with_error_group(mut self, error_group_id: String) -> Self {
+        self.error_group_id = Some(error_group_id);
+        self
+    }
+
+    pub fn with_aggregated_count(mut self, count: u32) -> Self {
+        self.aggregated_count = count;
+        self
+    }
+
     pub fn acknowledge(&mut self) {
         if !self.acknowledged {
             self.acknowledged = true;
@@ -153,6 +222,16 @@ impl Alert {
             self.resolved = true;
             self.resolved_at = Some(Utc::now());
         }
+    }
+
+    /// Increment aggregated count (v2.0)
+    pub fn increment_aggregated(&mut self) {
+        self.aggregated_count += 1;
+    }
+
+    /// Check if this alert is aggregated (v2.0)
+    pub fn is_aggregated(&self) -> bool {
+        self.aggregated_count > 1
     }
 }
 
@@ -191,10 +270,8 @@ pub struct AlertEngine {
 impl AlertEngine {
     pub fn new() -> Self {
         let rules = Self::default_rules();
-        let rules_map: HashMap<AlertType, AlertRule> = rules
-            .into_iter()
-            .map(|r| (r.alert_type, r))
-            .collect();
+        let rules_map: HashMap<AlertType, AlertRule> =
+            rules.into_iter().map(|r| (r.alert_type, r)).collect();
 
         Self {
             alerts: VecDeque::with_capacity(1000),
@@ -232,7 +309,8 @@ impl AlertEngine {
     ) -> Alert {
         let now = Utc::now();
 
-        let cooldown_minutes = self.rules
+        let cooldown_minutes = self
+            .rules
             .get(&alert_type)
             .map(|r| r.cooldown_minutes)
             .unwrap_or(0);
@@ -313,30 +391,27 @@ impl AlertEngine {
         let hour_ago = now - Duration::hours(1);
         let day_ago = now - Duration::hours(24);
 
-        let last_hour = self.alerts
+        let last_hour = self
+            .alerts
             .iter()
             .filter(|a| a.timestamp > hour_ago)
             .count() as u32;
 
-        let last_24h = self.alerts
-            .iter()
-            .filter(|a| a.timestamp > day_ago)
-            .count() as u32;
+        let last_24h = self.alerts.iter().filter(|a| a.timestamp > day_ago).count() as u32;
 
-        let critical = self.alerts
+        let critical = self
+            .alerts
             .iter()
             .filter(|a| a.severity == Severity::Critical)
             .count() as u32;
 
-        let warnings = self.alerts
+        let warnings = self
+            .alerts
             .iter()
             .filter(|a| a.severity == Severity::Warning)
             .count() as u32;
 
-        let unresolved = self.alerts
-            .iter()
-            .filter(|a| !a.resolved)
-            .count() as u32;
+        let unresolved = self.alerts.iter().filter(|a| !a.resolved).count() as u32;
 
         AlertStats {
             total_alerts: self.alerts.len() as u32,
@@ -352,9 +427,7 @@ impl AlertEngine {
         let cutoff = Utc::now() - Duration::days(days as i64);
         let initial_len = self.alerts.len();
 
-        self.alerts.retain(|a| {
-            a.timestamp > cutoff || !a.resolved
-        });
+        self.alerts.retain(|a| a.timestamp > cutoff || !a.resolved);
 
         (initial_len - self.alerts.len()) as u32
     }
@@ -363,6 +436,47 @@ impl AlertEngine {
 impl Default for AlertEngine {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl AlertEngine {
+    /// Create a DLQ entry for a critical alert.
+    ///
+    /// T6.2: Wire AlertEngine to DeadLetterQueueManager
+    /// When a critical alert is created, automatically create a DLQ entry
+    /// for manual review and potential retry.
+    ///
+    /// # Arguments
+    /// - `alert`: The critical alert
+    /// - `dlq_manager`: Reference to the DLQ manager
+    /// - `error`: The unified error that triggered the alert
+    /// - `strategy`: The recovery strategy assigned
+    ///
+    /// # Returns
+    /// The created DLQ entry
+    pub fn create_dlq_entry_for_alert(
+        &self,
+        alert: &Alert,
+        dlq_manager: &DeadLetterQueueManager,
+        error: &UnifiedError,
+        strategy: &RecoveryStrategy,
+    ) -> DeadLetterEntry {
+        let error_context = serde_json::json!({
+            "alert_id": alert.id,
+            "platform": alert.platform,
+            "account_id": alert.account_id,
+            "severity": format!("{}", alert.severity),
+        });
+
+        dlq_manager.store(
+            None,
+            "critical_alert".to_string(),
+            serde_json::to_string(&alert).unwrap_or_default(),
+            error,
+            strategy,
+            alert.message.clone(),
+            error_context.to_string(),
+        )
     }
 }
 
@@ -467,8 +581,16 @@ mod tests {
     fn cooldown_prevents_duplicate_alerts() {
         let mut engine = AlertEngine::new();
 
-        engine.create_alert(AlertType::RateLimitApproaching, Severity::Warning, "A".to_string());
-        engine.create_alert(AlertType::RateLimitApproaching, Severity::Warning, "B".to_string());
+        engine.create_alert(
+            AlertType::RateLimitApproaching,
+            Severity::Warning,
+            "A".to_string(),
+        );
+        engine.create_alert(
+            AlertType::RateLimitApproaching,
+            Severity::Warning,
+            "B".to_string(),
+        );
 
         assert_eq!(engine.get_alerts(None).len(), 1);
     }
@@ -477,8 +599,16 @@ mod tests {
     fn critical_alerts_bypass_cooldown() {
         let mut engine = AlertEngine::new();
 
-        engine.create_alert(AlertType::AccountBlocked, Severity::Critical, "A".to_string());
-        engine.create_alert(AlertType::AccountBlocked, Severity::Critical, "B".to_string());
+        engine.create_alert(
+            AlertType::AccountBlocked,
+            Severity::Critical,
+            "A".to_string(),
+        );
+        engine.create_alert(
+            AlertType::AccountBlocked,
+            Severity::Critical,
+            "B".to_string(),
+        );
 
         assert_eq!(engine.get_alerts(None).len(), 2);
     }
@@ -489,7 +619,11 @@ mod tests {
 
         engine.create_alert(AlertType::PostPublished, Severity::Info, "1".to_string());
         engine.create_alert(AlertType::PostFailed, Severity::Warning, "2".to_string());
-        engine.create_alert(AlertType::AccountBlocked, Severity::Critical, "3".to_string());
+        engine.create_alert(
+            AlertType::AccountBlocked,
+            Severity::Critical,
+            "3".to_string(),
+        );
 
         let stats = engine.get_alert_stats();
 
@@ -516,7 +650,11 @@ mod tests {
         let mut engine = AlertEngine::new();
 
         engine.create_alert(AlertType::PostPublished, Severity::Info, "1".to_string());
-        engine.create_alert(AlertType::AccountBlocked, Severity::Critical, "2".to_string());
+        engine.create_alert(
+            AlertType::AccountBlocked,
+            Severity::Critical,
+            "2".to_string(),
+        );
 
         let critical = engine.get_critical_alerts();
 
@@ -527,7 +665,8 @@ mod tests {
     #[test]
     fn acknowledge_alert_works() {
         let mut engine = AlertEngine::new();
-        let alert = engine.create_alert(AlertType::PostFailed, Severity::Warning, "Test".to_string());
+        let alert =
+            engine.create_alert(AlertType::PostFailed, Severity::Warning, "Test".to_string());
 
         engine.acknowledge_alert(&alert.id).unwrap();
 
@@ -538,7 +677,8 @@ mod tests {
     #[test]
     fn resolve_alert_works() {
         let mut engine = AlertEngine::new();
-        let alert = engine.create_alert(AlertType::PostFailed, Severity::Warning, "Test".to_string());
+        let alert =
+            engine.create_alert(AlertType::PostFailed, Severity::Warning, "Test".to_string());
 
         engine.resolve_alert(&alert.id).unwrap();
 
@@ -568,7 +708,8 @@ mod tests {
     fn clear_old_alerts_removes_resolved() {
         let mut engine = AlertEngine::new();
 
-        let alert = engine.create_alert(AlertType::PostPublished, Severity::Info, "Old".to_string());
+        let alert =
+            engine.create_alert(AlertType::PostPublished, Severity::Info, "Old".to_string());
         engine.resolve_alert(&alert.id).unwrap();
 
         let removed = engine.clear_old_alerts(0);
@@ -593,7 +734,11 @@ mod tests {
         let mut engine = AlertEngine::new();
 
         for i in 0..10 {
-            engine.create_alert(AlertType::PostPublished, Severity::Info, format!("Alert {}", i));
+            engine.create_alert(
+                AlertType::PostPublished,
+                Severity::Info,
+                format!("Alert {}", i),
+            );
         }
 
         let limited = engine.get_alerts(Some(5));
@@ -603,8 +748,14 @@ mod tests {
 
     #[test]
     fn alert_type_from_str_works() {
-        assert_eq!(AlertType::from_str("post_published"), Some(AlertType::PostPublished));
-        assert_eq!(AlertType::from_str("account_blocked"), Some(AlertType::AccountBlocked));
+        assert_eq!(
+            AlertType::from_str("post_published"),
+            Some(AlertType::PostPublished)
+        );
+        assert_eq!(
+            AlertType::from_str("account_blocked"),
+            Some(AlertType::AccountBlocked)
+        );
         assert_eq!(AlertType::from_str("invalid"), None);
     }
 
@@ -612,5 +763,112 @@ mod tests {
     fn alert_type_display_works() {
         assert_eq!(format!("{}", AlertType::PostPublished), "post_published");
         assert_eq!(format!("{}", AlertType::AccountBlocked), "account_blocked");
+    }
+
+    // ============================================
+    // T6.1: AlertEngine creating DLQ alert on critical
+    // ============================================
+
+    #[test]
+    fn test_create_dlq_entry_for_critical_alert() {
+        let mut engine = AlertEngine::new();
+        let dlq_manager = DeadLetterQueueManager::new();
+
+        // Create a critical alert
+        let alert = engine.create_alert(
+            AlertType::AccountBlocked,
+            Severity::Critical,
+            "Account permanently suspended".to_string(),
+        );
+
+        let error = UnifiedError::AccountRestricted {
+            reason: "suspended".to_string(),
+        };
+        let strategy = RecoveryStrategy::Escalate {
+            severity: Severity::Critical,
+        };
+
+        // Create DLQ entry
+        let dlq_entry = engine.create_dlq_entry_for_alert(&alert, &dlq_manager, &error, &strategy);
+
+        assert!(dlq_entry.id.starts_with("dlq_"));
+        assert_eq!(dlq_entry.task_type, "critical_alert");
+        assert!(dlq_entry.unified_error.contains("AccountRestricted"));
+        assert!(dlq_entry.recovery_strategy.contains("Escalate"));
+    }
+
+    #[test]
+    fn test_critical_alert_includes_alert_id_in_context() {
+        let mut engine = AlertEngine::new();
+        let dlq_manager = DeadLetterQueueManager::new();
+
+        let alert = engine.create_alert(
+            AlertType::AccountBlocked,
+            Severity::Critical,
+            "Test".to_string(),
+        );
+
+        let error = UnifiedError::Unknown {
+            message: "test".to_string(),
+        };
+        let strategy = RecoveryStrategy::DeadLetter {
+            reason: "test".to_string(),
+        };
+
+        let dlq_entry = engine.create_dlq_entry_for_alert(&alert, &dlq_manager, &error, &strategy);
+
+        // Verify error context includes alert_id
+        assert!(dlq_entry.error_context.contains(&alert.id));
+    }
+
+    #[test]
+    fn test_critical_alert_creates_dlq_with_correct_severity() {
+        let mut engine = AlertEngine::new();
+        let dlq_manager = DeadLetterQueueManager::new();
+
+        let alert = engine.create_alert(
+            AlertType::SuspiciousActivity,
+            Severity::Critical,
+            "Suspicious activity detected".to_string(),
+        );
+
+        let error = UnifiedError::AccountRestricted {
+            reason: "suspicious".to_string(),
+        };
+        let strategy = RecoveryStrategy::Escalate {
+            severity: Severity::Critical,
+        };
+
+        let dlq_entry = engine.create_dlq_entry_for_alert(&alert, &dlq_manager, &error, &strategy);
+
+        // Verify escalation strategy with critical severity
+        assert!(dlq_entry.recovery_strategy.contains("Critical"));
+    }
+
+    #[test]
+    fn test_dlq_entry_for_alert_with_platform_and_account() {
+        let mut engine = AlertEngine::new();
+        let dlq_manager = DeadLetterQueueManager::new();
+
+        let alert = engine
+            .create_alert(
+                AlertType::AccountBlocked,
+                Severity::Critical,
+                "Test".to_string(),
+            )
+            .with_platform("facebook".to_string())
+            .with_account("acc_123".to_string());
+
+        let error = UnifiedError::AuthExpired {
+            platform: "facebook".to_string(),
+            account_id: "acc_123".to_string(),
+        };
+        let strategy = RecoveryStrategy::CircuitBreak { cooldown_level: 1 };
+
+        let dlq_entry = engine.create_dlq_entry_for_alert(&alert, &dlq_manager, &error, &strategy);
+
+        // Verify error context includes platform and account
+        assert!(dlq_entry.error_context.contains("facebook"));
+        assert!(dlq_entry.error_context.contains("acc_123"));
     }
 }

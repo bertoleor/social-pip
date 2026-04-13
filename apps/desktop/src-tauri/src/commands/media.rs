@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
+use image::GenericImageView;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImageMetadata {

@@ -1,5 +1,5 @@
-// removed unused import
-// removed unused import
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { ProgressBar } from "./ProgressBar";
 
 describe("ProgressBar", () => {

@@ -573,3 +573,92 @@ export {
   imageFormatFromExtension,
   imageFormatFromMimeType,
 } from './media'
+
+export {
+  PLATFORM_PRIORITIES,
+  getPlatformPriority,
+  isPostingPlatform,
+} from './platform'
+export type { PostingPlatform, PlatformTarget } from './platform'
+
+export type { StartMultiPlatformSessionInput } from './posting'
+
+export type {
+  UnifiedError,
+  RecoveryStrategy,
+  Severity,
+  CircuitBreakerState,
+  CircuitBreakerConfig,
+  CircuitBreakerStatus,
+  PlatformHealthStatus,
+  PlatformHealth,
+  DeadLetterQueueEntry,
+  CreateDlqEntryInput,
+  DlqEntryFilter,
+  ErrorClassificationResult,
+} from './error'
+
+export {
+  rateLimitError,
+  authExpiredError,
+  accountRestrictedError,
+  networkFailureError,
+  browserFailureError,
+  platformErrorError,
+  validationFailedError,
+  circuitOpenError,
+  duplicateTaskError,
+  unknownError,
+} from './error'
+
+// ============================================
+// ERROR HANDLING V2.0 TYPES (Enterprise-Grade Error Handling)
+// ============================================
+
+export type {
+  OutboxStatus,
+  OutboxEntry,
+  CreateOutboxEntryOptions,
+  SagaState,
+  SagaStepStatus,
+  SagaExecution,
+  SagaStep,
+  ErrorContext,
+  BulkheadConfig,
+  BulkheadStatus,
+  OnTimeoutAction,
+  TimeoutConfig,
+  BatchResult,
+  BatchError,
+  ErrorGroup,
+  CircuitBreakerConfigV2,
+  CircuitBreakerMetrics,
+  StateTransition,
+  CircuitBreakerState as CircuitBreakerStateV2,
+  AlertV2,
+  AlertType,
+  Severity as SeverityV2,
+  DeadLetterEntryV2,
+  TracingContext,
+  SpanKind,
+  SpanStatus,
+  ObservabilityConfig,
+  // New v2.0 types
+  SloMetric,
+  SloThreshold,
+  ActiveJob,
+  TimeoutResult,
+  RetryContext,
+  DedupConfig,
+  AggregationStats,
+  BatchConfig,
+  AlertStats,
+} from './error-v2'
+
+export {
+  SLO_THRESHOLDS,
+  DEDUP_CONFIGS,
+  BATCH_CONFIGS,
+  TIMEOUT_CONFIGS,
+  CIRCUIT_BREAKER_CONFIGS,
+} from './error-v2'

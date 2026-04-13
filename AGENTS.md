@@ -402,4 +402,51 @@ Cada skill inyecta reglas específicas:
 
 ---
 
+## Testing Conventions
+
+### Test File Organization
+
+- **Unit tests**: Co-located with source (`*.test.ts`)
+- **Component tests**: Co-located with component (`*.test.tsx`)
+- **Integration tests**: `src/test/integration/`
+- **E2E tests**: `src/e2e-playwright/`
+- **Visual tests**: `src/test/visual/`
+- **Performance tests**: `src/test/performance/`
+
+### Naming Conventions
+
+- **Test files**: `*.test.ts` or `*.test.tsx`
+- **Test suites**: `describe('ComponentName', () => {})`
+- **Test cases**: `it('does something when condition', () => {})`
+- **Hooks**: `beforeEach`, `afterEach`, `beforeAll`, `afterAll`
+
+### Mock Patterns
+
+- **Tauri APIs**: Use `vi.mock('@tauri-apps/api/core')`
+- **Zustand stores**: Use `vi.spyOn(store, 'useStoreName')`
+- **Fixtures**: Import from `@/test/fixtures`
+- **Custom mocks**: Place in `src/test/mocks/`
+
+### Best Practices
+
+- Use `userEvent.setup()` for interactions
+- Use `screen.findBy*` for async elements
+- Use `within()` for scoped queries
+- Test accessibility with `jest-axe`
+- Run `vitest --coverage` before PRs
+- Use inline snapshots for visual regression tests
+
+### Coverage Thresholds
+
+| Category | Functions | Lines |
+|----------|-----------|-------|
+| Stores | 100% | 85% |
+| Hooks | 100% | 85% |
+| Components | - | 90% |
+| **Global** | 85% | 80% |
+
+Branch coverage: 75% minimum globally.
+
+---
+
 *Last updated: April 2026*

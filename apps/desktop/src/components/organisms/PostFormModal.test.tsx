@@ -1,5 +1,5 @@
-// removed unused import
-// removed unused import
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { PostFormModal } from "./PostFormModal";
 
 describe("PostFormModal", () => {
@@ -24,19 +24,19 @@ describe("PostFormModal", () => {
 	});
 
 	it("renders edit mode with existing post", () => {
-		const mockPost = {
-			id: "post_1",
-			content: "Existing content",
-			mediaUrls: [],
-			platform: "facebook" as const,
-			status: "draft" as const,
-			altCaptions: [],
-			hashtags: .test,
-			variance: 15,
-			accountId: "account_1",
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		};
+const mockPost = {
+      id: "post_1",
+      content: "Existing content",
+      mediaUrls: [],
+      platform: "facebook" as const,
+      status: "draft" as const,
+      altCaptions: [],
+      hashtags: ["test"],
+      variance: 15,
+      accountId: "account_1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
 
 		render(
 			<PostFormModal

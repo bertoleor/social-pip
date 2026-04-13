@@ -9,7 +9,7 @@ use std::sync::Mutex;
 use once_cell::sync::Lazy;
 
 // Import shared types from account module
-use super::account::{Platform, AccountStatus};
+use super::account::Platform;
 
 // ============================================
 // DOMAIN TYPES
@@ -118,7 +118,7 @@ fn default_post_status() -> String {
 }
 
 /// Input for updating an existing post
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct UpdatePostInput {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<String>,

@@ -1,6 +1,6 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import type { Template } from "@social-pip/types";
-// removed unused import
-// removed unused import
 import { TemplateSelector } from "./TemplateSelector";
 
 const mockTemplates: Template[] = [

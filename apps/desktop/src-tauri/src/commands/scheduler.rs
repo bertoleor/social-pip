@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Mutex;
 use once_cell::sync::Lazy;
-use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(dead_code)]
 pub enum ScheduleStatus {
     Pending,
     Running,
@@ -13,6 +13,7 @@ pub enum ScheduleStatus {
     Cancelled,
 }
 
+#[allow(dead_code)]
 impl ScheduleStatus {
     pub fn as_str(&self) -> &'static str {
         match self {
