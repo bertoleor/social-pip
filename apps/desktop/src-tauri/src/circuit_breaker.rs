@@ -343,6 +343,7 @@ impl CircuitBreaker {
                     let from = self.state;
                     self.state = CircuitState::Open;
                     self.opened_at = Some(Utc::now());
+                    self.failure_count = 0; // Reset failure count when opening
                     self.record_transition(from, self.state, "failure_threshold_reached");
                 }
             }

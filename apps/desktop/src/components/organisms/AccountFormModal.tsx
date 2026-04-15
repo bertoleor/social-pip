@@ -1,12 +1,13 @@
 import { Button } from "@/components/atoms/Button";
 import { FormField } from "@/components/molecules/FormField";
 import {
-	ACCOUNT_STATUSES,
-	type AccountFormData,
-	AccountFormSchema,
-	PLATFORMS,
+  ACCOUNT_STATUSES,
+  type AccountFormData,
+  AccountFormSchema,
+  PLATFORMS,
 } from "@/lib/schemas/account";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/useToast";
 import type { Account } from "@social-pip/types";
 import { X } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
@@ -30,16 +31,17 @@ const DEFAULT_VALUES: AccountFormData = {
 };
 
 export function AccountFormModal({
-	isOpen,
-	mode,
-	account,
-	onSubmit,
-	onCancel,
-	className,
+  isOpen,
+  mode,
+  account,
+  onSubmit,
+  onCancel,
+  className,
 }: AccountFormModalProps): React.ReactElement | null {
-	const [formData, setFormData] = useState<AccountFormData>(DEFAULT_VALUES);
-	const [errors, setErrors] = useState<Record<string, string>>({});
-	const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<AccountFormData>(DEFAULT_VALUES);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
 
 	useEffect(() => {
 		if (mode === "edit" && account) {
@@ -100,15 +102,19 @@ export function AccountFormModal({
 			return;
 		}
 
-		setIsSubmitting(true);
-		try {
-			await onSubmit(result.data);
-		} catch (error) {
-			console.error("Form submission error:", error);
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
+    setIsSubmitting(true);
+    try {
+      await onSubmit(result.data);
+      toast.success(
+        mode === "create" ? "Account created successfully" : "Account updated successfully"
+      );
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to save account";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
 	const isFormValid =
 		Object.keys(errors).length === 0 && formData.name.trim() !== "";

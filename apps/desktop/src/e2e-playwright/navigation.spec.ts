@@ -1,123 +1,101 @@
-import { spawn, spawnSync } from "node:child_process"
-import * as os from "node:os"
-import * as path from "node:path"
-import { fileURLToPath } from "node:url"
-import { expect, test } from "@playwright/test"
-
-const __dirname = fileURLToPath(new URL(".", import.meta.url))
-
-const TAURI_DRIVER_PATH = path.resolve(
-	os.homedir(),
-	".cargo",
-	"bin",
-	"tauri-driver"
-)
-
-let tauriDriver: ReturnType<typeof spawn>
-let exit = false
+/**
+ * Navigation E2E Tests
+ *
+ * Tests that navigation between pages works correctly
+ * using the sidebar navigation.
+ *
+ * Uses custom fixtures and Page Object Models for:
+ * - Clean test setup
+ * - Maintainable selectors
+ * - Reusable navigation patterns
+ */
+import { test, expect } from "./fixtures"
+import { DashboardPage } from "./dashboard/dashboard-page"
+import { AccountsPage } from "./accounts/accounts-page"
+import { PostsPage } from "./posts/posts-page"
+import { SchedulePage } from "./schedule/schedule-page"
+import { AnalyticsPage } from "./analytics/analytics-page"
+import { SettingsPage } from "./settings/settings-page"
 
 test.describe("Navigation", () => {
-	test.beforeAll(async () => {
-		spawnSync("pnpm", ["tauri", "build", "--debug", "--no-bundle"], {
-			cwd: path.resolve(__dirname, "..", ".."),
-			stdio: "inherit",
-			shell: true,
-		})
+	test(
+		"navigates to Accounts page",
+		{ tag: ["@critical", "@e2e", "@NAV-001"] },
+		async ({ tauriPage }) => {
+			const accountsPage = new AccountsPage(tauriPage)
+			await accountsPage.goto()
+			await accountsPage.verifyPageLoaded()
+		},
+	)
 
-		tauriDriver = spawn(TAURI_DRIVER_PATH, [], {
-			stdio: [null, process.stdout, process.stderr],
-		})
+	test(
+		"navigates to Posts page",
+		{ tag: ["@e2e", "@NAV-002"] },
+		async ({ tauriPage }) => {
+			const postsPage = new PostsPage(tauriPage)
+			await postsPage.goto()
+			await postsPage.verifyPageLoaded()
+		},
+	)
 
-		tauriDriver.on("error", (error) => {
-			console.error("tauri-driver error:", error)
-			process.exit(1)
-		})
+	test(
+		"navigates to Schedule page",
+		{ tag: ["@e2e", "@NAV-003"] },
+		async ({ tauriPage }) => {
+			const schedulePage = new SchedulePage(tauriPage)
+			await schedulePage.goto()
+			await schedulePage.verifyPageLoaded()
+		},
+	)
 
-		tauriDriver.on("exit", (code) => {
-			if (!exit) {
-				console.error("tauri-driver exited with code:", code)
-				process.exit(1)
-			}
-		})
-	})
+	test(
+		"navigates to Analytics page",
+		{ tag: ["@e2e", "@NAV-004"] },
+		async ({ tauriPage }) => {
+			const analyticsPage = new AnalyticsPage(tauriPage)
+			await analyticsPage.goto()
+			await analyticsPage.verifyPageLoaded()
+		},
+	)
 
-	test.afterAll(async () => {
-		exit = true
-		tauriDriver?.kill()
-	})
+	test(
+		"navigates to Settings page",
+		{ tag: ["@e2e", "@NAV-005"] },
+		async ({ tauriPage }) => {
+			const settingsPage = new SettingsPage(tauriPage)
+			await settingsPage.goto()
+			await settingsPage.verifyPageLoaded()
+		},
+	)
 
-	test.beforeEach(async ({ page }) => {
-		await page.goto("tauri://localhost")
-		await expect(page.locator("nav")).toBeVisible({ timeout: 10000 })
-	})
+	test(
+		"navigates back to Dashboard",
+		{ tag: ["@e2e", "@NAV-006"] },
+		async ({ tauriPage }) => {
+			const accountsPage = new AccountsPage(tauriPage)
+			const dashboardPage = new DashboardPage(tauriPage)
 
-	test("navigates to Accounts page", async ({ page }) => {
-		await page.click('nav a:has-text("Accounts")')
+			// Navigate to Accounts first
+			await accountsPage.goto()
+			await accountsPage.verifyPageLoaded()
 
-		await expect(page.locator('[data-testid="page-accounts"]')).toBeVisible({
-			timeout: 5000,
-		})
+			// Navigate back to Dashboard
+			await dashboardPage.goto()
+			await dashboardPage.verifyPageLoaded()
+		},
+	)
 
-		await expect(page.locator("h1")).toContainText("Accounts")
-	})
+	test(
+		"sidebar toggle opens and closes",
+		{ tag: ["@e2e", "@NAV-007"] },
+		async ({ tauriPage }) => {
+			const sidebar = tauriPage.locator("nav")
+			await expect(sidebar).toBeVisible()
 
-	test("navigates to Posts page", async ({ page }) => {
-		await page.click('nav a:has-text("Posts")')
+			const toggleButton = tauriPage.locator('button[aria-label*="sidebar"]')
+			await toggleButton.click()
 
-		await expect(page.locator('[data-testid="page-posts"]')).toBeVisible({
-			timeout: 5000,
-		})
-
-		await expect(page.locator("h1")).toContainText("Posts")
-	})
-
-	test("navigates to Schedule page", async ({ page }) => {
-		await page.click('nav a:has-text("Schedule")')
-
-		await expect(page.locator('[data-testid="page-schedule"]')).toBeVisible({
-			timeout: 5000,
-		})
-
-		await expect(page.locator("h1")).toContainText("Schedule")
-	})
-
-	test("navigates to Analytics page", async ({ page }) => {
-		await page.click('nav a:has-text("Analytics")')
-
-		await expect(page.locator('[data-testid="page-analytics"]')).toBeVisible({
-			timeout: 5000,
-		})
-
-		await expect(page.locator("h1")).toContainText("Analytics")
-	})
-
-	test("navigates to Settings page", async ({ page }) => {
-		await page.click('nav a:has-text("Settings")')
-
-		await expect(page.locator('[data-testid="page-settings"]')).toBeVisible({
-			timeout: 5000,
-		})
-
-		await expect(page.locator("h1")).toContainText("Settings")
-	})
-
-	test("navigates back to Dashboard", async ({ page }) => {
-		await page.click('nav a:has-text("Accounts")')
-		await expect(page.locator('[data-testid="page-accounts"]')).toBeVisible()
-
-		await page.click('nav a:has-text("Dashboard")')
-		await expect(page.locator('[data-testid="page-dashboard"]')).toBeVisible({
-			timeout: 5000,
-		})
-	})
-
-	test("sidebar toggle opens and closes", async ({ page }) => {
-		const sidebar = page.locator("nav")
-		await expect(sidebar).toBeVisible()
-
-		const toggleButton = page.locator('button[aria-label*="sidebar"]')
-		await toggleButton.click()
-
-		await page.waitForTimeout(500)
-	})
+			await tauriPage.waitForTimeout(500)
+		},
+	)
 })

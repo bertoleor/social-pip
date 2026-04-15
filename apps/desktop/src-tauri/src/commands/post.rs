@@ -153,7 +153,12 @@ static POSTS: Lazy<Mutex<HashMap<String, Post>>> = Lazy::new(|| {
 // ============================================
 
 fn generate_id() -> String {
-    format!("post_{}", chrono::Utc::now().timestamp_millis())
+    // Use nanoseconds and a thread-local counter for uniqueness
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let count = COUNTER.fetch_add(1, Ordering::SeqCst);
+    let now = chrono::Utc::now();
+    format!("post_{}{:010}", now.timestamp_nanos_opt().unwrap_or(0), count)
 }
 
 fn now_iso() -> String {

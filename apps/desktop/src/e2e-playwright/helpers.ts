@@ -2,6 +2,7 @@ import { spawn, spawnSync } from "node:child_process"
 import * as os from "node:os"
 import * as path from "node:path"
 import { fileURLToPath } from "node:url"
+import type { Page } from "@playwright/test"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 
@@ -86,45 +87,66 @@ export function waitForAppReady(timeout = 30000): number {
 	return startTime + timeout
 }
 
+/**
+ * Selector constants for E2E tests
+ *
+ * NOTE: For new Page Object Models, prefer using Playwright's
+ * locator methods (getByRole, getByLabel, getByTestId) directly
+ * instead of these string selectors. This type is kept for
+ * backward compatibility during migration.
+ *
+ * @example
+ * // Prefer this in POMs:
+ * this.addButton = page.getByRole('button', { name: 'Add Account' })
+ *
+ * // Over this:
+ * this.addButton = page.locator(SELECTORS.common.button)
+ */
 export const SELECTORS = {
-	pages: {
-		dashboard: '[data-testid="page-dashboard"]',
-		accounts: '[data-testid="page-accounts"]',
-		posts: '[data-testid="page-posts"]',
-		schedule: '[data-testid="page-schedule"]',
-		analytics: '[data-testid="page-analytics"]',
-		settings: '[data-testid="page-settings"]',
-	},
-	navigation: {
-		sidebar: "nav",
-		navLink: "nav a",
-		menuToggle: 'button[aria-label*="sidebar"]',
-	},
-	common: {
-		heading: "h1",
-		button: "button",
-		input: "input",
-		select: "select",
-		modal: '[role="dialog"]',
-		loading: '[data-testid="loading"]',
-	},
-}
+  pages: {
+    dashboard: '[data-testid="page-dashboard"]',
+    accounts: '[data-testid="page-accounts"]',
+    posts: '[data-testid="page-posts"]',
+    schedule: '[data-testid="page-schedule"]',
+    analytics: '[data-testid="page-analytics"]',
+    settings: '[data-testid="page-settings"]',
+  },
+  navigation: {
+    sidebar: "nav",
+    navLink: "nav a",
+    menuToggle: 'button[aria-label*="sidebar"]',
+  },
+  common: {
+    heading: "h1",
+    button: "button",
+    input: "input",
+    select: "select",
+    modal: '[role="dialog"]',
+    loading: '[data-testid="loading"]',
+  },
+} as const
+
+/**
+ * Type for SELECTORS constant
+ * Useful for typing in POMs that need reference to selector structure
+ */
+export type SelectorsType = typeof SELECTORS
 
 export async function waitForElement(
-	page: import("@playwright/test").Page,
-	selector: string,
-	timeout = 10000
+  page: Page,
+  selector: string,
+  timeout = 10000
 ): Promise<void> {
-	await page.waitForSelector(selector, { timeout })
+  await page.waitForSelector(selector, { timeout })
 }
 
 export async function clickAndWait(
-	page: import("@playwright/test").Page,
-	selector: string,
-	waitForSelector?: string
+  page: Page,
+  selector: string,
+  waitForSelector?: string
 ): Promise<void> {
-	await page.click(selector)
-	if (waitForSelector) {
-		await page.waitForSelector(waitForSelector, { timeout: 5000 })
-	}
+  await page.click(selector)
+  if (waitForSelector) {
+    await page.waitForSelector(waitForSelector, { timeout: 5000 })
+  }
 }

@@ -1,4 +1,3 @@
-// Stores barrel export
 export { useUIStore, type UIState, type Theme } from "./uiStore";
 export { useAccountsStore, type AccountsState } from "./accountsStore";
 export { usePostsStore, type PostsState } from "./postsStore";
@@ -10,6 +9,7 @@ export { useSettingsStore, type SettingsState } from "./settingsStore";
 export { useTemplateStore, type TemplateState } from "./templateStore";
 export { usePostingStore, type PostingState } from "./postingStore";
 export { useQuickPostStore, type QuickPostState } from "./quickPostStore";
+export { useToastStore, type ToastState, type Toast, type ToastType } from "./toastStore";
 
 export type {
 	Account,

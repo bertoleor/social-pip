@@ -145,8 +145,18 @@ impl OutboxEntry {
         let idempotency_key =
             generate_idempotency_key(&aggregate_type, &aggregate_id, &event_type, &payload);
 
+        // Use nanoseconds and counter to ensure unique IDs
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static OUTBOX_COUNTER: AtomicU64 = AtomicU64::new(0);
+        let count = OUTBOX_COUNTER.fetch_add(1, Ordering::SeqCst);
+        let now = chrono::Utc::now();
+
         Self {
-            id: format!("outbox_{}", chrono::Utc::now().timestamp_millis()),
+            id: format!(
+                "outbox_{}{:010}",
+                now.timestamp_nanos_opt().unwrap_or(0),
+                count
+            ),
             idempotency_key,
             aggregate_type,
             aggregate_id,

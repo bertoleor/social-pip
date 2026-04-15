@@ -23,9 +23,15 @@
         "decorations": true
       }
     ],
-    "security": {
-      "csp": null
-    }
+"security": {
+        "csp": {
+          "default-src": "'self' customprotocol: asset:",
+          "script-src": "'self'",
+          "style-src": "'self' 'unsafe-inline'",
+          "img-src": "'self' asset: data:",
+          "connect-src": "ipc: http://ipc.localhost"
+        }
+      }
   },
   "bundle": {
     "active": true,

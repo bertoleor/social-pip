@@ -4,6 +4,7 @@ pub mod media;
 pub mod post;
 pub mod posting;
 pub mod scheduler;
+pub mod secure_storage;
 pub mod task;
 pub mod template;
 

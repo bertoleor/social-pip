@@ -1,9 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
-	plugins: [react()],
+	plugins: [
+		react(),
+		visualizer({
+			filename: 'stats.html',
+			open: false,
+			gzipSize: true,
+			brotliSize: true,
+		}),
+	],
 	resolve: {
 		alias: {
 			'@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -26,5 +35,23 @@ export default defineConfig({
 		target: 'esnext',
 		minify: 'esbuild',
 		sourcemap: false,
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					// Vendor chunk for React ecosystem
+					react: ['react', 'react-dom', 'react-router-dom'],
+					// State management
+					state: ['zustand', '@tanstack/react-query'],
+					// UI utilities
+					ui: ['clsx', 'tailwind-merge', 'lucide-react'],
+					// Data visualization
+					charts: ['recharts'],
+					// Date utilities
+					date: ['date-fns'],
+					// Form validation
+					validation: ['zod'],
+				},
+			},
+		},
 	},
 })

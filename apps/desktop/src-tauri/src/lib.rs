@@ -13,6 +13,14 @@ pub mod cooldown;
 pub mod feature_flags;
 pub mod spintax;
 pub mod native_messaging;
+pub mod database;
+pub mod executor;
+pub mod browser;
+pub mod result_handler;
+pub mod secure_storage;
+pub mod tray;
+pub mod shortcuts;
+pub mod autostart;
 
 // v2.0 Error Handling Modules
 pub mod outbox;
@@ -26,6 +34,7 @@ pub mod error_aggregation;
 pub use commands::{Account, Post, Platform, AccountStatus, PostStatus};
 pub use commands::{Schedule, ScheduleStatus, ScheduleFilter};
 pub use commands::{Task, TaskStatus, TaskType, TaskFilter};
+pub use secure_storage::{SecureStorage, SecureStorageError, CredentialMetadata, CredentialList};
 pub use error_handler::{UnifiedError, RecoveryStrategy, Severity, ErrorClassifier};
 pub use error_context::{ErrorContext, EXECUTION_CONTEXT, set_execution_context, get_execution_context, clear_execution_context, capture_context};
 pub use circuit_breaker::{CircuitState, CircuitBreaker, CircuitBreakerConfig, CircuitBreakerMetrics, StateTransition};
@@ -68,4 +77,49 @@ pub use error_aggregation::{
 };
 pub use alert_system::{
     AlertType, Alert, AlertStats, AlertRule, AlertEngine, SloThreshold, SloMetric,
+};
+
+// Database module exports
+pub use database::{
+    DatabaseConfig, DatabasePool,
+    PostSessionModel, PostJobModel, SessionStatus, JobStatus, ErrorCategory,
+    InMemoryStore, InMemorySessionStore, InMemoryJobStore,
+    SessionPersistence, JobPersistence,
+    recover_pending_sessions, RecoveryResult, RecoverySummary,
+};
+
+// Executor module exports
+pub use executor::{
+    Executor, ExecutorConfig, ExecutorState, spawn_executor,
+};
+
+// Browser module exports
+pub use browser::{
+    BrowserLauncher, ChromeParams, build_chrome_url,
+    HandshakeManager, HandshakeStatus, HandshakeConfig,
+};
+
+// Result Handler module exports
+pub use result_handler::{
+    PostResult, JobResult, ResultHandler, JobProcessingOutcome,
+    NativeMessagingHandler, create_native_messaging_handler,
+    classify_error, process_posting_error,
+};
+
+// Tray module exports
+pub use tray::{
+    AppStatus, TrayState,
+    get_menu_label, create_tray_menu_items, create_tray_menu_items_with_locale,
+    get_tray_tooltip,
+};
+
+// Shortcuts module exports
+pub use shortcuts::{
+    ShortcutId, ShortcutEvent,
+    get_all_shortcuts, create_shortcut_event,
+};
+
+// Autostart module exports
+pub use autostart::{
+    AutostartError, AutostartStatus,
 };

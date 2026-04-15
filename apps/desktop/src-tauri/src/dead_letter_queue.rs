@@ -322,14 +322,17 @@ impl DeadLetterQueueManager {
     /// Number of entries removed
     pub fn cleanup_old_entries(&self, entries: Vec<DeadLetterEntry>) -> usize {
         let cutoff = Utc::now() - chrono::Duration::days(30);
+        let original_count = entries.len();
 
-        entries
+        let kept_count = entries
             .into_iter()
             .filter(|entry| {
                 // Keep if: not resolved OR within retention period
                 entry.resolved_at.is_none() || entry.created_at > cutoff
             })
-            .count()
+            .count();
+
+        original_count - kept_count
     }
 
     /// Clear all storage (for testing).
@@ -519,6 +522,7 @@ mod tests {
 
     #[test]
     fn test_get_pending_retries_returns_empty_when_no_entries() {
+        DeadLetterQueueManager::clear_storage();
         let manager = DeadLetterQueueManager::new();
 
         let pending = manager.get_pending_retries(10);
@@ -605,9 +609,9 @@ mod tests {
 
     #[test]
     fn test_cleanup_removes_resolved_entries_older_than_30_days() {
+        DeadLetterQueueManager::clear_storage();
         let manager = DeadLetterQueueManager::new();
 
-        // Create a resolved entry from 31 days ago
         let old_resolved = DeadLetterEntry {
             id: "dlq_old".to_string(),
             original_task_id: None,
@@ -617,13 +621,17 @@ mod tests {
             recovery_strategy: "{}".to_string(),
             error_message: "Old error".to_string(),
             error_context: "{}".to_string(),
+            trace_id: None,
+            span_id: None,
+            saga_id: None,
+            full_error_context: None,
+            error_group_id: None,
             retry_count: 0,
             manually_retried: false,
             resolved_at: Some(Utc::now() - chrono::Duration::days(31)),
             created_at: Utc::now() - chrono::Duration::days(31),
         };
 
-        // Create a recent resolved entry (should be kept)
         let recent_resolved = DeadLetterEntry {
             id: "dlq_recent".to_string(),
             original_task_id: None,
@@ -633,13 +641,17 @@ mod tests {
             recovery_strategy: "{}".to_string(),
             error_message: "Recent error".to_string(),
             error_context: "{}".to_string(),
+            trace_id: None,
+            span_id: None,
+            saga_id: None,
+            full_error_context: None,
+            error_group_id: None,
             retry_count: 0,
             manually_retried: false,
             resolved_at: Some(Utc::now() - chrono::Duration::days(5)),
             created_at: Utc::now() - chrono::Duration::days(5),
         };
 
-        // Create an old unresolved entry (should be kept)
         let old_unresolved = DeadLetterEntry {
             id: "dlq_unresolved".to_string(),
             original_task_id: None,
@@ -649,9 +661,14 @@ mod tests {
             recovery_strategy: "{}".to_string(),
             error_message: "Unresolved".to_string(),
             error_context: "{}".to_string(),
+            trace_id: None,
+            span_id: None,
+            saga_id: None,
+            full_error_context: None,
+            error_group_id: None,
             retry_count: 0,
             manually_retried: false,
-            resolved_at: None, // Unresolved
+            resolved_at: None,
             created_at: Utc::now() - chrono::Duration::days(60),
         };
 
@@ -664,6 +681,7 @@ mod tests {
 
     #[test]
     fn test_cleanup_keeps_unresolved_entries_indefinitely() {
+        DeadLetterQueueManager::clear_storage();
         let manager = DeadLetterQueueManager::new();
 
         // Create very old unresolved entries
@@ -676,10 +694,15 @@ mod tests {
             recovery_strategy: "{}".to_string(),
             error_message: "Very old".to_string(),
             error_context: "{}".to_string(),
+            trace_id: None,
+            span_id: None,
+            saga_id: None,
+            full_error_context: None,
+            error_group_id: None,
             retry_count: 0,
             manually_retried: false,
             resolved_at: None,
-            created_at: Utc::now() - chrono::Duration::days(365), // 1 year ago
+            created_at: Utc::now() - chrono::Duration::days(365),
         };
 
         let entries = vec![very_old_unresolved];
@@ -691,6 +714,7 @@ mod tests {
 
     #[test]
     fn test_cleanup_keeps_recent_resolved_entries() {
+        DeadLetterQueueManager::clear_storage();
         let manager = DeadLetterQueueManager::new();
 
         // Create entries within 30-day window
@@ -703,6 +727,11 @@ mod tests {
             recovery_strategy: "{}".to_string(),
             error_message: "Recent".to_string(),
             error_context: "{}".to_string(),
+            trace_id: None,
+            span_id: None,
+            saga_id: None,
+            full_error_context: None,
+            error_group_id: None,
             retry_count: 0,
             manually_retried: false,
             resolved_at: Some(Utc::now() - chrono::Duration::days(10)),

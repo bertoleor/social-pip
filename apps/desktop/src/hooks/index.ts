@@ -1,4 +1,3 @@
-// Hooks barrel export
 export { useAntiBan, type UseAntiBanProps, type UseAntiBanReturn } from "./useAntiBan";
 export { useAccounts, type UseAccountsReturn } from "./useAccounts";
 export { usePosts, type UsePostsOptions, type UsePostsReturn } from "./usePosts";
@@ -9,3 +8,5 @@ export { useAI, type UseAIReturn } from "./useAI";
 export { useAlerts, type UseAlertsOptions, type UseAlertsReturn } from "./useAlerts";
 export { useMediaUpload, type UseMediaUploadProps, type UseMediaUploadReturn } from "./useMediaUpload";
 export { useMediaValidation, type UseMediaValidationReturn } from "./useMediaValidation";
+export { useGlobalShortcuts, type UseGlobalShortcutsReturn, type UseGlobalShortcutsOptions, type ShortcutHandlers, type ShortcutEventPayload, SHORTCUT_EVENTS } from "./useGlobalShortcuts";
+export { useToast, type UseToastReturn } from "./useToast";

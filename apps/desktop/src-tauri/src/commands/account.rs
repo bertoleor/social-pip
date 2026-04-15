@@ -192,7 +192,12 @@ static ACCOUNTS: Lazy<Mutex<HashMap<String, Account>>> = Lazy::new(|| {
 // ============================================
 
 fn generate_id() -> String {
-    format!("acct_{}", chrono::Utc::now().timestamp_millis())
+    // Use nanoseconds and a thread-local counter for uniqueness
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let count = COUNTER.fetch_add(1, Ordering::SeqCst);
+    let now = chrono::Utc::now();
+    format!("acct_{}{:010}", now.timestamp_nanos_opt().unwrap_or(0), count)
 }
 
 fn now_iso() -> String {
@@ -446,36 +451,36 @@ mod tests {
         assert!(accounts.is_empty());
     }
 
-    #[test]
-    fn test_get_accounts_with_platform_filter_returns_only_matching() {
-        reset_accounts();
+#[test]
+fn test_get_accounts_with_platform_filter_returns_only_matching() {
+    reset_accounts();
 
-        // Create test accounts
-        let rt = tokio::runtime::Runtime::new().unwrap();
-        let facebook = rt.block_on(create_account(CreateAccountInput {
-            platform: "facebook".to_string(),
-            name: "FB Account".to_string(),
-            username: Some("fb_user".to_string()),
-            ..Default::default()
-        })).unwrap();
+    // Create test accounts
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    let facebook = rt.block_on(create_account(CreateAccountInput {
+        platform: "facebook".to_string(),
+        name: "FB Account".to_string(),
+        username: Some("fb_user".to_string()),
+        ..Default::default()
+    })).unwrap();
 
-        let instagram = rt.block_on(create_account(CreateAccountInput {
-            platform: "instagram".to_string(),
-            name: "IG Account".to_string(),
-            username: Some("ig_user".to_string()),
-            ..Default::default()
-        })).unwrap();
+    let instagram = rt.block_on(create_account(CreateAccountInput {
+        platform: "instagram".to_string(),
+        name: "IG Account".to_string(),
+        username: Some("ig_user".to_string()),
+        ..Default::default()
+    })).unwrap();
 
-        // Filter by facebook
-        let filter = AccountFilter {
-            platform: Some("facebook".to_string()),
-            ..Default::default()
-        };
-        let result = rt.block_on(get_accounts(Some(filter)));
-        assert!(result.is_ok());
-        let accounts = result.unwrap();
-        assert_eq!(accounts.len(), 1);
-        assert_eq!(accounts[0].platform, Platform::Facebook);
+    // Filter by facebook
+    let filter = AccountFilter {
+        platform: Some("facebook".to_string()),
+        ..Default::default()
+    };
+    let result = rt.block_on(get_accounts(Some(filter)));
+    assert!(result.is_ok());
+    let accounts = result.unwrap();
+    assert_eq!(accounts.len(), 1);
+    assert_eq!(accounts[0].platform, Platform::Facebook);
 
         // Filter by instagram
         let filter = AccountFilter {
