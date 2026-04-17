@@ -10,9 +10,7 @@ export interface ToastContainerProps {
 
 const AUTO_DISMISS_MS = 5000;
 
-export function ToastContainer({
-  className,
-}: ToastContainerProps): React.ReactElement {
+export function ToastContainer({ className }: ToastContainerProps): React.ReactElement {
   const toasts = useToastStore((state) => state.toasts);
   const removeToast = useToastStore((state) => state.removeToast);
 
@@ -60,7 +58,7 @@ export function ToastContainer({
         "flex flex-col gap-2",
         "w-80 max-w-[calc(100vw-2rem)]",
         "pointer-events-none",
-        className
+        className,
       )}
     >
       {toasts.map((toast: ToastType) => (

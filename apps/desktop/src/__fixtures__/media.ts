@@ -7,7 +7,8 @@ export const VALID_JPG_FIXTURE: MediaFile = {
   fileSize: 1024 * 1024,
   format: "jpg",
   dimensions: { width: 1920, height: 1080 },
-  thumbnailUrl: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMCwsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AVN//2Q==",
+  thumbnailUrl:
+    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMCwsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AVN//2Q==",
   validationStatus: "valid",
 };
 
@@ -18,7 +19,8 @@ export const VALID_PNG_FIXTURE: MediaFile = {
   fileSize: 5 * 1024 * 1024,
   format: "png",
   dimensions: { width: 2048, height: 2048 },
-  thumbnailUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+  thumbnailUrl:
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
   validationStatus: "valid",
 };
 
@@ -40,7 +42,8 @@ export const VALID_WEBP_FIXTURE: MediaFile = {
   fileSize: 256 * 1024,
   format: "webp",
   dimensions: { width: 640, height: 480 },
-  thumbnailUrl: "data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoKAAoAAUAmJYgCdAEO5YIqAMCD3AAD8P8A/gAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  thumbnailUrl:
+    "data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoKAAoAAUAmJYgCdAEO5YIqAMCD3AAD8P8A/gAAAAAAAAAAAAAAAAAAAAAAAAAA",
   validationStatus: "valid",
 };
 
@@ -56,7 +59,12 @@ export const INVALID_SIZE_FIXTURE: MediaFile = {
     {
       platform: "facebook",
       errors: [
-        { code: "SIZE_EXCEEDED", message: "File size exceeds platform limit", actual: 10 * 1024 * 1024, limit: 4 * 1024 * 1024 },
+        {
+          code: "SIZE_EXCEEDED",
+          message: "File size exceeds platform limit",
+          actual: 10 * 1024 * 1024,
+          limit: 4 * 1024 * 1024,
+        },
       ],
       warnings: [],
     },
@@ -74,9 +82,7 @@ export const INVALID_FORMAT_FIXTURE: MediaFile = {
   platformViolations: [
     {
       platform: "facebook",
-      errors: [
-        { code: "FORMAT_UNSUPPORTED", message: "PDF format not supported", actual: "pdf" },
-      ],
+      errors: [{ code: "FORMAT_UNSUPPORTED", message: "PDF format not supported", actual: "pdf" }],
       warnings: [],
     },
   ],

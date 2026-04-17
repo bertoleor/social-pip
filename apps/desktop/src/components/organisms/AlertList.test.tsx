@@ -1,7 +1,7 @@
 import { useAlertsStore } from "@/stores/alertsStore";
 import { invoke } from "@tauri-apps/api/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AlertList } from "./AlertList";
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -63,7 +63,9 @@ const createMockStore = (overrides = {}) => {
     loadAlerts: mockLoadAlerts,
     ...overrides,
   };
-  vi.mocked(useAlertsStore).mockReturnValue(defaultStore as unknown as ReturnType<typeof useAlertsStore>);
+  vi.mocked(useAlertsStore).mockReturnValue(
+    defaultStore as unknown as ReturnType<typeof useAlertsStore>,
+  );
   return defaultStore;
 };
 

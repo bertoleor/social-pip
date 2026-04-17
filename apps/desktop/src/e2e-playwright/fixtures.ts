@@ -12,21 +12,21 @@
  *   await expect(tauriPage.locator('nav')).toBeVisible()
  * })
  */
-import { test as base, type Page } from "@playwright/test"
+import { type Page, test as base } from "@playwright/test";
 import {
+  type TauriDriverProcess,
   buildTauriApp,
+  setupShutdownHandler,
   startTauriDriver,
   stopTauriDriver,
-  setupShutdownHandler,
-  type TauriDriverProcess,
-} from "./helpers"
+} from "./helpers";
 
 /**
  * Worker-scoped fixture state
  * Contains the tauri-driver process that persists across all tests in a worker
  */
 interface TauriWorkerFixture {
-  driverProcess: TauriDriverProcess
+  driverProcess: TauriDriverProcess;
 }
 
 /**
@@ -35,7 +35,7 @@ interface TauriWorkerFixture {
  */
 interface TauriTestFixtures {
   /** Page pre-navigated to tauri://localhost with app ready */
-  tauriPage: Page
+  tauriPage: Page;
 }
 
 /**
@@ -43,14 +43,14 @@ interface TauriTestFixtures {
  */
 interface TauriWorkerFixtures {
   /** The tauri-driver process (worker-scoped) */
-  tauriApp: TauriWorkerFixture
+  tauriApp: TauriWorkerFixture;
 }
 
 /**
  * Combined fixture types for the test
  */
-type MyFixtures = TauriTestFixtures
-type MyWorkerFixtures = TauriWorkerFixtures
+type MyFixtures = TauriTestFixtures;
+type MyWorkerFixtures = TauriWorkerFixtures;
 
 /**
  * Custom Playwright test with Tauri fixtures
@@ -75,21 +75,21 @@ export const test = base.extend<MyFixtures, MyWorkerFixtures>({
   tauriApp: [
     async ({}, use) => {
       // Build Tauri app in debug mode
-      buildTauriApp()
+      buildTauriApp();
 
       // Start tauri-driver process
-      const driverProcess = startTauriDriver()
+      const driverProcess = startTauriDriver();
 
       // Setup cleanup handler for process exit
       setupShutdownHandler(() => {
-        stopTauriDriver(driverProcess)
-      })
+        stopTauriDriver(driverProcess);
+      });
 
       // Provide to tests
-      await use({ driverProcess })
+      await use({ driverProcess });
 
       // Cleanup after all tests in worker complete
-      stopTauriDriver(driverProcess)
+      stopTauriDriver(driverProcess);
     },
     { scope: "worker", auto: true },
   ],
@@ -102,22 +102,22 @@ export const test = base.extend<MyFixtures, MyWorkerFixtures>({
    */
   tauriPage: async ({ page }, use) => {
     // Navigate to the Tauri app
-    await page.goto("tauri://localhost")
+    await page.goto("tauri://localhost");
 
     // Wait for the app to be ready (navigation visible)
-    await page.locator("nav").waitFor({ state: "visible", timeout: 10000 })
+    await page.locator("nav").waitFor({ state: "visible", timeout: 10000 });
 
     // Provide the page to the test
-    await use(page)
+    await use(page);
   },
-})
+});
 
 /**
  * Re-export expect from Playwright for convenience
  */
-export { expect } from "@playwright/test"
+export { expect } from "@playwright/test";
 
 /**
  * Type exports for consumers
  */
-export type { TauriTestFixtures, TauriWorkerFixture, TauriWorkerFixtures }
+export type { TauriTestFixtures, TauriWorkerFixture, TauriWorkerFixtures };

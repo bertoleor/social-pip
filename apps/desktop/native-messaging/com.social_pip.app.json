@@ -3,7 +3,5 @@
   "description": "Social-Pip Desktop App - Native Messaging Host for Chrome Extension",
   "path": "PLACEHOLDER_PATH_TO_EXECUTABLE",
   "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://EXTENSION_ID/"
-  ]
+  "allowed_origins": ["chrome-extension://EXTENSION_ID/"]
 }

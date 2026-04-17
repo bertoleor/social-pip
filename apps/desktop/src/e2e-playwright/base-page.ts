@@ -15,7 +15,7 @@
  *   }
  * }
  */
-import type { Page, Locator } from "@playwright/test"
+import type { Locator, Page } from "@playwright/test";
 
 /**
  * Abstract base class for all Page Object Models
@@ -31,13 +31,13 @@ import type { Page, Locator } from "@playwright/test"
  */
 export abstract class BasePage {
   /** Playwright page instance */
-  protected readonly page: Page
+  protected readonly page: Page;
 
   /** Container locator for this page (using data-testid) */
-  protected readonly pageContainer: Locator
+  protected readonly pageContainer: Locator;
 
   /** The data-testid identifier for this page */
-  protected readonly pageTestId: string
+  protected readonly pageTestId: string;
 
   /**
    * Creates a new BasePage instance
@@ -45,9 +45,9 @@ export abstract class BasePage {
    * @param pageTestId - The data-testid attribute value for this page's container
    */
   constructor(page: Page, pageTestId: string) {
-    this.page = page
-    this.pageTestId = pageTestId
-    this.pageContainer = page.getByTestId(pageTestId)
+    this.page = page;
+    this.pageTestId = pageTestId;
+    this.pageContainer = page.getByTestId(pageTestId);
   }
 
   /**
@@ -59,9 +59,9 @@ export abstract class BasePage {
    * @returns this for method chaining
    */
   async goto(): Promise<this> {
-    await this.navigateHere()
-    await this.verifyPageLoaded()
-    return this
+    await this.navigateHere();
+    await this.verifyPageLoaded();
+    return this;
   }
 
   /**
@@ -71,8 +71,8 @@ export abstract class BasePage {
    * @returns this for method chaining
    */
   async verifyPageLoaded(timeout = 10000): Promise<this> {
-    await this.pageContainer.waitFor({ state: "visible", timeout })
-    return this
+    await this.pageContainer.waitFor({ state: "visible", timeout });
+    return this;
   }
 
   /**
@@ -87,18 +87,16 @@ export abstract class BasePage {
     type?: "success" | "error",
     timeout = 5000,
   ): Promise<void> {
-    const notification = this.page
-      .getByRole("alert")
-      .filter({ hasText: message })
+    const notification = this.page.getByRole("alert").filter({ hasText: message });
 
-    await notification.waitFor({ state: "visible", timeout })
+    await notification.waitFor({ state: "visible", timeout });
 
     if (type) {
       // If type is specified, verify the notification has the correct type
       await this.page
         .getByRole("alert", { name: type })
         .filter({ hasText: message })
-        .waitFor({ state: "visible", timeout })
+        .waitFor({ state: "visible", timeout });
     }
   }
 
@@ -110,8 +108,8 @@ export abstract class BasePage {
    * @param timeout - Maximum time to wait in milliseconds (default: 10000)
    */
   async waitForLoadingComplete(timeout = 10000): Promise<void> {
-    const loading = this.page.getByTestId("loading")
-    await loading.waitFor({ state: "hidden", timeout })
+    const loading = this.page.getByTestId("loading");
+    await loading.waitFor({ state: "hidden", timeout });
   }
 
   /**
@@ -122,7 +120,7 @@ export abstract class BasePage {
    * @param timeout - Maximum time to wait in milliseconds (default: 10000)
    */
   async waitForNavigation(timeout = 10000): Promise<void> {
-    await this.page.locator("nav").waitFor({ state: "visible", timeout })
+    await this.page.locator("nav").waitFor({ state: "visible", timeout });
   }
 
   /**
@@ -134,7 +132,7 @@ export abstract class BasePage {
    * @returns Locator for the navigation link
    */
   getNavLink(name: string): Locator {
-    return this.page.getByRole("link", { name })
+    return this.page.getByRole("link", { name });
   }
 
   /**
@@ -146,7 +144,7 @@ export abstract class BasePage {
    * @returns Locator for the button
    */
   getButton(name: string): Locator {
-    return this.page.getByRole("button", { name })
+    return this.page.getByRole("button", { name });
   }
 
   /**
@@ -158,7 +156,7 @@ export abstract class BasePage {
    * @returns Locator for the input
    */
   getInput(label: string): Locator {
-    return this.page.getByLabel(label)
+    return this.page.getByLabel(label);
   }
 
   /**
@@ -167,7 +165,7 @@ export abstract class BasePage {
    * @returns Locator for the h1 element
    */
   getHeading(): Locator {
-    return this.page.locator("h1")
+    return this.page.locator("h1");
   }
 
   /**
@@ -178,7 +176,7 @@ export abstract class BasePage {
    * @returns Locator for the dialog element
    */
   getModal(): Locator {
-    return this.page.getByRole("dialog")
+    return this.page.getByRole("dialog");
   }
 
   /**
@@ -191,5 +189,5 @@ export abstract class BasePage {
    * Note: This is called by goto() and should not verify
    * the page is loaded - that's done separately.
    */
-  protected abstract navigateHere(): Promise<void>
+  protected abstract navigateHere(): Promise<void>;
 }

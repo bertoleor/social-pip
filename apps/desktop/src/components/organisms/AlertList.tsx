@@ -39,8 +39,13 @@ export function AlertList({
   showAcknowledge = true,
   onAlertAcknowledge,
 }: AlertListProps): React.ReactElement {
-  const { alerts: storeAlerts, loading, acknowledgeAlert, resolveAlert, loadAlerts } =
-    useAlertsStore();
+  const {
+    alerts: storeAlerts,
+    loading,
+    acknowledgeAlert,
+    resolveAlert,
+    loadAlerts,
+  } = useAlertsStore();
 
   const alerts = storeAlerts ?? [];
 
@@ -59,10 +64,7 @@ export function AlertList({
 
   if (loading) {
     return (
-      <div
-        data-testid="alert-list-loading"
-        className="flex items-center justify-center py-8"
-      >
+      <div data-testid="alert-list-loading" className="flex items-center justify-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         <span className="ml-3 text-gray-600">Loading alerts...</span>
       </div>
@@ -101,30 +103,19 @@ export function AlertList({
                 )}
               </div>
               <p className="text-gray-900 text-sm">{alert.message}</p>
-              <p
-                data-testid="alert-timestamp"
-                className="text-xs text-gray-400 mt-1"
-              >
+              <p data-testid="alert-timestamp" className="text-xs text-gray-400 mt-1">
                 {formatRelativeTime(alert.timestamp)}
               </p>
             </div>
 
             <div className="flex gap-2 ml-4">
               {showAcknowledge && !alert.acknowledged && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => handleAcknowledge(alert.id)}
-                >
+                <Button variant="secondary" size="sm" onClick={() => handleAcknowledge(alert.id)}>
                   Acknowledge
                 </Button>
               )}
               {!alert.resolved && (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => handleResolve(alert.id)}
-                >
+                <Button variant="primary" size="sm" onClick={() => handleResolve(alert.id)}>
                   Resolve
                 </Button>
               )}

@@ -37,7 +37,7 @@ export interface AlertsState {
     severity: string,
     message: string,
     platform?: string,
-    accountId?: string
+    accountId?: string,
   ) => Promise<Alert>;
   acknowledgeAlert: (alertId: string) => Promise<void>;
   resolveAlert: (alertId: string) => Promise<void>;
@@ -81,7 +81,7 @@ export const useAlertsStore = create<AlertsState>((set, get) => ({
     severity: string,
     message: string,
     platform?: string,
-    accountId?: string
+    accountId?: string,
   ) => {
     const alert = await invoke<Alert>("create_alert", {
       alertType,
@@ -104,7 +104,7 @@ export const useAlertsStore = create<AlertsState>((set, get) => ({
     const updatedAlerts = currentAlerts.map((alert) =>
       alert.id === alertId
         ? { ...alert, acknowledged: true, acknowledged_at: new Date().toISOString() }
-        : alert
+        : alert,
     );
     set({ alerts: updatedAlerts, error: null });
   },
@@ -116,7 +116,7 @@ export const useAlertsStore = create<AlertsState>((set, get) => ({
     const updatedAlerts = currentAlerts.map((alert) =>
       alert.id === alertId
         ? { ...alert, resolved: true, resolved_at: new Date().toISOString() }
-        : alert
+        : alert,
     );
     set({ alerts: updatedAlerts, error: null });
   },

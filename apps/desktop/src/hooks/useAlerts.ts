@@ -15,7 +15,7 @@ export interface UseAlertsReturn {
     severity: string,
     message: string,
     platform?: string,
-    accountId?: string
+    accountId?: string,
   ) => Promise<void>;
   acknowledgeAlert: (alertId: string) => Promise<void>;
   resolveAlert: (alertId: string) => Promise<void>;
@@ -61,7 +61,7 @@ export function useAlerts(options: UseAlertsOptions = {}): UseAlertsReturn {
       severity: string,
       message: string,
       platform?: string,
-      accountId?: string
+      accountId?: string,
     ) => {
       try {
         await storeCreateAlert(alertType, severity, message, platform, accountId);
@@ -70,7 +70,7 @@ export function useAlerts(options: UseAlertsOptions = {}): UseAlertsReturn {
         useAlertsStore.setState({ error: errorMessage });
       }
     },
-    [storeCreateAlert]
+    [storeCreateAlert],
   );
 
   const acknowledgeAlert = useCallback(
@@ -82,7 +82,7 @@ export function useAlerts(options: UseAlertsOptions = {}): UseAlertsReturn {
         useAlertsStore.setState({ error: errorMessage });
       }
     },
-    [storeAcknowledgeAlert]
+    [storeAcknowledgeAlert],
   );
 
   const resolveAlert = useCallback(
@@ -94,7 +94,7 @@ export function useAlerts(options: UseAlertsOptions = {}): UseAlertsReturn {
         useAlertsStore.setState({ error: errorMessage });
       }
     },
-    [storeResolveAlert]
+    [storeResolveAlert],
   );
 
   const refresh = useCallback(async () => {

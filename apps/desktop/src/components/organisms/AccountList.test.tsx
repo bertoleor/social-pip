@@ -1,11 +1,6 @@
 import type { Account } from "@social-pip/types";
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AccountList } from "./AccountList";
 
 const mockAccounts: Account[] = [
@@ -77,47 +72,47 @@ describe("AccountList", () => {
     vi.useRealTimers();
   });
 
-	describe("grid rendering", () => {
-		it("renders grid with all 5 accounts", () => {
-			render(<AccountList accounts={mockAccounts} />);
+  describe("grid rendering", () => {
+    it("renders grid with all 5 accounts", () => {
+      render(<AccountList accounts={mockAccounts} />);
 
-			expect(screen.getByText("Facebook Account")).toBeDefined();
-			expect(screen.getByText("Instagram Account")).toBeDefined();
-			expect(screen.getByText("Twitter Account")).toBeDefined();
-			expect(screen.getByText("Another Facebook")).toBeDefined();
-			expect(screen.getByText("TikTok Account")).toBeDefined();
-		});
+      expect(screen.getByText("Facebook Account")).toBeDefined();
+      expect(screen.getByText("Instagram Account")).toBeDefined();
+      expect(screen.getByText("Twitter Account")).toBeDefined();
+      expect(screen.getByText("Another Facebook")).toBeDefined();
+      expect(screen.getByText("TikTok Account")).toBeDefined();
+    });
 
-		it("renders grid with correct responsive classes", () => {
-			const { container } = render(<AccountList accounts={mockAccounts} />);
+    it("renders grid with correct responsive classes", () => {
+      const { container } = render(<AccountList accounts={mockAccounts} />);
 
-			const grid = container.querySelector(".grid");
-			expect(grid?.className).toContain("grid-cols-1");
-			expect(grid?.className).toContain("sm:grid-cols-2");
-			expect(grid?.className).toContain("md:grid-cols-3");
-			expect(grid?.className).toContain("lg:grid-cols-4");
-		});
-	});
+      const grid = container.querySelector(".grid");
+      expect(grid?.className).toContain("grid-cols-1");
+      expect(grid?.className).toContain("sm:grid-cols-2");
+      expect(grid?.className).toContain("md:grid-cols-3");
+      expect(grid?.className).toContain("lg:grid-cols-4");
+    });
+  });
 
-	describe("platform filter", () => {
-		it("filters by platform when dropdown is changed", async () => {
-			const onEdit = vi.fn();
-			render(<AccountList accounts={mockAccounts} onEdit={onEdit} />);
+  describe("platform filter", () => {
+    it("filters by platform when dropdown is changed", async () => {
+      const onEdit = vi.fn();
+      render(<AccountList accounts={mockAccounts} onEdit={onEdit} />);
 
-			// Initially all accounts are shown
-			expect(screen.getByText("Instagram Account")).toBeDefined();
+      // Initially all accounts are shown
+      expect(screen.getByText("Instagram Account")).toBeDefined();
 
-			// Select Facebook filter
-			const select = screen.getByLabelText("Filter by platform");
-			fireEvent.change(select, { target: { value: "facebook" } });
+      // Select Facebook filter
+      const select = screen.getByLabelText("Filter by platform");
+      fireEvent.change(select, { target: { value: "facebook" } });
 
-			// Should only show Facebook accounts
-			expect(screen.getByText("Facebook Account")).toBeDefined();
-			expect(screen.getByText("Another Facebook")).toBeDefined();
-			expect(screen.queryByText("Instagram Account")).toBeNull();
-			expect(screen.queryByText("Twitter Account")).toBeNull();
-		});
-	});
+      // Should only show Facebook accounts
+      expect(screen.getByText("Facebook Account")).toBeDefined();
+      expect(screen.getByText("Another Facebook")).toBeDefined();
+      expect(screen.queryByText("Instagram Account")).toBeNull();
+      expect(screen.queryByText("Twitter Account")).toBeNull();
+    });
+  });
 
   describe("search functionality", () => {
     it("filters by username (debounced 300ms)", async () => {
@@ -133,7 +128,7 @@ describe("AccountList", () => {
           expect(screen.getByText("Facebook Account")).toBeDefined();
           expect(screen.queryByText("Instagram Account")).toBeNull();
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
     });
 
@@ -147,7 +142,7 @@ describe("AccountList", () => {
         () => {
           expect(screen.getByText("Facebook Account")).toBeDefined();
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
     });
 
@@ -161,83 +156,81 @@ describe("AccountList", () => {
         () => {
           expect(screen.getByText("Instagram Account")).toBeDefined();
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
     });
   });
 
-	describe("empty state", () => {
-		it("shows empty state when no accounts match filter", () => {
-			render(<AccountList accounts={mockAccounts} />);
+  describe("empty state", () => {
+    it("shows empty state when no accounts match filter", () => {
+      render(<AccountList accounts={mockAccounts} />);
 
-			const select = screen.getByLabelText("Filter by platform");
-			fireEvent.change(select, { target: { value: "telegram" } });
+      const select = screen.getByLabelText("Filter by platform");
+      fireEvent.change(select, { target: { value: "telegram" } });
 
-			expect(
-				screen.getByText("No accounts found matching your filters"),
-			).toBeDefined();
-		});
+      expect(screen.getByText("No accounts found matching your filters")).toBeDefined();
+    });
 
-		it("shows Add button in empty state", () => {
-			const onAdd = vi.fn();
-			render(<AccountList accounts={[]} onAdd={onAdd} />);
+    it("shows Add button in empty state", () => {
+      const onAdd = vi.fn();
+      render(<AccountList accounts={[]} onAdd={onAdd} />);
 
-			const addButton = screen.getByText("Add Account");
-			expect(addButton).toBeDefined();
+      const addButton = screen.getByText("Add Account");
+      expect(addButton).toBeDefined();
 
-			fireEvent.click(addButton);
-			expect(onAdd).toHaveBeenCalled();
-		});
+      fireEvent.click(addButton);
+      expect(onAdd).toHaveBeenCalled();
+    });
 
-		it("shows different message when no accounts exist at all", () => {
-			render(<AccountList accounts={[]} />);
+    it("shows different message when no accounts exist at all", () => {
+      render(<AccountList accounts={[]} />);
 
-			expect(screen.getByText("No accounts yet")).toBeDefined();
-		});
-	});
+      expect(screen.getByText("No accounts yet")).toBeDefined();
+    });
+  });
 
-	describe("loading skeleton", () => {
-		it("shows 6 skeleton cards when loading", () => {
-			const { container } = render(<AccountList accounts={[]} loading />);
+  describe("loading skeleton", () => {
+    it("shows 6 skeleton cards when loading", () => {
+      const { container } = render(<AccountList accounts={[]} loading />);
 
-			const skeletons = container.querySelectorAll(".animate-pulse");
-			// 1 for filter bar (w-40), 1 for search (w-64), 6 for cards
-			expect(skeletons.length).toBeGreaterThanOrEqual(6);
-		});
+      const skeletons = container.querySelectorAll(".animate-pulse");
+      // 1 for filter bar (w-40), 1 for search (w-64), 6 for cards
+      expect(skeletons.length).toBeGreaterThanOrEqual(6);
+    });
 
-		it("does not show accounts when loading", () => {
-			render(<AccountList accounts={mockAccounts} loading />);
+    it("does not show accounts when loading", () => {
+      render(<AccountList accounts={mockAccounts} loading />);
 
-			expect(screen.queryByText("Facebook Account")).toBeNull();
-		});
-	});
+      expect(screen.queryByText("Facebook Account")).toBeNull();
+    });
+  });
 
-	describe("action handlers", () => {
-		it("calls onEdit with correct id", () => {
-			const onEdit = vi.fn();
-			render(<AccountList accounts={mockAccounts} onEdit={onEdit} />);
+  describe("action handlers", () => {
+    it("calls onEdit with correct id", () => {
+      const onEdit = vi.fn();
+      render(<AccountList accounts={mockAccounts} onEdit={onEdit} />);
 
-			// Find the first account card and click edit
-			const card = screen.getByRole("button", { name: /Facebook Account/ });
-			fireEvent.mouseEnter(card);
+      // Find the first account card and click edit
+      const card = screen.getByRole("button", { name: /Facebook Account/ });
+      fireEvent.mouseEnter(card);
 
-			const editButton = screen.getAllByLabelText("Edit account")[0];
-			fireEvent.click(editButton);
+      const editButton = screen.getAllByLabelText("Edit account")[0];
+      fireEvent.click(editButton);
 
-			expect(onEdit).toHaveBeenCalledWith("acc_001");
-		});
+      expect(onEdit).toHaveBeenCalledWith("acc_001");
+    });
 
-		it("calls onDelete with correct id", () => {
-			const onDelete = vi.fn();
-			render(<AccountList accounts={mockAccounts} onDelete={onDelete} />);
+    it("calls onDelete with correct id", () => {
+      const onDelete = vi.fn();
+      render(<AccountList accounts={mockAccounts} onDelete={onDelete} />);
 
-			const card = screen.getByRole("button", { name: /Facebook Account/ });
-			fireEvent.mouseEnter(card);
+      const card = screen.getByRole("button", { name: /Facebook Account/ });
+      fireEvent.mouseEnter(card);
 
-			const deleteButton = screen.getAllByLabelText("Delete account")[0];
-			fireEvent.click(deleteButton);
+      const deleteButton = screen.getAllByLabelText("Delete account")[0];
+      fireEvent.click(deleteButton);
 
-			expect(onDelete).toHaveBeenCalledWith("acc_001");
-		});
-	});
+      expect(onDelete).toHaveBeenCalledWith("acc_001");
+    });
+  });
 });

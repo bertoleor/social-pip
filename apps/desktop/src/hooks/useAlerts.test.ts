@@ -95,7 +95,7 @@ describe("useAlerts", () => {
           "INFO",
           "Test message",
           "facebook",
-          "acc-1"
+          "acc-1",
         );
       });
 
@@ -108,30 +108,26 @@ describe("useAlerts", () => {
       });
     });
 
-  it("adds new alert to the list", async () => {
-    const testAlert = createMockAlert("Test message");
-    mockInvoke.mockResolvedValueOnce(mockAlertStats);
-    mockInvoke.mockResolvedValueOnce(testAlert);
+    it("adds new alert to the list", async () => {
+      const testAlert = createMockAlert("Test message");
+      mockInvoke.mockResolvedValueOnce(mockAlertStats);
+      mockInvoke.mockResolvedValueOnce(testAlert);
 
-    const { result } = renderHook(() => useAlerts());
+      const { result } = renderHook(() => useAlerts());
 
-    await waitFor(() => {
-      expect(result.current.stats).toEqual(mockAlertStats);
+      await waitFor(() => {
+        expect(result.current.stats).toEqual(mockAlertStats);
+      });
+
+      await act(async () => {
+        await result.current.createAlert("post_published", "INFO", "Test message");
+      });
+
+      await waitFor(() => {
+        expect(result.current.alerts).toHaveLength(1);
+        expect(result.current.alerts[0]?.message).toBe("Test message");
+      });
     });
-
-    await act(async () => {
-      await result.current.createAlert(
-        "post_published",
-        "INFO",
-        "Test message"
-      );
-    });
-
-    await waitFor(() => {
-      expect(result.current.alerts).toHaveLength(1);
-      expect(result.current.alerts[0]?.message).toBe("Test message");
-    });
-  });
   });
 
   describe("acknowledgeAlert", () => {

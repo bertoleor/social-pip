@@ -1,6 +1,6 @@
 import type { Schedule } from "@social-pip/types";
 import { invoke } from "@tauri-apps/api/core";
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { useSchedule } from "./useSchedule";
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -32,7 +32,9 @@ let mockStoreState: {
 };
 
 vi.mock("@/stores/scheduleStore", () => ({
-  useScheduleStore: vi.fn((selector: (state: typeof mockStoreState) => unknown) => selector(mockStoreState)),
+  useScheduleStore: vi.fn((selector: (state: typeof mockStoreState) => unknown) =>
+    selector(mockStoreState),
+  ),
 }));
 
 const mockInvoke = vi.mocked(invoke);
@@ -92,10 +94,7 @@ describe("useSchedule", () => {
       const { result } = renderHook(() => useSchedule());
 
       await act(async () => {
-        await result.current.schedulePost(
-          "post_001",
-          new Date("2026-04-15T10:00:00Z"),
-        );
+        await result.current.schedulePost("post_001", new Date("2026-04-15T10:00:00Z"));
       });
 
       expect(mockStoreState.schedulePost).toHaveBeenCalledWith(
@@ -103,9 +102,7 @@ describe("useSchedule", () => {
         expect.any(Date),
         undefined,
       );
-      expect(mockToast.success).toHaveBeenCalledWith(
-        "Post scheduled successfully",
-      );
+      expect(mockToast.success).toHaveBeenCalledWith("Post scheduled successfully");
     });
 
     it("shows error toast on failure", async () => {
@@ -121,9 +118,7 @@ describe("useSchedule", () => {
         }
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        "Failed to schedule post: Post not found",
-      );
+      expect(mockToast.error).toHaveBeenCalledWith("Failed to schedule post: Post not found");
     });
 
     it("passes variance parameter correctly", async () => {
@@ -132,18 +127,10 @@ describe("useSchedule", () => {
       const { result } = renderHook(() => useSchedule());
 
       await act(async () => {
-        await result.current.schedulePost(
-          "post_001",
-          new Date("2026-04-15T10:00:00Z"),
-          20,
-        );
+        await result.current.schedulePost("post_001", new Date("2026-04-15T10:00:00Z"), 20);
       });
 
-      expect(mockStoreState.schedulePost).toHaveBeenCalledWith(
-        "post_001",
-        expect.any(Date),
-        20,
-      );
+      expect(mockStoreState.schedulePost).toHaveBeenCalledWith("post_001", expect.any(Date), 20);
     });
   });
 
@@ -188,9 +175,7 @@ describe("useSchedule", () => {
         await result.current.cancelSchedule("sched_001");
       });
 
-      expect(mockToast.success).toHaveBeenCalledWith(
-        "Schedule cancelled successfully",
-      );
+      expect(mockToast.success).toHaveBeenCalledWith("Schedule cancelled successfully");
     });
 
     it("shows error toast on failure", async () => {
@@ -207,9 +192,7 @@ describe("useSchedule", () => {
         }
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        "Failed to cancel schedule: Network error",
-      );
+      expect(mockToast.error).toHaveBeenCalledWith("Failed to cancel schedule: Network error");
     });
   });
 
@@ -403,13 +386,8 @@ describe("useSchedule", () => {
         await result.current.updateSchedule("sched_001", { variance: 20 });
       });
 
-      expect(mockStoreState.updateSchedule).toHaveBeenCalledWith(
-        "sched_001",
-        { variance: 20 },
-      );
-      expect(mockToast.success).toHaveBeenCalledWith(
-        "Schedule updated successfully",
-      );
+      expect(mockStoreState.updateSchedule).toHaveBeenCalledWith("sched_001", { variance: 20 });
+      expect(mockToast.success).toHaveBeenCalledWith("Schedule updated successfully");
     });
 
     it("shows error toast on failure", async () => {
@@ -425,9 +403,7 @@ describe("useSchedule", () => {
         }
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        "Failed to update schedule: Update failed",
-      );
+      expect(mockToast.error).toHaveBeenCalledWith("Failed to update schedule: Update failed");
     });
   });
 });

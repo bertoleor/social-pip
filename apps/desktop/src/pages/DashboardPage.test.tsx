@@ -6,36 +6,32 @@ import { describe, expect, it } from "vitest";
 import DashboardPage from "./DashboardPage";
 
 describe("DashboardPage", () => {
-	describe("rendering", () => {
-		it("renders the page container", () => {
-			render(<DashboardPage />);
+  describe("rendering", () => {
+    it("renders the page container", () => {
+      render(<DashboardPage />);
 
-			expect(screen.getByTestId("page-dashboard")).toBeInTheDocument();
-		});
+      expect(screen.getByTestId("page-dashboard")).toBeInTheDocument();
+    });
 
-		it("renders the page title", () => {
-			render(<DashboardPage />);
+    it("renders the page title", () => {
+      render(<DashboardPage />);
 
-			expect(
-				screen.getByRole("heading", { name: "Dashboard" }),
-			).toBeInTheDocument();
-		});
+      expect(screen.getByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    });
 
-		it("renders welcome message", () => {
-			render(<DashboardPage />);
+    it("renders welcome message", () => {
+      render(<DashboardPage />);
 
-			expect(
-				screen.getByText(/overview of your social media activity/i),
-			).toBeInTheDocument();
-		});
-	});
+      expect(screen.getByText(/overview of your social media activity/i)).toBeInTheDocument();
+    });
+  });
 
-	describe("accessibility", () => {
-		it("has proper heading structure", () => {
-			render(<DashboardPage />);
+  describe("accessibility", () => {
+    it("has proper heading structure", () => {
+      render(<DashboardPage />);
 
-			const heading = screen.getByRole("heading", { level: 1 });
-			expect(heading).toHaveTextContent("Dashboard");
-		});
-	});
+      const heading = screen.getByRole("heading", { level: 1 });
+      expect(heading).toHaveTextContent("Dashboard");
+    });
+  });
 });

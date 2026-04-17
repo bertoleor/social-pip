@@ -1,63 +1,63 @@
-import { invoke } from "@tauri-apps/api/core"
-import { act, render, screen, waitFor } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { AlertList } from "@/components/organisms/AlertList"
-import { useAlertsStore } from "@/stores/alertsStore"
+import { AlertList } from "@/components/organisms/AlertList";
+import { useAlertsStore } from "@/stores/alertsStore";
+import { invoke } from "@tauri-apps/api/core";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@tauri-apps/api/core", () => ({
-	invoke: vi.fn(),
-}))
+  invoke: vi.fn(),
+}));
 
-const mockInvoke = vi.mocked(invoke)
+const mockInvoke = vi.mocked(invoke);
 
 describe("Alerts Flow Integration", () => {
-	const user = userEvent.setup()
+  const user = userEvent.setup();
 
-	const mockAlert = {
-		id: "alert-1",
-		alert_type: "rate_limit",
-		severity: "WARNING" as const,
-		platform: "facebook",
-		account_id: "account-1",
-		message: "Rate limit approaching",
-		details: { threshold: 80 },
-		timestamp: new Date().toISOString(),
-		acknowledged: false,
-		acknowledged_at: null,
-		resolved: false,
-		resolved_at: null,
-	}
+  const mockAlert = {
+    id: "alert-1",
+    alert_type: "rate_limit",
+    severity: "WARNING" as const,
+    platform: "facebook",
+    account_id: "account-1",
+    message: "Rate limit approaching",
+    details: { threshold: 80 },
+    timestamp: new Date().toISOString(),
+    acknowledged: false,
+    acknowledged_at: null,
+    resolved: false,
+    resolved_at: null,
+  };
 
-	const mockCriticalAlert = {
-		id: "alert-2",
-		alert_type: "account_banned",
-		severity: "CRITICAL" as const,
-		platform: "instagram",
-		account_id: "account-2",
-		message: "Account has been banned",
-		details: { reason: "suspicious_activity" },
-		timestamp: new Date().toISOString(),
-		acknowledged: false,
-		acknowledged_at: null,
-		resolved: false,
-		resolved_at: null,
-	}
+  const mockCriticalAlert = {
+    id: "alert-2",
+    alert_type: "account_banned",
+    severity: "CRITICAL" as const,
+    platform: "instagram",
+    account_id: "account-2",
+    message: "Account has been banned",
+    details: { reason: "suspicious_activity" },
+    timestamp: new Date().toISOString(),
+    acknowledged: false,
+    acknowledged_at: null,
+    resolved: false,
+    resolved_at: null,
+  };
 
-	beforeEach(() => {
-		vi.clearAllMocks()
+  beforeEach(() => {
+    vi.clearAllMocks();
 
-		useAlertsStore.setState({
-			alerts: [],
-			stats: null,
-			loading: false,
-			error: null,
-		})
+    useAlertsStore.setState({
+      alerts: [],
+      stats: null,
+      loading: false,
+      error: null,
+    });
 
-mockInvoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+    mockInvoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
       if (command === "get_alerts") {
-        const currentAlerts = useAlertsStore.getState().alerts
-        return currentAlerts.length > 0 ? currentAlerts : []
+        const currentAlerts = useAlertsStore.getState().alerts;
+        return currentAlerts.length > 0 ? currentAlerts : [];
       }
       if (command === "create_alert") {
         return {
@@ -73,10 +73,10 @@ mockInvoke.mockImplementation(async (command: string, args?: Record<string, unkn
           acknowledged_at: null,
           resolved: false,
           resolved_at: null,
-        }
+        };
       }
-      if (command === "acknowledge_alert") return undefined
-      if (command === "resolve_alert") return undefined
+      if (command === "acknowledge_alert") return undefined;
+      if (command === "resolve_alert") return undefined;
       if (command === "init_alert_system") {
         return {
           total_alerts: 1,
@@ -85,161 +85,158 @@ mockInvoke.mockImplementation(async (command: string, args?: Record<string, unkn
           warnings: 1,
           last_24h: 1,
           last_hour: 0,
-        }
+        };
       }
-      return {}
-    })
-	})
+      return {};
+    });
+  });
 
-	describe("Action triggers alert - useAlerts creates alert - AlertList displays", () => {
-		it("should display alerts in AlertList component", async () => {
-			useAlertsStore.setState({ alerts: [mockAlert] })
+  describe("Action triggers alert - useAlerts creates alert - AlertList displays", () => {
+    it("should display alerts in AlertList component", async () => {
+      useAlertsStore.setState({ alerts: [mockAlert] });
 
-			render(<AlertList />)
+      render(<AlertList />);
 
-			await waitFor(() => {
-				expect(screen.getByTestId("alert-list")).toBeInTheDocument()
-				expect(screen.getByText("Rate limit approaching")).toBeInTheDocument()
-			})
-		})
+      await waitFor(() => {
+        expect(screen.getByTestId("alert-list")).toBeInTheDocument();
+        expect(screen.getByText("Rate limit approaching")).toBeInTheDocument();
+      });
+    });
 
-		it("should create alert via store and display in list", async () => {
-			render(<AlertList />)
+    it("should create alert via store and display in list", async () => {
+      render(<AlertList />);
 
-			await act(async () => {
-				await useAlertsStore.getState().createAlert(
-					"test_alert",
-					"WARNING",
-					"Test warning message",
-					"facebook",
-				)
-			})
+      await act(async () => {
+        await useAlertsStore
+          .getState()
+          .createAlert("test_alert", "WARNING", "Test warning message", "facebook");
+      });
 
-			await waitFor(() => {
-				const state = useAlertsStore.getState()
-				expect(state.alerts).toHaveLength(1)
-			})
-		})
+      await waitFor(() => {
+        const state = useAlertsStore.getState();
+        expect(state.alerts).toHaveLength(1);
+      });
+    });
 
-		it("should show severity badge with correct styling", async () => {
-			useAlertsStore.setState({ alerts: [mockCriticalAlert] })
+    it("should show severity badge with correct styling", async () => {
+      useAlertsStore.setState({ alerts: [mockCriticalAlert] });
 
-			render(<AlertList />)
+      render(<AlertList />);
 
-			await waitFor(() => {
-				const badge = screen.getByTestId("severity-badge-CRITICAL")
-				expect(badge).toBeInTheDocument()
-				expect(badge).toHaveTextContent("CRITICAL")
-			})
-		})
-	})
+      await waitFor(() => {
+        const badge = screen.getByTestId("severity-badge-CRITICAL");
+        expect(badge).toBeInTheDocument();
+        expect(badge).toHaveTextContent("CRITICAL");
+      });
+    });
+  });
 
-	describe("Auto-dismiss timing - alert removal", () => {
-		it("should acknowledge alert when acknowledge button clicked", async () => {
-			useAlertsStore.setState({ alerts: [mockAlert] })
+  describe("Auto-dismiss timing - alert removal", () => {
+    it("should acknowledge alert when acknowledge button clicked", async () => {
+      useAlertsStore.setState({ alerts: [mockAlert] });
 
-			render(<AlertList showAcknowledge />)
+      render(<AlertList showAcknowledge />);
 
-			await waitFor(() => {
-				expect(screen.getByText("Acknowledge")).toBeInTheDocument()
-			})
+      await waitFor(() => {
+        expect(screen.getByText("Acknowledge")).toBeInTheDocument();
+      });
 
-			await user.click(screen.getByText("Acknowledge"))
+      await user.click(screen.getByText("Acknowledge"));
 
-			await waitFor(() => {
-				expect(mockInvoke).toHaveBeenCalledWith("acknowledge_alert", {
-					alertId: "alert-1",
-				})
-			})
-		})
+      await waitFor(() => {
+        expect(mockInvoke).toHaveBeenCalledWith("acknowledge_alert", {
+          alertId: "alert-1",
+        });
+      });
+    });
 
-		it("should resolve alert when resolve button clicked", async () => {
-			useAlertsStore.setState({ alerts: [mockAlert] })
+    it("should resolve alert when resolve button clicked", async () => {
+      useAlertsStore.setState({ alerts: [mockAlert] });
 
-			render(<AlertList />)
+      render(<AlertList />);
 
-			await waitFor(() => {
-				expect(screen.getByText("Resolve")).toBeInTheDocument()
-			})
+      await waitFor(() => {
+        expect(screen.getByText("Resolve")).toBeInTheDocument();
+      });
 
-			await user.click(screen.getByText("Resolve"))
+      await user.click(screen.getByText("Resolve"));
 
-			await waitFor(() => {
-				expect(mockInvoke).toHaveBeenCalledWith("resolve_alert", {
-					alertId: "alert-1",
-				})
-			})
-		})
+      await waitFor(() => {
+        expect(mockInvoke).toHaveBeenCalledWith("resolve_alert", {
+          alertId: "alert-1",
+        });
+      });
+    });
 
-		it("should update alert state after acknowledgment", async () => {
-			useAlertsStore.setState({ alerts: [mockAlert] })
+    it("should update alert state after acknowledgment", async () => {
+      useAlertsStore.setState({ alerts: [mockAlert] });
 
-			render(<AlertList showAcknowledge />)
+      render(<AlertList showAcknowledge />);
 
-			await act(async () => {
-				await useAlertsStore.getState().acknowledgeAlert("alert-1")
-			})
+      await act(async () => {
+        await useAlertsStore.getState().acknowledgeAlert("alert-1");
+      });
 
-			await waitFor(() => {
-				const state = useAlertsStore.getState()
-				const alert = state.alerts.find((a) => a.id === "alert-1")
-				expect(alert?.acknowledged).toBe(true)
-			})
-		})
+      await waitFor(() => {
+        const state = useAlertsStore.getState();
+        const alert = state.alerts.find((a) => a.id === "alert-1");
+        expect(alert?.acknowledged).toBe(true);
+      });
+    });
 
-		it("should hide acknowledge button for acknowledged alerts", async () => {
-			const acknowledgedAlert = { ...mockAlert, acknowledged: true }
-			useAlertsStore.setState({ alerts: [acknowledgedAlert] })
+    it("should hide acknowledge button for acknowledged alerts", async () => {
+      const acknowledgedAlert = { ...mockAlert, acknowledged: true };
+      useAlertsStore.setState({ alerts: [acknowledgedAlert] });
 
-			render(<AlertList showAcknowledge />)
+      render(<AlertList showAcknowledge />);
 
-			await waitFor(() => {
-				expect(screen.queryByText("Acknowledge")).not.toBeInTheDocument()
-			})
-		})
-	})
+      await waitFor(() => {
+        expect(screen.queryByText("Acknowledge")).not.toBeInTheDocument();
+      });
+    });
+  });
 
-	describe("Alert filtering and loading states", () => {
-		it("should show loading state", async () => {
-			useAlertsStore.setState({ loading: true })
+  describe("Alert filtering and loading states", () => {
+    it("should show loading state", async () => {
+      useAlertsStore.setState({ loading: true });
 
-			render(<AlertList />)
+      render(<AlertList />);
 
-			expect(screen.getByTestId("alert-list-loading")).toBeInTheDocument()
-		})
+      expect(screen.getByTestId("alert-list-loading")).toBeInTheDocument();
+    });
 
-		it("should show empty state when no alerts", async () => {
-			useAlertsStore.setState({ alerts: [], loading: false })
+    it("should show empty state when no alerts", async () => {
+      useAlertsStore.setState({ alerts: [], loading: false });
 
-			render(<AlertList />)
+      render(<AlertList />);
 
-			await waitFor(() => {
-				expect(screen.getByText("No alerts to display")).toBeInTheDocument()
-			})
-		})
+      await waitFor(() => {
+        expect(screen.getByText("No alerts to display")).toBeInTheDocument();
+      });
+    });
 
-		it("should filter by severity", async () => {
-			useAlertsStore.setState({ alerts: [mockAlert, mockCriticalAlert] })
+    it("should filter by severity", async () => {
+      useAlertsStore.setState({ alerts: [mockAlert, mockCriticalAlert] });
 
-			render(<AlertList severityFilter="CRITICAL" />)
+      render(<AlertList severityFilter="CRITICAL" />);
 
-			await waitFor(() => {
-				expect(mockInvoke).toHaveBeenCalledWith("get_alerts", {
-					limit: 50,
-					severityFilter: "CRITICAL",
-				})
-			})
-		})
+      await waitFor(() => {
+        expect(mockInvoke).toHaveBeenCalledWith("get_alerts", {
+          limit: 50,
+          severityFilter: "CRITICAL",
+        });
+      });
+    });
 
-		it("should limit number of alerts displayed", async () => {
-			render(<AlertList limit={10} />)
+    it("should limit number of alerts displayed", async () => {
+      render(<AlertList limit={10} />);
 
-			await waitFor(() => {
-				expect(mockInvoke).toHaveBeenCalledWith("get_alerts", {
-					limit: 10,
-					severityFilter: null,
-				})
-			})
-		})
-	})
-})
+      await waitFor(() => {
+        expect(mockInvoke).toHaveBeenCalledWith("get_alerts", {
+          limit: 10,
+          severityFilter: null,
+        });
+      });
+    });
+  });
+});

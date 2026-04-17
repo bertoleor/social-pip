@@ -1,18 +1,18 @@
-import { render } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
-import { Badge } from "@/components/atoms/Badge"
-import { Button } from "@/components/atoms/Button"
-import { PostStatusBadge } from "@/components/atoms/PostStatusBadge"
-import { Card } from "@/components/molecules/Card"
-import { AntiBanStatsCard } from "@/components/molecules/AntiBanStatsCard"
-import { PostCard } from "@/components/molecules/PostCard"
-import { createPostFixture } from "@/test/fixtures/posts"
-import type { AntiBanStats } from "@social-pip/types"
+import { Badge } from "@/components/atoms/Badge";
+import { Button } from "@/components/atoms/Button";
+import { PostStatusBadge } from "@/components/atoms/PostStatusBadge";
+import { AntiBanStatsCard } from "@/components/molecules/AntiBanStatsCard";
+import { Card } from "@/components/molecules/Card";
+import { PostCard } from "@/components/molecules/PostCard";
+import { createPostFixture } from "@/test/fixtures/posts";
+import type { AntiBanStats } from "@social-pip/types";
+import { render } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 
 describe("Visual Regression", () => {
   describe("Button snapshots", () => {
     it("renders primary button", () => {
-      const { container } = render(<Button variant="primary">Primary</Button>)
+      const { container } = render(<Button variant="primary">Primary</Button>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <button
           class="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 bg-primary text-white hover:bg-primary/90 px-4 py-2 text-sm"
@@ -20,11 +20,11 @@ describe("Visual Regression", () => {
         >
           Primary
         </button>
-      `)
-    })
+      `);
+    });
 
     it("renders secondary button", () => {
-      const { container } = render(<Button variant="secondary">Secondary</Button>)
+      const { container } = render(<Button variant="secondary">Secondary</Button>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <button
           class="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 text-sm"
@@ -32,11 +32,11 @@ describe("Visual Regression", () => {
         >
           Secondary
         </button>
-      `)
-    })
+      `);
+    });
 
     it("renders outline button", () => {
-      const { container } = render(<Button variant="outline">Outline</Button>)
+      const { container } = render(<Button variant="outline">Outline</Button>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <button
           class="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-50 px-4 py-2 text-sm"
@@ -44,11 +44,11 @@ describe("Visual Regression", () => {
         >
           Outline
         </button>
-      `)
-    })
+      `);
+    });
 
     it("renders ghost button", () => {
-      const { container } = render(<Button variant="ghost">Ghost</Button>)
+      const { container } = render(<Button variant="ghost">Ghost</Button>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <button
           class="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 bg-transparent text-gray-700 hover:bg-gray-100 px-4 py-2 text-sm"
@@ -56,11 +56,11 @@ describe("Visual Regression", () => {
         >
           Ghost
         </button>
-      `)
-    })
+      `);
+    });
 
     it("renders small size button", () => {
-      const { container } = render(<Button size="sm">Small</Button>)
+      const { container } = render(<Button size="sm">Small</Button>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <button
           class="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 bg-primary text-white hover:bg-primary/90 px-3 py-1.5 text-sm"
@@ -68,11 +68,11 @@ describe("Visual Regression", () => {
         >
           Small
         </button>
-      `)
-    })
+      `);
+    });
 
     it("renders large size button", () => {
-      const { container } = render(<Button size="lg">Large</Button>)
+      const { container } = render(<Button size="lg">Large</Button>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <button
           class="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 bg-primary text-white hover:bg-primary/90 px-6 py-3 text-base"
@@ -80,11 +80,11 @@ describe("Visual Regression", () => {
         >
           Large
         </button>
-      `)
-    })
+      `);
+    });
 
     it("renders disabled button", () => {
-      const { container } = render(<Button disabled>Disabled</Button>)
+      const { container } = render(<Button disabled>Disabled</Button>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <button
           class="inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 bg-primary text-white hover:bg-primary/90 px-4 py-2 text-sm opacity-50 cursor-not-allowed"
@@ -93,180 +93,180 @@ describe("Visual Regression", () => {
         >
           Disabled
         </button>
-      `)
-    })
-  })
+      `);
+    });
+  });
 
   describe("Badge snapshots", () => {
     it("renders success badge", () => {
-      const { container } = render(<Badge variant="success">Success</Badge>)
+      const { container } = render(<Badge variant="success">Success</Badge>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-green-100 text-green-700 px-2.5 py-1 text-sm"
         >
           Success
         </span>
-      `)
-    })
+      `);
+    });
 
     it("renders warning badge", () => {
-      const { container } = render(<Badge variant="warning">Warning</Badge>)
+      const { container } = render(<Badge variant="warning">Warning</Badge>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-yellow-100 text-yellow-700 px-2.5 py-1 text-sm"
         >
           Warning
         </span>
-      `)
-    })
+      `);
+    });
 
     it("renders error badge", () => {
-      const { container } = render(<Badge variant="error">Error</Badge>)
+      const { container } = render(<Badge variant="error">Error</Badge>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-red-100 text-red-700 px-2.5 py-1 text-sm"
         >
           Error
         </span>
-      `)
-    })
+      `);
+    });
 
     it("renders info badge", () => {
-      const { container } = render(<Badge variant="info">Info</Badge>)
+      const { container } = render(<Badge variant="info">Info</Badge>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-blue-100 text-blue-700 px-2.5 py-1 text-sm"
         >
           Info
         </span>
-      `)
-    })
+      `);
+    });
 
     it("renders neutral badge", () => {
-      const { container } = render(<Badge variant="neutral">Neutral</Badge>)
+      const { container } = render(<Badge variant="neutral">Neutral</Badge>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-gray-100 text-gray-700 px-2.5 py-1 text-sm"
         >
           Neutral
         </span>
-      `)
-    })
+      `);
+    });
 
     it("renders small badge", () => {
-      const { container } = render(<Badge size="sm">Small</Badge>)
+      const { container } = render(<Badge size="sm">Small</Badge>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-gray-100 text-gray-700 px-2 py-0.5 text-xs"
         >
           Small
         </span>
-      `)
-    })
-  })
+      `);
+    });
+  });
 
   describe("Card snapshots", () => {
     it("renders card with default padding and shadow", () => {
-      const { container } = render(<Card>Card content</Card>)
+      const { container } = render(<Card>Card content</Card>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm"
         >
           Card content
         </div>
-      `)
-    })
+      `);
+    });
 
     it("renders card with no padding", () => {
-      const { container } = render(<Card padding="none">No padding</Card>)
+      const { container } = render(<Card padding="none">No padding</Card>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 shadow-sm"
         >
           No padding
         </div>
-      `)
-    })
+      `);
+    });
 
     it("renders card with large padding", () => {
-      const { container } = render(<Card padding="lg">Large padding</Card>)
+      const { container } = render(<Card padding="lg">Large padding</Card>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm"
         >
           Large padding
         </div>
-      `)
-    })
+      `);
+    });
 
     it("renders card with large shadow", () => {
-      const { container } = render(<Card shadow="lg">Large shadow</Card>)
+      const { container } = render(<Card shadow="lg">Large shadow</Card>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 p-4 shadow-lg"
         >
           Large shadow
         </div>
-      `)
-    })
+      `);
+    });
 
     it("renders card with no shadow", () => {
-      const { container } = render(<Card shadow="none">No shadow</Card>)
+      const { container } = render(<Card shadow="none">No shadow</Card>);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 p-4"
         >
           No shadow
         </div>
-      `)
-    })
-  })
+      `);
+    });
+  });
 
   describe("PostStatusBadge snapshots", () => {
     it("renders draft status", () => {
-      const { container } = render(<PostStatusBadge status="draft" />)
+      const { container } = render(<PostStatusBadge status="draft" />);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-gray-100 text-gray-700 px-2.5 py-1 text-xs"
         >
           Draft
         </span>
-      `)
-    })
+      `);
+    });
 
     it("renders scheduled status", () => {
-      const { container } = render(<PostStatusBadge status="scheduled" />)
+      const { container } = render(<PostStatusBadge status="scheduled" />);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-yellow-100 text-yellow-700 px-2.5 py-1 text-xs"
         >
           Scheduled
         </span>
-      `)
-    })
+      `);
+    });
 
     it("renders published status", () => {
-      const { container } = render(<PostStatusBadge status="published" />)
+      const { container } = render(<PostStatusBadge status="published" />);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-green-100 text-green-700 px-2.5 py-1 text-xs"
         >
           Published
         </span>
-      `)
-    })
+      `);
+    });
 
     it("renders failed status", () => {
-      const { container } = render(<PostStatusBadge status="failed" />)
+      const { container } = render(<PostStatusBadge status="failed" />);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <span
           class="inline-flex items-center font-medium rounded-full bg-red-100 text-red-700 px-2.5 py-1 text-xs"
         >
           Failed
         </span>
-      `)
-    })
-  })
+      `);
+    });
+  });
 
   describe("AntiBanStatsCard snapshot", () => {
     const mockStats: AntiBanStats = {
@@ -283,10 +283,10 @@ describe("Visual Regression", () => {
         batch_size: 5,
         batch_break_minutes: 20,
       },
-    }
+    };
 
     it("renders anti-ban stats card", () => {
-      const { container } = render(<AntiBanStatsCard stats={mockStats} platform="facebook" />)
+      const { container } = render(<AntiBanStatsCard stats={mockStats} platform="facebook" />);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm"
@@ -392,9 +392,9 @@ describe("Visual Regression", () => {
             </ul>
           </div>
         </div>
-      `)
-    })
-  })
+      `);
+    });
+  });
 
   describe("PostCard snapshot", () => {
     it("renders draft post card", () => {
@@ -402,8 +402,8 @@ describe("Visual Regression", () => {
         id: "post_snapshot_1",
         status: "draft",
         content: "This is a test post for visual regression testing",
-      })
-      const { container } = render(<PostCard post={post} />)
+      });
+      const { container } = render(<PostCard post={post} />);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
@@ -451,8 +451,8 @@ describe("Visual Regression", () => {
             </p>
           </div>
         </div>
-      `)
-    })
+      `);
+    });
 
     it("renders scheduled post card with hashtags", () => {
       const post = createPostFixture({
@@ -461,8 +461,8 @@ describe("Visual Regression", () => {
         content: "Scheduled post with hashtags",
         hashtags: ["trending", "social", "marketing"],
         scheduledAt: new Date("2026-04-15T10:00:00Z"),
-      })
-      const { container } = render(<PostCard post={post} />)
+      });
+      const { container } = render(<PostCard post={post} />);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
@@ -560,17 +560,17 @@ describe("Visual Regression", () => {
             </div>
           </div>
         </div>
-      `)
-    })
+      `);
+    });
 
     it("renders failed post card with error", () => {
       const post = createPostFixture({
         id: "post_snapshot_3",
         status: "failed",
         content: "Failed post",
-      })
-      post.errorMessage = "Rate limit exceeded"
-      const { container } = render(<PostCard post={post} />)
+      });
+      post.errorMessage = "Rate limit exceeded";
+      const { container } = render(<PostCard post={post} />);
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
           class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
@@ -623,7 +623,7 @@ describe("Visual Regression", () => {
             </p>
           </div>
         </div>
-      `)
-    })
-  })
-})
+      `);
+    });
+  });
+});

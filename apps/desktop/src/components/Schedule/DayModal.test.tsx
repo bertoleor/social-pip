@@ -1,8 +1,8 @@
-import type { Schedule } from "@social-pip/types"
-import { render, screen, within } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { vi } from "vitest"
-import { DayModal } from "./DayModal"
+import type { Schedule } from "@social-pip/types";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
+import { DayModal } from "./DayModal";
 
 const mockPendingSchedule: Schedule = {
   id: "sched_pending",
@@ -15,7 +15,7 @@ const mockPendingSchedule: Schedule = {
   maxAttempts: 3,
   createdAt: new Date("2026-04-01T00:00:00Z"),
   updatedAt: new Date("2026-04-01T00:00:00Z"),
-}
+};
 
 const mockCompletedSchedule: Schedule = {
   id: "sched_completed",
@@ -29,7 +29,7 @@ const mockCompletedSchedule: Schedule = {
   result: "success",
   createdAt: new Date("2026-04-01T00:00:00Z"),
   updatedAt: new Date("2026-04-15T14:30:00Z"),
-}
+};
 
 const mockFailedSchedule: Schedule = {
   id: "sched_failed",
@@ -43,7 +43,7 @@ const mockFailedSchedule: Schedule = {
   result: "Error: Network timeout",
   createdAt: new Date("2026-04-01T00:00:00Z"),
   updatedAt: new Date("2026-04-15T09:30:00Z"),
-}
+};
 
 const mockRunningSchedule: Schedule = {
   id: "sched_running",
@@ -56,7 +56,7 @@ const mockRunningSchedule: Schedule = {
   maxAttempts: 3,
   createdAt: new Date("2026-04-01T00:00:00Z"),
   updatedAt: new Date("2026-04-01T00:00:00Z"),
-}
+};
 
 const mockCancelledSchedule: Schedule = {
   id: "sched_cancelled",
@@ -69,16 +69,16 @@ const mockCancelledSchedule: Schedule = {
   maxAttempts: 3,
   createdAt: new Date("2026-04-01T00:00:00Z"),
   updatedAt: new Date("2026-04-01T00:00:00Z"),
-}
+};
 
 describe("DayModal", () => {
-  const mockDate = new Date(2026, 3, 15)
-  const mockOnCancel = vi.fn()
-  const mockOnClose = vi.fn()
+  const mockDate = new Date(2026, 3, 15);
+  const mockOnCancel = vi.fn();
+  const mockOnClose = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   describe("rendering", () => {
     it("renders when open is true", () => {
@@ -90,10 +90,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByRole("dialog")).toBeInTheDocument()
-    })
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+    });
 
     it("does not render when open is false", () => {
       render(
@@ -104,10 +104,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
-    })
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
 
     it("renders formatted date in header", () => {
       render(
@@ -118,10 +118,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByText(/Wednesday, April 15, 2026/)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/Wednesday, April 15, 2026/)).toBeInTheDocument();
+    });
 
     it("renders modal title with id modal-title", () => {
       render(
@@ -132,15 +132,15 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByLabelText(/Wednesday, April 15, 2026/)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByLabelText(/Wednesday, April 15, 2026/)).toBeInTheDocument();
+    });
+  });
 
   describe("schedule list", () => {
     it("displays schedules for selected day", () => {
-      const schedules = [mockPendingSchedule, mockCompletedSchedule]
+      const schedules = [mockPendingSchedule, mockCompletedSchedule];
       render(
         <DayModal
           isOpen={true}
@@ -149,11 +149,11 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const listItems = screen.getAllByRole("listitem")
-      expect(listItems).toHaveLength(2)
-    })
+      const listItems = screen.getAllByRole("listitem");
+      expect(listItems).toHaveLength(2);
+    });
 
     it("shows schedule time correctly", () => {
       render(
@@ -164,10 +164,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByText(/07:00 AM/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/07:00 AM/i)).toBeInTheDocument();
+    });
 
     it("shows status badge for each schedule", () => {
       const schedules = [
@@ -176,7 +176,7 @@ describe("DayModal", () => {
         mockFailedSchedule,
         mockRunningSchedule,
         mockCancelledSchedule,
-      ]
+      ];
       render(
         <DayModal
           isOpen={true}
@@ -185,14 +185,14 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByText("Pending")).toBeInTheDocument()
-      expect(screen.getByText("Completed")).toBeInTheDocument()
-      expect(screen.getByText("Failed")).toBeInTheDocument()
-      expect(screen.getByText("Running")).toBeInTheDocument()
-      expect(screen.getByText("Cancelled")).toBeInTheDocument()
-    })
+      expect(screen.getByText("Pending")).toBeInTheDocument();
+      expect(screen.getByText("Completed")).toBeInTheDocument();
+      expect(screen.getByText("Failed")).toBeInTheDocument();
+      expect(screen.getByText("Running")).toBeInTheDocument();
+      expect(screen.getByText("Cancelled")).toBeInTheDocument();
+    });
 
     it("shows post ID preview", () => {
       render(
@@ -203,10 +203,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByText(/post_tes/)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/post_tes/)).toBeInTheDocument();
+    });
 
     it("shows result for completed schedules", () => {
       render(
@@ -217,10 +217,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByText("success")).toBeInTheDocument()
-    })
+      expect(screen.getByText("success")).toBeInTheDocument();
+    });
 
     it("shows result for failed schedules", () => {
       render(
@@ -231,17 +231,17 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByText("Error: Network timeout")).toBeInTheDocument()
-    })
+      expect(screen.getByText("Error: Network timeout")).toBeInTheDocument();
+    });
 
     it("shows attempts when greater than 0", () => {
       const scheduleWithAttempts: Schedule = {
         ...mockFailedSchedule,
         attempts: 2,
         maxAttempts: 5,
-      }
+      };
       render(
         <DayModal
           isOpen={true}
@@ -250,10 +250,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByText(/Attempts: 2\/5/)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/Attempts: 2\/5/)).toBeInTheDocument();
+    });
 
     it("does not show attempts when 0", () => {
       render(
@@ -264,11 +264,11 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.queryByText(/Attempts:/)).not.toBeInTheDocument()
-    })
-  })
+      expect(screen.queryByText(/Attempts:/)).not.toBeInTheDocument();
+    });
+  });
 
   describe("empty state", () => {
     it("shows message when no schedules", () => {
@@ -280,10 +280,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByText("No schedules for this day")).toBeInTheDocument()
-    })
+      expect(screen.getByText("No schedules for this day")).toBeInTheDocument();
+    });
 
     it("shows empty state with proper styling", () => {
       render(
@@ -294,12 +294,12 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const emptyMessage = screen.getByText("No schedules for this day")
-      expect(emptyMessage).toHaveClass("text-gray-500")
-    })
-  })
+      const emptyMessage = screen.getByText("No schedules for this day");
+      expect(emptyMessage).toHaveClass("text-gray-500");
+    });
+  });
 
   describe("schedule cancel action", () => {
     it("shows cancel button for pending schedules", () => {
@@ -311,10 +311,10 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByRole("button", { name: /cancel schedule/i })).toBeInTheDocument()
-    })
+      expect(screen.getByRole("button", { name: /cancel schedule/i })).toBeInTheDocument();
+    });
 
     it("does not show cancel button for non-pending schedules", () => {
       render(
@@ -325,13 +325,13 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.queryByRole("button", { name: /cancel schedule/i })).not.toBeInTheDocument()
-    })
+      expect(screen.queryByRole("button", { name: /cancel schedule/i })).not.toBeInTheDocument();
+    });
 
     it("calls onCancel with schedule id when cancel clicked", async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
       render(
         <DayModal
           isOpen={true}
@@ -340,13 +340,13 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      await user.click(screen.getByRole("button", { name: /cancel schedule/i }))
+      await user.click(screen.getByRole("button", { name: /cancel schedule/i }));
 
-      expect(mockOnCancel).toHaveBeenCalledWith("sched_pending")
-    })
-  })
+      expect(mockOnCancel).toHaveBeenCalledWith("sched_pending");
+    });
+  });
 
   describe("modal controls", () => {
     it("renders close button", () => {
@@ -358,13 +358,13 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      expect(screen.getByRole("button", { name: "Close modal" })).toBeInTheDocument()
-    })
+      expect(screen.getByRole("button", { name: "Close modal" })).toBeInTheDocument();
+    });
 
     it("calls onClose when close button clicked", async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
       render(
         <DayModal
           isOpen={true}
@@ -373,15 +373,15 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      await user.click(screen.getByRole("button", { name: "Close modal" }))
+      await user.click(screen.getByRole("button", { name: "Close modal" }));
 
-      expect(mockOnClose).toHaveBeenCalledTimes(1)
-    })
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
 
     it("calls onClose when backdrop clicked", async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
       render(
         <DayModal
           isOpen={true}
@@ -390,16 +390,16 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const backdrop = screen.getByRole("dialog")
-      await user.click(backdrop)
+      const backdrop = screen.getByRole("dialog");
+      await user.click(backdrop);
 
-      expect(mockOnClose).toHaveBeenCalledTimes(1)
-    })
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
 
     it("does not call onClose when modal content clicked", async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
       render(
         <DayModal
           isOpen={true}
@@ -408,14 +408,14 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const modalContent = screen.getByText(/Wednesday, April 15, 2026/)
-      await user.click(modalContent)
+      const modalContent = screen.getByText(/Wednesday, April 15, 2026/);
+      await user.click(modalContent);
 
-      expect(mockOnClose).not.toHaveBeenCalled()
-    })
-  })
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+  });
 
   describe("accessibility", () => {
     it("has correct ARIA attributes", () => {
@@ -427,12 +427,12 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const dialog = screen.getByRole("dialog")
-      expect(dialog).toHaveAttribute("aria-modal", "true")
-      expect(dialog).toHaveAttribute("aria-labelledby", "modal-title")
-    })
+      const dialog = screen.getByRole("dialog");
+      expect(dialog).toHaveAttribute("aria-modal", "true");
+      expect(dialog).toHaveAttribute("aria-labelledby", "modal-title");
+    });
 
     it("has proper list structure for schedules", () => {
       render(
@@ -443,13 +443,13 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const list = screen.getByRole("list")
-      expect(list).toBeInTheDocument()
-      expect(within(list).getAllByRole("listitem")).toHaveLength(2)
-    })
-  })
+      const list = screen.getByRole("list");
+      expect(list).toBeInTheDocument();
+      expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+    });
+  });
 
   describe("status colors", () => {
     it("applies blue color for pending status", () => {
@@ -461,12 +461,12 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const pendingBadge = screen.getByText("Pending")
-      expect(pendingBadge).toHaveClass("bg-blue-100")
-      expect(pendingBadge).toHaveClass("text-blue-800")
-    })
+      const pendingBadge = screen.getByText("Pending");
+      expect(pendingBadge).toHaveClass("bg-blue-100");
+      expect(pendingBadge).toHaveClass("text-blue-800");
+    });
 
     it("applies green color for completed status", () => {
       render(
@@ -477,12 +477,12 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const completedBadge = screen.getByText("Completed")
-      expect(completedBadge).toHaveClass("bg-green-100")
-      expect(completedBadge).toHaveClass("text-green-800")
-    })
+      const completedBadge = screen.getByText("Completed");
+      expect(completedBadge).toHaveClass("bg-green-100");
+      expect(completedBadge).toHaveClass("text-green-800");
+    });
 
     it("applies red color for failed status", () => {
       render(
@@ -493,12 +493,12 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const failedBadge = screen.getByText("Failed")
-      expect(failedBadge).toHaveClass("bg-red-100")
-      expect(failedBadge).toHaveClass("text-red-800")
-    })
+      const failedBadge = screen.getByText("Failed");
+      expect(failedBadge).toHaveClass("bg-red-100");
+      expect(failedBadge).toHaveClass("text-red-800");
+    });
 
     it("applies yellow color for running status", () => {
       render(
@@ -509,12 +509,12 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const runningBadge = screen.getByText("Running")
-      expect(runningBadge).toHaveClass("bg-yellow-100")
-      expect(runningBadge).toHaveClass("text-yellow-800")
-    })
+      const runningBadge = screen.getByText("Running");
+      expect(runningBadge).toHaveClass("bg-yellow-100");
+      expect(runningBadge).toHaveClass("text-yellow-800");
+    });
 
     it("applies gray color for cancelled status", () => {
       render(
@@ -525,11 +525,11 @@ describe("DayModal", () => {
           onCancel={mockOnCancel}
           onClose={mockOnClose}
         />,
-      )
+      );
 
-      const cancelledBadge = screen.getByText("Cancelled")
-      expect(cancelledBadge).toHaveClass("bg-gray-100")
-      expect(cancelledBadge).toHaveClass("text-gray-800")
-    })
-  })
-})
+      const cancelledBadge = screen.getByText("Cancelled");
+      expect(cancelledBadge).toHaveClass("bg-gray-100");
+      expect(cancelledBadge).toHaveClass("text-gray-800");
+    });
+  });
+});

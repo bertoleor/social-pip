@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { SpintaxPreview } from "./SpintaxPreview";
 
@@ -70,13 +70,7 @@ describe("SpintaxPreview", () => {
 
   describe("custom className", () => {
     it("merges custom className", () => {
-      render(
-        <SpintaxPreview
-          content="Test"
-          variationsCount={1}
-          className="custom-preview"
-        />,
-      );
+      render(<SpintaxPreview content="Test" variationsCount={1} className="custom-preview" />);
       const container = document.querySelector(".custom-preview");
       expect(container).toBeInTheDocument();
     });

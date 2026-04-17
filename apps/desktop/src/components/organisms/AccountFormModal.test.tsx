@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { Account } from "@social-pip/types";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AccountFormModal } from "./AccountFormModal";
 
 const mockAccount: Account = {
@@ -28,12 +28,7 @@ describe("AccountFormModal", () => {
   describe("create mode", () => {
     it("renders form with 6 fields in create mode", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       expect(screen.getByLabelText(/Platform/)).toBeDefined();
@@ -47,12 +42,7 @@ describe("AccountFormModal", () => {
 
     it("shows Add Account title in create mode", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       expect(screen.getByText("Add Account")).toBeDefined();
@@ -99,12 +89,7 @@ describe("AccountFormModal", () => {
   describe("validation", () => {
     it("disables submit when name is empty", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const submitButton = screen.getByText("Create");
@@ -113,12 +98,7 @@ describe("AccountFormModal", () => {
 
     it("submit disabled when form invalid", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const submitButton = screen.getByText("Create");
@@ -127,12 +107,7 @@ describe("AccountFormModal", () => {
 
     it("validates username format", async () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const nameInputs = screen.getAllByRole("textbox", { name: /Name/ });
@@ -145,20 +120,13 @@ describe("AccountFormModal", () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/Only letters, numbers, and underscores/),
-        ).toBeDefined();
+        expect(screen.getByText(/Only letters, numbers, and underscores/)).toBeDefined();
       });
     });
 
     it("clears field error when modified", async () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const nameInputs = screen.getAllByRole("textbox", { name: /Name/ });
@@ -171,17 +139,13 @@ describe("AccountFormModal", () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/Only letters, numbers, and underscores/),
-        ).toBeDefined();
+        expect(screen.getByText(/Only letters, numbers, and underscores/)).toBeDefined();
       });
 
       fireEvent.change(usernameInput, { target: { value: "validuser" } });
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/Only letters, numbers, and underscores/),
-        ).toBeNull();
+        expect(screen.queryByText(/Only letters, numbers, and underscores/)).toBeNull();
       });
     });
   });
@@ -191,12 +155,7 @@ describe("AccountFormModal", () => {
       mockOnSubmit.mockResolvedValueOnce(undefined);
 
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const platformSelect = screen.getByLabelText(/Platform/);
@@ -227,12 +186,7 @@ describe("AccountFormModal", () => {
   describe("cancel actions", () => {
     it("closes modal when Cancel button is clicked", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const cancelButton = screen.getByText("Cancel");
@@ -243,12 +197,7 @@ describe("AccountFormModal", () => {
 
     it("closes modal when X button is clicked", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const closeButton = screen.getByLabelText("Close modal");
@@ -259,12 +208,7 @@ describe("AccountFormModal", () => {
 
     it("closes modal when Escape is pressed", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       fireEvent.keyDown(window, { key: "Escape" });
@@ -292,12 +236,7 @@ describe("AccountFormModal", () => {
   describe("accessibility", () => {
     it("has correct ARIA attributes", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const dialog = screen.getByRole("dialog");
@@ -307,12 +246,7 @@ describe("AccountFormModal", () => {
 
     it("marks required fields with asterisk", () => {
       render(
-        <AccountFormModal
-          isOpen
-          mode="create"
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />,
+        <AccountFormModal isOpen mode="create" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const platformLabel = screen.getByLabelText(/Platform/);

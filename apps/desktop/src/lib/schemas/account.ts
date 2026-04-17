@@ -7,88 +7,79 @@ import { z } from "zod";
  * Platform enum values matching @social-pip/types
  */
 export const PLATFORMS = [
-	"facebook",
-	"instagram",
-	"tiktok",
-	"twitter",
-	"linkedin",
-	"threads",
-	"telegram",
-	"whatsapp",
+  "facebook",
+  "instagram",
+  "tiktok",
+  "twitter",
+  "linkedin",
+  "threads",
+  "telegram",
+  "whatsapp",
 ] as const;
 
 /**
  * AccountStatus enum values matching @social-pip/types
  */
 export const ACCOUNT_STATUSES = [
-	"active",
-	"inactive",
-	"warming_up",
-	"restricted",
-	"banned",
+  "active",
+  "inactive",
+  "warming_up",
+  "restricted",
+  "banned",
 ] as const;
 
 /**
  * Platform color mapping for UI
  */
 export const PLATFORM_COLORS: Record<string, string> = {
-	facebook: "#1877F2",
-	instagram: "#E4405F",
-	tiktok: "#000000",
-	twitter: "#1DA1F2",
-	linkedin: "#0A66C2",
-	threads: "#000000",
-	telegram: "#0088CC",
-	whatsapp: "#25D366",
+  facebook: "#1877F2",
+  instagram: "#E4405F",
+  tiktok: "#000000",
+  twitter: "#1DA1F2",
+  linkedin: "#0A66C2",
+  threads: "#000000",
+  telegram: "#0088CC",
+  whatsapp: "#25D366",
 };
 
 /**
  * Status badge variant mapping
  */
-export const STATUS_VARIANTS: Record<
-	string,
-	"success" | "neutral" | "info" | "warning" | "error"
-> = {
-	active: "success",
-	inactive: "neutral",
-	warming_up: "info",
-	restricted: "warning",
-	banned: "error",
-};
+export const STATUS_VARIANTS: Record<string, "success" | "neutral" | "info" | "warning" | "error"> =
+  {
+    active: "success",
+    inactive: "neutral",
+    warming_up: "info",
+    restricted: "warning",
+    banned: "error",
+  };
 
 /**
  * Zod schema for Account form validation
  */
 export const AccountFormSchema = z.object({
-	platform: z.enum(PLATFORMS, {
-		required_error: "Platform is required",
-		invalid_type_error: "Invalid platform",
-	}),
-	name: z
-		.string()
-		.min(1, "Name is required")
-		.max(100, "Name must be 100 characters or less"),
-	username: z
-		.string()
-		.max(50, "Username must be 50 characters or less")
-		.regex(/^[a-zA-Z0-9_]*$/, "Only letters, numbers, and underscores")
-		.optional()
-		.or(z.literal("")),
-	displayName: z
-		.string()
-		.max(100, "Display name must be 100 characters or less")
-		.optional()
-		.or(z.literal("")),
-	status: z
-		.enum(ACCOUNT_STATUSES, {
-			invalid_type_error: "Invalid status",
-		})
-		.default("active"),
-	notes: z
-		.string()
-		.max(500, "Notes must be 500 characters or less")
-		.optional()
-		.or(z.literal("")),
+  platform: z.enum(PLATFORMS, {
+    required_error: "Platform is required",
+    invalid_type_error: "Invalid platform",
+  }),
+  name: z.string().min(1, "Name is required").max(100, "Name must be 100 characters or less"),
+  username: z
+    .string()
+    .max(50, "Username must be 50 characters or less")
+    .regex(/^[a-zA-Z0-9_]*$/, "Only letters, numbers, and underscores")
+    .optional()
+    .or(z.literal("")),
+  displayName: z
+    .string()
+    .max(100, "Display name must be 100 characters or less")
+    .optional()
+    .or(z.literal("")),
+  status: z
+    .enum(ACCOUNT_STATUSES, {
+      invalid_type_error: "Invalid status",
+    })
+    .default("active"),
+  notes: z.string().max(500, "Notes must be 500 characters or less").optional().or(z.literal("")),
 });
 
 /**
@@ -100,11 +91,11 @@ export const CreateAccountSchema = AccountFormSchema;
  * Zod schema for updating an existing account
  */
 export const UpdateAccountSchema = AccountFormSchema.partial().extend({
-	name: z
-		.string()
-		.min(1, "Name is required")
-		.max(100, "Name must be 100 characters or less")
-		.optional(),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(100, "Name must be 100 characters or less")
+    .optional(),
 });
 
 /**

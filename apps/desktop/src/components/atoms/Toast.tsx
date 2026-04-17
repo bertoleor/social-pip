@@ -63,13 +63,11 @@ export function Toast({
         "flex items-start gap-3 p-4 rounded-lg border shadow-lg",
         config.bgColorClass,
         config.borderColorClass,
-        className
+        className,
       )}
       {...props}
     >
-      <div className={cn("flex-shrink-0", config.iconColorClass)}>
-        {config.icon}
-      </div>
+      <div className={cn("flex-shrink-0", config.iconColorClass)}>{config.icon}</div>
 
       <p className="flex-grow text-sm text-gray-900">{message}</p>
 

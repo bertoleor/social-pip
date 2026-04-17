@@ -1,5 +1,5 @@
-import { useCallback } from "react";
 import { useToastStore } from "@/stores/toastStore";
+import { useCallback } from "react";
 
 export interface UseToastReturn {
   success: (message: string) => void;
@@ -19,35 +19,35 @@ export function useToast(): UseToastReturn {
     (message: string) => {
       addToast({ type: "success", message });
     },
-    [addToast]
+    [addToast],
   );
 
   const error = useCallback(
     (message: string) => {
       addToast({ type: "error", message });
     },
-    [addToast]
+    [addToast],
   );
 
   const info = useCallback(
     (message: string) => {
       addToast({ type: "info", message });
     },
-    [addToast]
+    [addToast],
   );
 
   const warning = useCallback(
     (message: string) => {
       addToast({ type: "warning", message });
     },
-    [addToast]
+    [addToast],
   );
 
   const dismiss = useCallback(
     (id: string) => {
       removeToast(id);
     },
-    [removeToast]
+    [removeToast],
   );
 
   const dismissAll = useCallback(() => {

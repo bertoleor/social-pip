@@ -4,10 +4,10 @@
  */
 
 interface ConfirmOptions {
-	title: string;
-	message: string;
-	confirmText?: string;
-	cancelText?: string;
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
 }
 
 /**
@@ -18,12 +18,12 @@ interface ConfirmOptions {
  * @returns Promise<boolean> - true if confirmed, false if cancelled
  */
 export async function confirm(
-	title: string,
-	message: string,
-	_options?: Partial<ConfirmOptions>,
+  title: string,
+  message: string,
+  _options?: Partial<ConfirmOptions>,
 ): Promise<boolean> {
-	// Console-based confirmation for now (can be replaced with Tauri dialog)
-	console.log(`[CONFIRM] ${title}: ${message}`);
-	// Default to true for testing, in production this would show a real dialog
-	return true;
+  // Console-based confirmation for now (can be replaced with Tauri dialog)
+  console.log(`[CONFIRM] ${title}: ${message}`);
+  // Default to true for testing, in production this would show a real dialog
+  return true;
 }

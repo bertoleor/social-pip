@@ -8,52 +8,52 @@
  * Flow: Minimize to tray → Restore from tray
  */
 
-import { invoke } from "@tauri-apps/api/core"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { invoke } from "@tauri-apps/api/core";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock Tauri invoke
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
-}))
+}));
 
-const mockInvoke = vi.mocked(invoke)
+const mockInvoke = vi.mocked(invoke);
 
 describe("E2E: System Tray Flow", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   describe("Tray status management", () => {
     it("should set tray status to idle by default", async () => {
-      mockInvoke.mockResolvedValueOnce(undefined)
+      mockInvoke.mockResolvedValueOnce(undefined);
 
-      await invoke("set_tray_status", { status: "Idle" })
+      await invoke("set_tray_status", { status: "Idle" });
 
       expect(mockInvoke).toHaveBeenCalledWith("set_tray_status", {
         status: "Idle",
-      })
-    })
+      });
+    });
 
     it("should set tray status to working when processing", async () => {
-      mockInvoke.mockResolvedValueOnce(undefined)
+      mockInvoke.mockResolvedValueOnce(undefined);
 
-      await invoke("set_tray_status", { status: "Working" })
+      await invoke("set_tray_status", { status: "Working" });
 
       expect(mockInvoke).toHaveBeenCalledWith("set_tray_status", {
         status: "Working",
-      })
-    })
+      });
+    });
 
     it("should set tray status to error on failure", async () => {
-      mockInvoke.mockResolvedValueOnce(undefined)
+      mockInvoke.mockResolvedValueOnce(undefined);
 
-      await invoke("set_tray_status", { status: "Error" })
+      await invoke("set_tray_status", { status: "Error" });
 
       expect(mockInvoke).toHaveBeenCalledWith("set_tray_status", {
         status: "Error",
-      })
-    })
-  })
+      });
+    });
+  });
 
   describe("Tray menu items", () => {
     it("should have correct menu item IDs", () => {
@@ -61,76 +61,76 @@ describe("E2E: System Tray Flow", () => {
         { id: "open", label: "Abrir Social-Pip" },
         { id: "settings", label: "Configuración" },
         { id: "quit", label: "Salir" },
-      ]
+      ];
 
-      expect(menuItems).toHaveLength(3)
-      expect(menuItems[0]?.id).toBe("open")
-      expect(menuItems[1]?.id).toBe("settings")
-      expect(menuItems[2]?.id).toBe("quit")
-    })
+      expect(menuItems).toHaveLength(3);
+      expect(menuItems[0]?.id).toBe("open");
+      expect(menuItems[1]?.id).toBe("settings");
+      expect(menuItems[2]?.id).toBe("quit");
+    });
 
     it("should have localized menu labels in Spanish", () => {
       const labels = {
         open: "Abrir Social-Pip",
         settings: "Configuración",
         quit: "Salir",
-      }
+      };
 
-      expect(labels.open).toBe("Abrir Social-Pip")
-      expect(labels.settings).toBe("Configuración")
-      expect(labels.quit).toBe("Salir")
-    })
+      expect(labels.open).toBe("Abrir Social-Pip");
+      expect(labels.settings).toBe("Configuración");
+      expect(labels.quit).toBe("Salir");
+    });
 
     it("should have localized menu labels in English", () => {
       const labels = {
         open: "Open Social-Pip",
         settings: "Settings",
         quit: "Quit",
-      }
+      };
 
-      expect(labels.open).toBe("Open Social-Pip")
-      expect(labels.settings).toBe("Settings")
-      expect(labels.quit).toBe("Quit")
-    })
-  })
+      expect(labels.open).toBe("Open Social-Pip");
+      expect(labels.settings).toBe("Settings");
+      expect(labels.quit).toBe("Quit");
+    });
+  });
 
   describe("Minimize to tray behavior", () => {
     it("should emit close event that triggers minimize-to-tray logic", () => {
       // In actual Tauri app, close_requested event is intercepted
       // This test verifies the expected behavior
-      const closeHandler = vi.fn()
+      const closeHandler = vi.fn();
       const mockWindow = {
         hide: vi.fn().mockResolvedValue(undefined),
         minimize: vi.fn().mockResolvedValue(undefined),
-      }
+      };
 
       // Simulate close event handler
       const handleClose = () => {
         // Instead of closing, minimize/hide the window
-        mockWindow.hide()
-        closeHandler()
-      }
+        mockWindow.hide();
+        closeHandler();
+      };
 
-      handleClose()
+      handleClose();
 
-      expect(mockWindow.hide).toHaveBeenCalled()
-      expect(closeHandler).toHaveBeenCalled()
-    })
+      expect(mockWindow.hide).toHaveBeenCalled();
+      expect(closeHandler).toHaveBeenCalled();
+    });
 
     it("should prevent default close behavior", () => {
       // In Tauri, we use on_window_event with CloseRequested { api }
-      const mockApi = { prevent_close: vi.fn() }
+      const mockApi = { prevent_close: vi.fn() };
 
       // Simulate the close_requested handler
       const handleCloseRequested = () => {
-        mockApi.prevent_close()
-      }
+        mockApi.prevent_close();
+      };
 
-      handleCloseRequested()
+      handleCloseRequested();
 
-      expect(mockApi.prevent_close).toHaveBeenCalled()
-    })
-  })
+      expect(mockApi.prevent_close).toHaveBeenCalled();
+    });
+  });
 
   describe("Restore from tray behavior", () => {
     it("should show window on tray icon click", async () => {
@@ -138,21 +138,21 @@ describe("E2E: System Tray Flow", () => {
         show: vi.fn().mockResolvedValue(undefined),
         unminimize: vi.fn().mockResolvedValue(undefined),
         setFocus: vi.fn().mockResolvedValue(undefined),
-      }
+      };
 
       // Simulate tray icon click handler
       const handleTrayClick = async () => {
-        await mockWindow.show()
-        await mockWindow.unminimize()
-        await mockWindow.setFocus()
-      }
+        await mockWindow.show();
+        await mockWindow.unminimize();
+        await mockWindow.setFocus();
+      };
 
-      await handleTrayClick()
+      await handleTrayClick();
 
-      expect(mockWindow.show).toHaveBeenCalled()
-      expect(mockWindow.unminimize).toHaveBeenCalled()
-      expect(mockWindow.setFocus).toHaveBeenCalled()
-    })
+      expect(mockWindow.show).toHaveBeenCalled();
+      expect(mockWindow.unminimize).toHaveBeenCalled();
+      expect(mockWindow.setFocus).toHaveBeenCalled();
+    });
 
     it("should toggle window visibility on tray click", () => {
       const mockWindow = {
@@ -162,23 +162,23 @@ describe("E2E: System Tray Flow", () => {
         show: vi.fn().mockResolvedValue(undefined),
         unminimize: vi.fn().mockResolvedValue(undefined),
         setFocus: vi.fn().mockResolvedValue(undefined),
-      }
+      };
 
       // Toggle logic: if visible and focused, minimize; otherwise show
       const handleTrayClick = () => {
         if (mockWindow.isVisible() && mockWindow.isFocused()) {
-          mockWindow.minimize()
+          mockWindow.minimize();
         } else {
-          mockWindow.show()
-          mockWindow.unminimize()
-          mockWindow.setFocus()
+          mockWindow.show();
+          mockWindow.unminimize();
+          mockWindow.setFocus();
         }
-      }
+      };
 
-      handleTrayClick()
+      handleTrayClick();
 
-      expect(mockWindow.minimize).toHaveBeenCalled()
-    })
+      expect(mockWindow.minimize).toHaveBeenCalled();
+    });
 
     it("should show window when clicking tray while minimized", () => {
       const mockWindow = {
@@ -188,25 +188,25 @@ describe("E2E: System Tray Flow", () => {
         show: vi.fn().mockResolvedValue(undefined),
         unminimize: vi.fn().mockResolvedValue(undefined),
         setFocus: vi.fn().mockResolvedValue(undefined),
-      }
+      };
 
       const handleTrayClick = () => {
         if (mockWindow.isVisible() && mockWindow.isFocused()) {
-          mockWindow.minimize()
+          mockWindow.minimize();
         } else {
-          mockWindow.show()
-          mockWindow.unminimize()
-          mockWindow.setFocus()
+          mockWindow.show();
+          mockWindow.unminimize();
+          mockWindow.setFocus();
         }
-      }
+      };
 
-      handleTrayClick()
+      handleTrayClick();
 
-      expect(mockWindow.show).toHaveBeenCalled()
-      expect(mockWindow.unminimize).toHaveBeenCalled()
-      expect(mockWindow.setFocus).toHaveBeenCalled()
-    })
-  })
+      expect(mockWindow.show).toHaveBeenCalled();
+      expect(mockWindow.unminimize).toHaveBeenCalled();
+      expect(mockWindow.setFocus).toHaveBeenCalled();
+    });
+  });
 
   describe("Tray menu event handling", () => {
     it("should handle 'open' menu click", () => {
@@ -214,60 +214,60 @@ describe("E2E: System Tray Flow", () => {
         show: vi.fn().mockResolvedValue(undefined),
         unminimize: vi.fn().mockResolvedValue(undefined),
         setFocus: vi.fn().mockResolvedValue(undefined),
-      }
+      };
 
       const handleMenuEvent = (eventId: string) => {
         switch (eventId) {
           case "open":
-            mockWindow.show()
-            mockWindow.unminimize()
-            mockWindow.setFocus()
-            break
+            mockWindow.show();
+            mockWindow.unminimize();
+            mockWindow.setFocus();
+            break;
         }
-      }
+      };
 
-      handleMenuEvent("open")
+      handleMenuEvent("open");
 
-      expect(mockWindow.show).toHaveBeenCalled()
-      expect(mockWindow.unminimize).toHaveBeenCalled()
-      expect(mockWindow.setFocus).toHaveBeenCalled()
-    })
+      expect(mockWindow.show).toHaveBeenCalled();
+      expect(mockWindow.unminimize).toHaveBeenCalled();
+      expect(mockWindow.setFocus).toHaveBeenCalled();
+    });
 
     it("should handle 'quit' menu click", () => {
       const mockApp = {
         exit: vi.fn(),
-      }
+      };
 
       const handleMenuEvent = (eventId: string) => {
         switch (eventId) {
           case "quit":
-            mockApp.exit(0)
-            break
+            mockApp.exit(0);
+            break;
         }
-      }
+      };
 
-      handleMenuEvent("quit")
+      handleMenuEvent("quit");
 
-      expect(mockApp.exit).toHaveBeenCalledWith(0)
-    })
-  })
+      expect(mockApp.exit).toHaveBeenCalledWith(0);
+    });
+  });
 
   describe("Tooltip updates", () => {
     it("should show 'Idle' status in tooltip", () => {
-      const tooltip = "Social-Pip - Inactivo"
-      expect(tooltip).toContain("Inactivo")
-    })
+      const tooltip = "Social-Pip - Inactivo";
+      expect(tooltip).toContain("Inactivo");
+    });
 
     it("should show 'Working' status in tooltip", () => {
-      const tooltip = "Social-Pip - Trabajando"
-      expect(tooltip).toContain("Trabajando")
-    })
+      const tooltip = "Social-Pip - Trabajando";
+      expect(tooltip).toContain("Trabajando");
+    });
 
     it("should show 'Error' status in tooltip", () => {
-      const tooltip = "Social-Pip - Error"
-      expect(tooltip).toContain("Error")
-    })
-  })
+      const tooltip = "Social-Pip - Error";
+      expect(tooltip).toContain("Error");
+    });
+  });
 
   describe("Full flow: Minimize → Restore", () => {
     it("should complete minimize-to-tray and restore cycle", async () => {
@@ -279,31 +279,31 @@ describe("E2E: System Tray Flow", () => {
         show: vi.fn().mockResolvedValue(undefined),
         unminimize: vi.fn().mockResolvedValue(undefined),
         setFocus: vi.fn().mockResolvedValue(undefined),
-      }
+      };
 
       // Step 1: Minimize to tray
       const handleMinimize = async () => {
-        await mockWindow.hide()
-      }
+        await mockWindow.hide();
+      };
 
-      await handleMinimize()
-      expect(mockWindow.hide).toHaveBeenCalled()
+      await handleMinimize();
+      expect(mockWindow.hide).toHaveBeenCalled();
 
       // Step 2: Simulate window is hidden
-      mockWindow.isVisible.mockReturnValue(false)
-      mockWindow.isFocused.mockReturnValue(false)
+      mockWindow.isVisible.mockReturnValue(false);
+      mockWindow.isFocused.mockReturnValue(false);
 
       // Step 3: Restore from tray
       const handleRestore = async () => {
-        await mockWindow.show()
-        await mockWindow.unminimize()
-        await mockWindow.setFocus()
-      }
+        await mockWindow.show();
+        await mockWindow.unminimize();
+        await mockWindow.setFocus();
+      };
 
-      await handleRestore()
-      expect(mockWindow.show).toHaveBeenCalled()
-      expect(mockWindow.unminimize).toHaveBeenCalled()
-      expect(mockWindow.setFocus).toHaveBeenCalled()
-    })
-  })
-})
+      await handleRestore();
+      expect(mockWindow.show).toHaveBeenCalled();
+      expect(mockWindow.unminimize).toHaveBeenCalled();
+      expect(mockWindow.setFocus).toHaveBeenCalled();
+    });
+  });
+});

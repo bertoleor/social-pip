@@ -1,8 +1,8 @@
-import type { AIGenerationLog, AIProvider, Platform } from "@social-pip/types"
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { vi } from "vitest"
-import { GenerationHistory } from "./GenerationHistory"
+import type { AIGenerationLog, AIProvider, Platform } from "@social-pip/types";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
+import { GenerationHistory } from "./GenerationHistory";
 
 const mockFetchHistory = vi.fn();
 const mockRateGeneration = vi.fn();
@@ -139,34 +139,31 @@ describe("GenerationHistory", () => {
     });
 
     it("expands item to show full details", async () => {
-      const user = userEvent.setup()
-      mockGenerationHistory = mockHistoryItems
+      const user = userEvent.setup();
+      mockGenerationHistory = mockHistoryItems;
 
-      render(<GenerationHistory />)
+      render(<GenerationHistory />);
 
-      const expandButton = screen.getAllByRole("button", { name: /expand/i, })[0]
-      await user.click(expandButton)
+      const expandButton = screen.getAllByRole("button", { name: /expand/i })[0];
+      await user.click(expandButton);
 
-      expect(screen.getByText("Test content 1")).toBeInTheDocument()
-    })
+      expect(screen.getByText("Test content 1")).toBeInTheDocument();
+    });
 
     it("calls rateGeneration when rating is clicked", async () => {
-      const user = userEvent.setup()
-      mockGenerationHistory = mockHistoryItems
+      const user = userEvent.setup();
+      mockGenerationHistory = mockHistoryItems;
 
-      render(<GenerationHistory />)
+      render(<GenerationHistory />);
 
-      const expandButton = screen.getAllByRole("button", { name: /expand/i })[0]
-      await user.click(expandButton)
+      const expandButton = screen.getAllByRole("button", { name: /expand/i })[0];
+      await user.click(expandButton);
 
-      const starButton = screen.getAllByRole("button", { name: /rate/i })[0]
-      await user.click(starButton)
+      const starButton = screen.getAllByRole("button", { name: /rate/i })[0];
+      await user.click(starButton);
 
-      expect(mockRateGeneration).toHaveBeenCalledWith(
-        "gen_001",
-        expect.any(Number),
-      )
-    })
+      expect(mockRateGeneration).toHaveBeenCalledWith("gen_001", expect.any(Number));
+    });
 
     it("displays existing rating", () => {
       mockGenerationHistory = mockHistoryItems;
@@ -177,69 +174,69 @@ describe("GenerationHistory", () => {
     });
 
     it("calls clearHistory when clear button is clicked", async () => {
-      const user = userEvent.setup()
-      mockGenerationHistory = mockHistoryItems
+      const user = userEvent.setup();
+      mockGenerationHistory = mockHistoryItems;
 
-      render(<GenerationHistory />)
+      render(<GenerationHistory />);
 
-      const clearButton = screen.getByRole("button", { name: /clear history/i, })
-      await user.click(clearButton)
+      const clearButton = screen.getByRole("button", { name: /clear history/i });
+      await user.click(clearButton);
 
-      expect(mockClearHistory).toHaveBeenCalled()
-    })
+      expect(mockClearHistory).toHaveBeenCalled();
+    });
 
     it("shows tokens used when available", async () => {
-      const user = userEvent.setup()
-      mockGenerationHistory = [mockHistoryItems[2]]
+      const user = userEvent.setup();
+      mockGenerationHistory = [mockHistoryItems[2]];
 
-      render(<GenerationHistory />)
+      render(<GenerationHistory />);
 
-      const expandButton = screen.getByRole("button", { name: /expand/i })
-      await user.click(expandButton)
+      const expandButton = screen.getByRole("button", { name: /expand/i });
+      await user.click(expandButton);
 
-      expect(screen.getByText(/150 tokens/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/150 tokens/i)).toBeInTheDocument();
+    });
 
     it("shows latency when available", async () => {
-      const user = userEvent.setup()
-      mockGenerationHistory = [mockHistoryItems[2]]
+      const user = userEvent.setup();
+      mockGenerationHistory = [mockHistoryItems[2]];
 
-      render(<GenerationHistory />)
+      render(<GenerationHistory />);
 
-      const expandButton = screen.getByRole("button", { name: /expand/i })
-      await user.click(expandButton)
+      const expandButton = screen.getByRole("button", { name: /expand/i });
+      await user.click(expandButton);
 
-      expect(screen.getByText(/500ms/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/500ms/i)).toBeInTheDocument();
+    });
   });
 
   describe("filtering", () => {
     it("filters by platform", async () => {
-      const user = userEvent.setup()
-      mockGenerationHistory = mockHistoryItems
+      const user = userEvent.setup();
+      mockGenerationHistory = mockHistoryItems;
 
-      render(<GenerationHistory />)
+      render(<GenerationHistory />);
 
-      const platformFilter = screen.getByLabelText(/filter by platform/i)
-      await user.selectOptions(platformFilter, "instagram")
+      const platformFilter = screen.getByLabelText(/filter by platform/i);
+      await user.selectOptions(platformFilter, "instagram");
 
-      expect(screen.getByText("Generated caption 2")).toBeInTheDocument()
-      expect(screen.queryByText("Generated caption 1")).not.toBeInTheDocument()
-    })
+      expect(screen.getByText("Generated caption 2")).toBeInTheDocument();
+      expect(screen.queryByText("Generated caption 1")).not.toBeInTheDocument();
+    });
 
     it("filters by provider", async () => {
-      const user = userEvent.setup()
-      mockGenerationHistory = mockHistoryItems
+      const user = userEvent.setup();
+      mockGenerationHistory = mockHistoryItems;
 
-      render(<GenerationHistory />)
+      render(<GenerationHistory />);
 
-      const providerFilter = screen.getByLabelText(/filter by provider/i)
-      await user.selectOptions(providerFilter, "nim")
+      const providerFilter = screen.getByLabelText(/filter by provider/i);
+      await user.selectOptions(providerFilter, "nim");
 
-      expect(screen.getByText("Generated caption 1")).toBeInTheDocument()
-      expect(screen.queryByText("Generated caption 2")).not.toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText("Generated caption 1")).toBeInTheDocument();
+      expect(screen.queryByText("Generated caption 2")).not.toBeInTheDocument();
+    });
+  });
 
   describe("accessibility", () => {
     it("has proper ARIA labels", () => {
@@ -247,9 +244,7 @@ describe("GenerationHistory", () => {
 
       render(<GenerationHistory />);
 
-      expect(
-        screen.getByRole("list", { name: /generation history/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("list", { name: /generation history/i })).toBeInTheDocument();
     });
 
     it("has keyboard navigation", () => {
@@ -277,16 +272,16 @@ describe("GenerationHistory", () => {
     });
 
     it("accepts onSelect callback", async () => {
-      const user = userEvent.setup()
-      const onSelect = vi.fn()
-      mockGenerationHistory = mockHistoryItems
+      const user = userEvent.setup();
+      const onSelect = vi.fn();
+      mockGenerationHistory = mockHistoryItems;
 
-      render(<GenerationHistory onSelect={onSelect} />)
+      render(<GenerationHistory onSelect={onSelect} />);
 
-      const item = screen.getByText("Generated caption 1")
-      await user.click(item)
+      const item = screen.getByText("Generated caption 1");
+      await user.click(item);
 
-      expect(onSelect).toHaveBeenCalledWith(mockHistoryItems[0])
-    })
+      expect(onSelect).toHaveBeenCalledWith(mockHistoryItems[0]);
+    });
   });
 });

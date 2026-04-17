@@ -1,6 +1,6 @@
 import { useAlerts } from "@/hooks/useAlerts";
-import { AlertList } from "./AlertList";
 import { Button } from "../atoms/Button";
+import { AlertList } from "./AlertList";
 
 export interface MonitoringDashboardProps {
   refreshInterval?: number;
@@ -43,31 +43,11 @@ export function MonitoringDashboard({
 
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <StatCard
-            title="Total Alerts"
-            value={stats.total_alerts}
-            color="bg-gray-50"
-          />
-          <StatCard
-            title="Unresolved"
-            value={stats.unresolved}
-            color="bg-yellow-50"
-          />
-          <StatCard
-            title="Critical"
-            value={stats.critical}
-            color="bg-red-50"
-          />
-          <StatCard
-            title="Warnings"
-            value={stats.warnings}
-            color="bg-orange-50"
-          />
-          <StatCard
-            title="Last 24h"
-            value={stats.last_24h}
-            color="bg-blue-50"
-          />
+          <StatCard title="Total Alerts" value={stats.total_alerts} color="bg-gray-50" />
+          <StatCard title="Unresolved" value={stats.unresolved} color="bg-yellow-50" />
+          <StatCard title="Critical" value={stats.critical} color="bg-red-50" />
+          <StatCard title="Warnings" value={stats.warnings} color="bg-orange-50" />
+          <StatCard title="Last 24h" value={stats.last_24h} color="bg-blue-50" />
         </div>
       )}
 
@@ -79,4 +59,4 @@ export function MonitoringDashboard({
   );
 }
 
-import React from "react";
+import type React from "react";

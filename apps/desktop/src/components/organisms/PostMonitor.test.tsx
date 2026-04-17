@@ -1,15 +1,15 @@
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { vi } from "vitest"
-import { PostMonitor } from "@/components/organisms/PostMonitor"
-import * as postingStore from "@/stores/postingStore"
+import { PostMonitor } from "@/components/organisms/PostMonitor";
+import * as postingStore from "@/stores/postingStore";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
 
 vi.mock("@/hooks/usePostingEvents", () => ({
   usePostingEvents: vi.fn(() => ({
     isConnected: true,
     error: null,
   })),
-}))
+}));
 
 const mockSession = {
   id: "session_001",
@@ -22,7 +22,7 @@ const mockSession = {
   configSnapshot: "{}",
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:05:00Z"),
-}
+};
 
 const mockCompletedSession = {
   id: "session_002",
@@ -35,7 +35,7 @@ const mockCompletedSession = {
   configSnapshot: "{}",
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:10:00Z"),
-}
+};
 
 const mockCancelledSession = {
   id: "session_003",
@@ -49,7 +49,7 @@ const mockCancelledSession = {
   configSnapshot: "{}",
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:07:00Z"),
-}
+};
 
 const mockSessionWithFailures = {
   id: "session_004",
@@ -62,7 +62,7 @@ const mockSessionWithFailures = {
   configSnapshot: "{}",
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:10:00Z"),
-}
+};
 
 const mockSuccessJob = {
   id: "job_001",
@@ -78,7 +78,7 @@ const mockSuccessJob = {
   maxRetries: 3,
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:00:05Z"),
-}
+};
 
 const mockPendingJob = {
   id: "job_002",
@@ -92,7 +92,7 @@ const mockPendingJob = {
   maxRetries: 3,
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:00:00Z"),
-}
+};
 
 const mockProcessingJob = {
   id: "job_003",
@@ -106,7 +106,7 @@ const mockProcessingJob = {
   maxRetries: 3,
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:00:00Z"),
-}
+};
 
 const mockFailedJob = {
   id: "job_004",
@@ -123,7 +123,7 @@ const mockFailedJob = {
   maxRetries: 3,
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:00:03Z"),
-}
+};
 
 const mockSkippedJob = {
   id: "job_005",
@@ -137,19 +137,19 @@ const mockSkippedJob = {
   maxRetries: 3,
   createdAt: new Date("2026-04-15T10:00:00Z"),
   updatedAt: new Date("2026-04-15T10:00:00Z"),
-}
+};
 
 describe("PostMonitor", () => {
-  const mockOnCancel = vi.fn()
-  const mockOnRetryFailed = vi.fn()
-  let mockCancelSession: ReturnType<typeof vi.fn>
-  let mockRefreshJobs: ReturnType<typeof vi.fn>
+  const mockOnCancel = vi.fn();
+  const mockOnRetryFailed = vi.fn();
+  let mockCancelSession: ReturnType<typeof vi.fn>;
+  let mockRefreshJobs: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockCancelSession = vi.fn().mockResolvedValue(undefined)
-    mockRefreshJobs = vi.fn().mockResolvedValue(undefined)
-  })
+    vi.clearAllMocks();
+    mockCancelSession = vi.fn().mockResolvedValue(undefined);
+    mockRefreshJobs = vi.fn().mockResolvedValue(undefined);
+  });
 
   describe("status display", () => {
     it("shows no session message when no active session", () => {
@@ -158,12 +158,12 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId={null} />)
+      render(<PostMonitor sessionId={null} />);
 
-      expect(screen.getByText("No posting session active")).toBeInTheDocument()
-    })
+      expect(screen.getByText("No posting session active")).toBeInTheDocument();
+    });
 
     it("shows posting progress header when session is active", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -171,13 +171,13 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.getByText("Posting Progress")).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText("Posting Progress")).toBeInTheDocument();
+    });
+  });
 
   describe("progress tracking", () => {
     it("shows progress bar with correct value", () => {
@@ -186,13 +186,13 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      const progressBar = document.querySelector('[role="progressbar"]')
-      expect(progressBar).toBeInTheDocument()
-    })
+      const progressBar = document.querySelector('[role="progressbar"]');
+      expect(progressBar).toBeInTheDocument();
+    });
 
     it("shows completed vs total jobs count", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -200,12 +200,12 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.getByText("2 of 5 posted")).toBeInTheDocument()
-    })
+      expect(screen.getByText("2 of 5 posted")).toBeInTheDocument();
+    });
 
     it("shows 100% progress when complete", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -213,13 +213,13 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_002" />)
+      render(<PostMonitor sessionId="session_002" />);
 
-      expect(screen.getByText("5 of 5 posted")).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText("5 of 5 posted")).toBeInTheDocument();
+    });
+  });
 
   describe("job counts display", () => {
     it("shows success count", () => {
@@ -228,12 +228,12 @@ describe("PostMonitor", () => {
         jobs: [mockSuccessJob, { ...mockSuccessJob, id: "job_002" }],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.getByText(/2 success/)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/2 success/)).toBeInTheDocument();
+    });
 
     it("shows failed count when there are failures", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -241,12 +241,12 @@ describe("PostMonitor", () => {
         jobs: [mockSuccessJob, mockFailedJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.getByText(/1 failed/)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/1 failed/)).toBeInTheDocument();
+    });
 
     it("does not show failed count when zero failures", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -254,12 +254,12 @@ describe("PostMonitor", () => {
         jobs: [mockSuccessJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.queryByText(/failed/)).not.toBeInTheDocument()
-    })
+      expect(screen.queryByText(/failed/)).not.toBeInTheDocument();
+    });
 
     it("shows pending count when there are pending jobs", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -267,12 +267,12 @@ describe("PostMonitor", () => {
         jobs: [mockSuccessJob, mockPendingJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.getByText(/1 pending/)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/1 pending/)).toBeInTheDocument();
+    });
 
     it("shows processing count when jobs are processing", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -280,12 +280,12 @@ describe("PostMonitor", () => {
         jobs: [mockSuccessJob, mockProcessingJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.getByText(/1 processing/)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/1 processing/)).toBeInTheDocument();
+    });
 
     it("shows skipped count when jobs are skipped", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -293,13 +293,13 @@ describe("PostMonitor", () => {
         jobs: [mockSuccessJob, mockSkippedJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.getByText(/1 skipped/)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/1 skipped/)).toBeInTheDocument();
+    });
+  });
 
   describe("error display", () => {
     it("shows error message for failed jobs", () => {
@@ -308,12 +308,12 @@ describe("PostMonitor", () => {
         jobs: [mockFailedJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_004" />)
+      render(<PostMonitor sessionId="session_004" />);
 
-      expect(screen.getByText("Rate limit exceeded")).toBeInTheDocument()
-    })
+      expect(screen.getByText("Rate limit exceeded")).toBeInTheDocument();
+    });
 
     it("shows completion message with failed count", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -324,13 +324,13 @@ describe("PostMonitor", () => {
         jobs: [mockFailedJob, { ...mockFailedJob, id: "job_006" }],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_004" />)
+      render(<PostMonitor sessionId="session_004" />);
 
-      expect(screen.getByText(/Completed with 2 failed posts/)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/Completed with 2 failed posts/)).toBeInTheDocument();
+    });
+  });
 
   describe("cancel action", () => {
     it("shows cancel button when session is running", () => {
@@ -339,12 +339,12 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" onCancel={mockOnCancel} />)
+      render(<PostMonitor sessionId="session_001" onCancel={mockOnCancel} />);
 
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument()
-    })
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+    });
 
     it("does not show cancel button when session is complete", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -352,12 +352,12 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_002" />)
+      render(<PostMonitor sessionId="session_002" />);
 
-      expect(screen.queryByRole("button", { name: /cancel/i })).not.toBeInTheDocument()
-    })
+      expect(screen.queryByRole("button", { name: /cancel/i })).not.toBeInTheDocument();
+    });
 
     it("calls cancelSession when cancel button clicked", async () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -365,16 +365,16 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      const user = userEvent.setup()
-      render(<PostMonitor sessionId="session_001" onCancel={mockOnCancel} />)
+      const user = userEvent.setup();
+      render(<PostMonitor sessionId="session_001" onCancel={mockOnCancel} />);
 
-      await user.click(screen.getByRole("button", { name: /cancel/i }))
+      await user.click(screen.getByRole("button", { name: /cancel/i }));
 
-      expect(mockCancelSession).toHaveBeenCalled()
-    })
-  })
+      expect(mockCancelSession).toHaveBeenCalled();
+    });
+  });
 
   describe("retry action", () => {
     it("shows retry controls when session complete with failures", () => {
@@ -383,12 +383,12 @@ describe("PostMonitor", () => {
         jobs: [mockFailedJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_004" onRetryFailed={mockOnRetryFailed} />)
+      render(<PostMonitor sessionId="session_004" onRetryFailed={mockOnRetryFailed} />);
 
-      expect(screen.getByTestId("retry-controls")).toBeInTheDocument()
-    })
+      expect(screen.getByTestId("retry-controls")).toBeInTheDocument();
+    });
 
     it("does not show retry controls when session is running", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -396,12 +396,12 @@ describe("PostMonitor", () => {
         jobs: [mockFailedJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.queryByTestId("retry-controls")).not.toBeInTheDocument()
-    })
+      expect(screen.queryByTestId("retry-controls")).not.toBeInTheDocument();
+    });
 
     it("does not show retry controls when no failures", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -409,13 +409,13 @@ describe("PostMonitor", () => {
         jobs: [mockSuccessJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_002" />)
+      render(<PostMonitor sessionId="session_002" />);
 
-      expect(screen.queryByTestId("retry-controls")).not.toBeInTheDocument()
-    })
-  })
+      expect(screen.queryByTestId("retry-controls")).not.toBeInTheDocument();
+    });
+  });
 
   describe("completion states", () => {
     it("shows success message when all posts complete successfully", () => {
@@ -424,12 +424,12 @@ describe("PostMonitor", () => {
         jobs: [mockSuccessJob],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_002" />)
+      render(<PostMonitor sessionId="session_002" />);
 
-      expect(screen.getByText("All posts completed successfully!")).toBeInTheDocument()
-    })
+      expect(screen.getByText("All posts completed successfully!")).toBeInTheDocument();
+    });
 
     it("shows cancelled message when session is cancelled", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -437,12 +437,12 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_003" />)
+      render(<PostMonitor sessionId="session_003" />);
 
-      expect(screen.getByText("Posting session cancelled")).toBeInTheDocument()
-    })
+      expect(screen.getByText("Posting session cancelled")).toBeInTheDocument();
+    });
 
     it("shows completion with failures message", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -450,13 +450,13 @@ describe("PostMonitor", () => {
         jobs: [mockFailedJob, { ...mockFailedJob, id: "job_006" }],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_004" />)
+      render(<PostMonitor sessionId="session_004" />);
 
-      expect(screen.getByText(/Completed with 2 failed posts/)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/Completed with 2 failed posts/)).toBeInTheDocument();
+    });
+  });
 
   describe("accessibility", () => {
     it("has proper heading structure", () => {
@@ -465,12 +465,12 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      expect(screen.getByRole("heading", { name: "Posting Progress" })).toBeInTheDocument()
-    })
+      expect(screen.getByRole("heading", { name: "Posting Progress" })).toBeInTheDocument();
+    });
 
     it("cancel button has proper styling for visibility", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -478,14 +478,14 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" />)
+      render(<PostMonitor sessionId="session_001" />);
 
-      const cancelButton = screen.getByRole("button", { name: /cancel/i })
-      expect(cancelButton).toHaveClass("text-red-600")
-    })
-  })
+      const cancelButton = screen.getByRole("button", { name: /cancel/i });
+      expect(cancelButton).toHaveClass("text-red-600");
+    });
+  });
 
   describe("custom className", () => {
     it("applies custom className to container", () => {
@@ -494,13 +494,13 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId="session_001" className="custom-monitor" />)
+      render(<PostMonitor sessionId="session_001" className="custom-monitor" />);
 
-      const container = screen.getByText("Posting Progress").closest(".custom-monitor")
-      expect(container).toBeInTheDocument()
-    })
+      const container = screen.getByText("Posting Progress").closest(".custom-monitor");
+      expect(container).toBeInTheDocument();
+    });
 
     it("applies custom className to no session message", () => {
       vi.spyOn(postingStore, "usePostingStore").mockImplementation(() => ({
@@ -508,12 +508,12 @@ describe("PostMonitor", () => {
         jobs: [],
         cancelSession: mockCancelSession,
         refreshJobs: mockRefreshJobs,
-      }))
+      }));
 
-      render(<PostMonitor sessionId={null} className="custom-class" />)
+      render(<PostMonitor sessionId={null} className="custom-class" />);
 
-      const card = screen.getByText("No posting session active").closest(".custom-class")
-      expect(card).toBeInTheDocument()
-    })
-  })
-})
+      const card = screen.getByText("No posting session active").closest(".custom-class");
+      expect(card).toBeInTheDocument();
+    });
+  });
+});

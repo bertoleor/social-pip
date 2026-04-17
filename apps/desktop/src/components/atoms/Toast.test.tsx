@@ -18,7 +18,7 @@ describe("Toast", () => {
           type="success"
           message="Post published successfully"
           onDismiss={mockOnDismiss}
-        />
+        />,
       );
 
       expect(screen.getByText("Post published successfully")).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe("Toast", () => {
           type="error"
           message="Failed to publish post"
           onDismiss={mockOnDismiss}
-        />
+        />,
       );
 
       expect(screen.getByText("Failed to publish post")).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe("Toast", () => {
           type="info"
           message="Processing your request"
           onDismiss={mockOnDismiss}
-        />
+        />,
       );
 
       expect(screen.getByText("Processing your request")).toBeInTheDocument();
@@ -60,7 +60,7 @@ describe("Toast", () => {
           type="warning"
           message="Rate limit approaching"
           onDismiss={mockOnDismiss}
-        />
+        />,
       );
 
       expect(screen.getByText("Rate limit approaching")).toBeInTheDocument();
@@ -70,28 +70,14 @@ describe("Toast", () => {
 
   describe("dismiss button", () => {
     it("renders dismiss button", () => {
-      render(
-        <Toast
-          id="toast-1"
-          type="success"
-          message="Test"
-          onDismiss={mockOnDismiss}
-        />
-      );
+      render(<Toast id="toast-1" type="success" message="Test" onDismiss={mockOnDismiss} />);
 
       expect(screen.getByRole("button", { name: /dismiss/i })).toBeInTheDocument();
     });
 
     it("calls onDismiss when dismiss button clicked", async () => {
       const user = userEvent.setup();
-      render(
-        <Toast
-          id="toast-1"
-          type="success"
-          message="Test"
-          onDismiss={mockOnDismiss}
-        />
-      );
+      render(<Toast id="toast-1" type="success" message="Test" onDismiss={mockOnDismiss} />);
 
       await user.click(screen.getByRole("button", { name: /dismiss/i }));
 
@@ -101,53 +87,25 @@ describe("Toast", () => {
 
   describe("type icons", () => {
     it("shows check icon for success", () => {
-      render(
-        <Toast
-          id="toast-1"
-          type="success"
-          message="Test"
-          onDismiss={mockOnDismiss}
-        />
-      );
+      render(<Toast id="toast-1" type="success" message="Test" onDismiss={mockOnDismiss} />);
 
       expect(screen.getByTestId("toast-icon-success")).toBeInTheDocument();
     });
 
     it("shows x-circle icon for error", () => {
-      render(
-        <Toast
-          id="toast-1"
-          type="error"
-          message="Test"
-          onDismiss={mockOnDismiss}
-        />
-      );
+      render(<Toast id="toast-1" type="error" message="Test" onDismiss={mockOnDismiss} />);
 
       expect(screen.getByTestId("toast-icon-error")).toBeInTheDocument();
     });
 
     it("shows info icon for info", () => {
-      render(
-        <Toast
-          id="toast-1"
-          type="info"
-          message="Test"
-          onDismiss={mockOnDismiss}
-        />
-      );
+      render(<Toast id="toast-1" type="info" message="Test" onDismiss={mockOnDismiss} />);
 
       expect(screen.getByTestId("toast-icon-info")).toBeInTheDocument();
     });
 
     it("shows alert-triangle icon for warning", () => {
-      render(
-        <Toast
-          id="toast-1"
-          type="warning"
-          message="Test"
-          onDismiss={mockOnDismiss}
-        />
-      );
+      render(<Toast id="toast-1" type="warning" message="Test" onDismiss={mockOnDismiss} />);
 
       expect(screen.getByTestId("toast-icon-warning")).toBeInTheDocument();
     });
@@ -155,26 +113,14 @@ describe("Toast", () => {
 
   describe("accessibility", () => {
     it("has role='alert' for error toasts", () => {
-      render(
-        <Toast
-          id="toast-1"
-          type="error"
-          message="Error message"
-          onDismiss={mockOnDismiss}
-        />
-      );
+      render(<Toast id="toast-1" type="error" message="Error message" onDismiss={mockOnDismiss} />);
 
       expect(screen.getByRole("alert")).toBeInTheDocument();
     });
 
     it("has role='status' for non-error toasts", () => {
       render(
-        <Toast
-          id="toast-1"
-          type="success"
-          message="Success message"
-          onDismiss={mockOnDismiss}
-        />
+        <Toast id="toast-1" type="success" message="Success message" onDismiss={mockOnDismiss} />,
       );
 
       expect(screen.getByRole("status")).toBeInTheDocument();
@@ -190,7 +136,7 @@ describe("Toast", () => {
           message="Test"
           onDismiss={mockOnDismiss}
           className="custom-toast"
-        />
+        />,
       );
 
       expect(screen.getByTestId("toast-success")).toHaveClass("custom-toast");

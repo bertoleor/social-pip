@@ -20,11 +20,7 @@ export interface MainLayoutProps {
   className?: string;
 }
 
-export function MainLayout({
-  children,
-  title,
-  className,
-}: MainLayoutProps): React.ReactElement {
+export function MainLayout({ children, title, className }: MainLayoutProps): React.ReactElement {
   const { sidebarOpen, toggleSidebar } = useUIStore();
 
   const navItems = [
@@ -46,9 +42,7 @@ export function MainLayout({
           sidebarOpen ? "w-64" : "w-0",
         )}
       >
-        <div
-          className={cn("w-64 h-full flex flex-col", !sidebarOpen && "hidden")}
-        >
+        <div className={cn("w-64 h-full flex flex-col", !sidebarOpen && "hidden")}>
           {/* Sidebar header */}
           <div className="h-16 flex items-center px-4 border-b border-gray-200">
             <h1 className="text-lg font-semibold text-gray-900">Social-Pip</h1>
@@ -64,9 +58,7 @@ export function MainLayout({
                   className={({ isActive }) =>
                     cn(
                       "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-gray-700 hover:bg-gray-100",
+                      isActive ? "bg-primary/10 text-primary" : "text-gray-700 hover:bg-gray-100",
                     )
                   }
                 >
@@ -96,9 +88,7 @@ export function MainLayout({
                 <Menu className="w-5 h-5 text-gray-600" />
               )}
             </button>
-            {title && (
-              <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-            )}
+            {title && <h2 className="text-lg font-semibold text-gray-900">{title}</h2>}
           </div>
         </header>
 

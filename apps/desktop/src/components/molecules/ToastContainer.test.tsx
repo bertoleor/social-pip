@@ -1,8 +1,8 @@
+import { useToastStore } from "@/stores/toastStore";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ToastContainer } from "./ToastContainer";
-import { useToastStore } from "@/stores/toastStore";
 
 describe("ToastContainer", () => {
   beforeEach(() => {
@@ -25,9 +25,7 @@ describe("ToastContainer", () => {
 
     it("renders single toast from store", () => {
       useToastStore.setState({
-        toasts: [
-          { id: "toast-1", type: "success", message: "Success message" },
-        ],
+        toasts: [{ id: "toast-1", type: "success", message: "Success message" }],
       });
 
       render(<ToastContainer />);
@@ -67,9 +65,7 @@ describe("ToastContainer", () => {
       vi.useRealTimers();
       const user = userEvent.setup();
       useToastStore.setState({
-        toasts: [
-          { id: "toast-1", type: "success", message: "Test toast" },
-        ],
+        toasts: [{ id: "toast-1", type: "success", message: "Test toast" }],
       });
 
       render(<ToastContainer />);
@@ -81,9 +77,7 @@ describe("ToastContainer", () => {
 
     it("auto-dismisses toast after 5 seconds", () => {
       useToastStore.setState({
-        toasts: [
-          { id: "toast-1", type: "success", message: "Auto dismiss" },
-        ],
+        toasts: [{ id: "toast-1", type: "success", message: "Auto dismiss" }],
       });
 
       render(<ToastContainer />);
@@ -103,9 +97,7 @@ describe("ToastContainer", () => {
       vi.useRealTimers();
       const user = userEvent.setup();
       useToastStore.setState({
-        toasts: [
-          { id: "toast-1", type: "success", message: "Manual dismiss" },
-        ],
+        toasts: [{ id: "toast-1", type: "success", message: "Manual dismiss" }],
       });
 
       render(<ToastContainer />);
