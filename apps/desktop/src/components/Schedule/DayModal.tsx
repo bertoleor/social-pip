@@ -2,7 +2,7 @@ import type { Schedule } from "@social-pip/types";
 /**
  * @fileoverview DayModal component - Modal showing schedules for a specific day
  */
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 interface DayModalProps {
   isOpen: boolean;
@@ -38,9 +38,31 @@ export function DayModal({
   onCancel,
   onClose,
 }: DayModalProps): React.ReactElement | null {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // Handle dialog open/close
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else {
+      if (dialog.open) {
+        dialog.close();
+      }
+    }
+  }, [isOpen]);
+
+  // Handle backdrop click via dialog's built-in backdrop
   const handleBackdropClick = useCallback(
     (event: React.MouseEvent): void => {
-      if (event.target === event.currentTarget) {
+      // dialog backdrop is the ::backdrop pseudo-element
+      // clicking on the dialog content itself won't trigger this
+      const dialog = dialogRef.current;
+      if (dialog && event.target === dialog) {
         onClose();
       }
     },
@@ -54,8 +76,6 @@ export function DayModal({
     [onCancel],
   );
 
-  if (!isOpen) return null;
-
   const formattedDate = date.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -64,11 +84,11 @@ export function DayModal({
   });
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    <dialog
+      ref={dialogRef}
+      className="bg-transparent p-0 max-w-md w-full backdrop:bg-black/50"
       onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
+      onKeyDown={() => {}}
       aria-labelledby="modal-title"
     >
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden">
@@ -148,6 +168,6 @@ export function DayModal({
           )}
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

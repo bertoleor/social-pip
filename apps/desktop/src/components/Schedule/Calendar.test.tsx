@@ -412,9 +412,9 @@ describe("Calendar", () => {
 
       expect(screen.getByText("April 2026")).toBeInTheDocument();
       const dayCells = screen.getAllByRole("cell");
-      dayCells.forEach((cell) => {
+      for (const cell of dayCells) {
         expect(within(cell).queryByTestId(/schedule-indicator/)).not.toBeInTheDocument();
-      });
+      }
     });
 
     it("grays out days from previous/next month", () => {

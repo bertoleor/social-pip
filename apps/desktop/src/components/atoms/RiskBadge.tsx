@@ -22,17 +22,16 @@ const sizeStyles = {
 
 export function RiskBadge({ level, size = "md", className }: RiskBadgeProps): React.ReactElement {
   return (
-    <span
+    <output
       className={cn(
         "inline-flex items-center font-medium rounded-full",
         riskStyles[level],
         sizeStyles[size],
         className,
       )}
-      role="status"
       aria-label={`Risk level: ${level}`}
     >
       {level}
-    </span>
+    </output>
   );
 }

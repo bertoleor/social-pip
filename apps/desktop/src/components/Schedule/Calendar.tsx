@@ -257,7 +257,6 @@ export function Calendar({
               <th
                 key={day}
                 scope="col"
-                role="columnheader"
                 className="p-2 text-center font-medium text-gray-600 border-b"
               >
                 {day}
@@ -331,8 +330,12 @@ export function Calendar({
               }
             }
 
+            // Compute stable key for the week row using the first day's date
+            const firstDayDate = getDateForDay(weekDays[0] ?? 1, startDay < days.length, false);
+            const weekKey = firstDayDate.toDateString();
+
             return (
-              <tr key={`week-${weekIndex}`}>
+              <tr key={weekKey}>
                 {weekDays.map((day, dayIndex) => {
                   const isNextMonth =
                     dayIndex >= days.length - startDay && weekDays.length > days.length - startDay;
@@ -344,7 +347,7 @@ export function Calendar({
 
                   return (
                     <CalendarDay
-                      key={`day-${day}-${dayIndex}`}
+                      key={dateKey}
                       day={day}
                       date={date}
                       schedules={daySchedules}

@@ -17,7 +17,7 @@ export function ToastContainer({ className }: ToastContainerProps): React.ReactE
   const timeoutRefs = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   useEffect(() => {
-    toasts.forEach((toast) => {
+    for (const toast of toasts) {
       if (!timeoutRefs.current.has(toast.id)) {
         const timeoutId = setTimeout(() => {
           removeToast(toast.id);
@@ -26,10 +26,10 @@ export function ToastContainer({ className }: ToastContainerProps): React.ReactE
 
         timeoutRefs.current.set(toast.id, timeoutId);
       }
-    });
+    }
 
     const currentIds = new Set(toasts.map((t) => t.id));
-    timeoutRefs.current.forEach((_, id) => {
+    for (const [id] of timeoutRefs.current) {
       if (!currentIds.has(id)) {
         const timeoutId = timeoutRefs.current.get(id);
         if (timeoutId) {
@@ -37,7 +37,7 @@ export function ToastContainer({ className }: ToastContainerProps): React.ReactE
         }
         timeoutRefs.current.delete(id);
       }
-    });
+    }
   }, [toasts, removeToast]);
 
   const handleDismiss = (toastId: string) => {

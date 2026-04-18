@@ -30,8 +30,8 @@ describe("AntiBanWarningBadge", () => {
 
       const badge = screen.getByText("Safe");
       expect(badge).toBeInTheDocument();
-      expect(badge.closest("span")).toHaveClass("bg-green-100");
-      expect(badge.closest("span")).toHaveClass("text-green-700");
+      expect(badge.closest("output")).toHaveClass("bg-green-100");
+      expect(badge.closest("output")).toHaveClass("text-green-700");
     });
 
     it("shows checkmark icon for low risk", () => {
@@ -49,8 +49,8 @@ describe("AntiBanWarningBadge", () => {
 
       const badge = screen.getByText("Caution");
       expect(badge).toBeInTheDocument();
-      expect(badge.closest("span")).toHaveClass("bg-yellow-100");
-      expect(badge.closest("span")).toHaveClass("text-yellow-700");
+      expect(badge.closest("output")).toHaveClass("bg-yellow-100");
+      expect(badge.closest("output")).toHaveClass("text-yellow-700");
     });
 
     it("shows warning icon for medium risk", () => {
@@ -67,8 +67,8 @@ describe("AntiBanWarningBadge", () => {
 
       const badge = screen.getByText("Stop");
       expect(badge).toBeInTheDocument();
-      expect(badge.closest("span")).toHaveClass("bg-red-100");
-      expect(badge.closest("span")).toHaveClass("text-red-700");
+      expect(badge.closest("output")).toHaveClass("bg-red-100");
+      expect(badge.closest("output")).toHaveClass("text-red-700");
     });
 
     it("shows alert icon for high risk", () => {
@@ -84,7 +84,7 @@ describe("AntiBanWarningBadge", () => {
       render(<AntiBanWarningBadge riskLevel="medium" stats={mockAntiBanStats} />);
 
       // Check for title attribute (native HTML tooltip)
-      const badge = screen.getByText("Caution").closest("span");
+      const badge = screen.getByText("Caution").closest("output");
       expect(badge).toHaveAttribute("title");
       const title = badge?.getAttribute("title");
       expect(title).toContain("Hourly: 5/50");
@@ -94,7 +94,7 @@ describe("AntiBanWarningBadge", () => {
     it("shows recommendation for high risk", () => {
       render(<AntiBanWarningBadge riskLevel="high" stats={mockAntiBanStats} />);
 
-      const badge = screen.getByText("Stop").closest("span");
+      const badge = screen.getByText("Stop").closest("output");
       const title = badge?.getAttribute("title");
       expect(title).toContain("Take a break recommended");
     });

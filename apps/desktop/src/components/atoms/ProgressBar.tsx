@@ -42,6 +42,7 @@ export function ProgressBar({
       <div
         className={cn("w-full bg-gray-200 rounded-full overflow-hidden", sizeStyles[size])}
         role="progressbar"
+        tabIndex={0}
         aria-valuenow={percentage}
         aria-valuemin={0}
         aria-valuemax={100}

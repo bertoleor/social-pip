@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { Account } from "@social-pip/types";
 import { X } from "lucide-react";
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 
 export interface AccountFormModalProps {
   isOpen: boolean;
@@ -42,6 +42,23 @@ export function AccountFormModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // Handle dialog open/close
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else {
+      if (dialog.open) {
+        dialog.close();
+      }
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (mode === "edit" && account) {
@@ -57,20 +74,14 @@ export function AccountFormModal({
       setFormData(DEFAULT_VALUES);
     }
     setErrors({});
-  }, [mode, account, isOpen]);
+  }, [mode, account]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onCancel();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onCancel]);
-
-  if (!isOpen) return null;
+  // Handle backdrop click
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>): void => {
+    if (e.target === dialogRef.current) {
+      onCancel();
+    }
+  };
 
   const handleChange = (field: keyof AccountFormData) => (value: string) => {
     setFormData((prev: AccountFormData) => ({ ...prev, [field]: value }));
@@ -119,22 +130,24 @@ export function AccountFormModal({
   const isFormValid = Object.keys(errors).length === 0 && formData.name.trim() !== "";
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={onCancel}
-      role="dialog"
-      aria-modal="true"
+    // biome-ignore lint/a11y/useKeyWithClickEvents: dialog backdrop click is handled via pointer events; Escape key is handled natively
+    <dialog
+      ref={dialogRef}
+      className="bg-transparent p-0 max-w-md w-full backdrop:bg-black/50"
+      onClick={handleBackdropClick}
       aria-labelledby="modal-title"
     >
       <div
         className={cn("bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6", className)}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={() => {}}
       >
         <div className="flex items-center justify-between mb-6">
           <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
             {mode === "create" ? "Add Account" : "Edit Account"}
           </h2>
           <button
+            type="button"
             onClick={onCancel}
             className="text-gray-400 hover:text-gray-600 transition-colors"
             aria-label="Close modal"
@@ -262,6 +275,6 @@ export function AccountFormModal({
           </div>
         </form>
       </div>
-    </div>
+    </dialog>
   );
 }

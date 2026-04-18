@@ -86,7 +86,7 @@ describe("RiskBadge", () => {
     it("has proper role attributes", () => {
       render(<RiskBadge level="HIGH" />);
       const badge = screen.getByText("HIGH");
-      expect(badge.tagName).toBe("SPAN");
+      expect(badge.tagName).toBe("OUTPUT");
     });
   });
 });

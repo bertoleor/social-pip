@@ -40,6 +40,7 @@ export function PostLimitIndicator({
       <div
         className="h-2 bg-gray-200 rounded-full overflow-hidden"
         role="progressbar"
+        tabIndex={0}
         aria-valuenow={percentage}
         aria-valuemin={0}
         aria-valuemax={100}
