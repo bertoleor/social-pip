@@ -249,7 +249,7 @@ export function Calendar({
         </button>
       </nav>
 
-      {/* Calendar Grid */}
+      {/* Calendar Grid - role="grid" is correct per WAI-ARIA APG for interactive calendars */}
       <table role="grid" aria-label="Calendar" className="w-full border-collapse">
         <thead>
           <tr>

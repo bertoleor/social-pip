@@ -58,8 +58,11 @@ export default function SettingsPage(): React.ReactElement {
         <h2 className="text-lg font-semibold mb-4">AI Configuration</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Provider</label>
+            <label htmlFor="ai-provider" className="block text-sm font-medium mb-1">
+              Provider
+            </label>
             <select
+              id="ai-provider"
               value={provider}
               onChange={(e) => setProvider(e.target.value as AIProvider)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"

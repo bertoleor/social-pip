@@ -81,9 +81,9 @@ export function PostList({
           <div className="h-10 w-64 bg-gray-200 animate-pulse rounded flex-1" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {["a", "b", "c", "d", "e", "f"].map((id) => (
             <div
-              key={i}
+              key={id}
               className="h-40 bg-gray-100 animate-pulse rounded-lg border border-gray-200"
             />
           ))}

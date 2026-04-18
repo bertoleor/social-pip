@@ -227,7 +227,7 @@ describe("Spintax to Template Flow", () => {
     });
 
     it("detects max depth exceeded", () => {
-      const deepNesting = "{".repeat(15) + "A" + "}".repeat(15);
+      const deepNesting = `${"{".repeat(15)}A${"}".repeat(15)}`;
       const result = validateSpintax(deepNesting);
 
       expect(result.valid).toBe(false);

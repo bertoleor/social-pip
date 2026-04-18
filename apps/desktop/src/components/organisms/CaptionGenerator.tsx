@@ -223,9 +223,9 @@ export const CaptionGenerator: FC<CaptionGeneratorProps> = ({
 
             {generatedCaption.hashtags.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
-                {generatedCaption.hashtags.map((tag, index) => (
+                {generatedCaption.hashtags.map((tag) => (
                   <span
-                    key={index}
+                    key={tag}
                     className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
                   >
                     {tag}
@@ -239,14 +239,15 @@ export const CaptionGenerator: FC<CaptionGeneratorProps> = ({
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-gray-700">Alternatives</h4>
               <div className="space-y-2">
-                {generatedCaption.alternatives.map((alt, index) => (
-                  <div
-                    key={index}
-                    className="p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                {generatedCaption.alternatives.map((alt) => (
+                  <button
+                    type="button"
+                    key={alt}
+                    className="w-full text-left p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
                     onClick={() => handleCopy(alt)}
                   >
                     <p className="text-sm text-gray-600">{alt}</p>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>

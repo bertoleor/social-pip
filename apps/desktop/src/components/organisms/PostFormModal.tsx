@@ -100,13 +100,12 @@ export function PostFormModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div
+      <dialog
+        open
         className={cn(
           "bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto",
           className,
         )}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="post-form-title"
       >
         <div className="flex items-center justify-between p-4 border-b">
@@ -114,6 +113,7 @@ export function PostFormModal({
             {isEditMode ? "Edit Post" : "Create Post"}
           </h2>
           <button
+            type="button"
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full"
             aria-label="Close"
@@ -124,9 +124,9 @@ export function PostFormModal({
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {!isEditMode && (
-            <div>
-              <label className="block text-sm font-medium mb-1">Platform</label>
-              <div className="flex flex-wrap gap-2">
+            <fieldset>
+              <legend className="block text-sm font-medium mb-1">Platform</legend>
+              <div className="flex flex-wrap gap-2" role="radiogroup">
                 {PLATFORMS.map((p) => (
                   <button
                     key={p}
@@ -144,7 +144,7 @@ export function PostFormModal({
                   </button>
                 ))}
               </div>
-            </div>
+            </fieldset>
           )}
 
           <div>
@@ -177,9 +177,9 @@ export function PostFormModal({
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Status</label>
-            <div className="flex gap-2">
+          <fieldset>
+            <legend className="block text-sm font-medium mb-1">Status</legend>
+            <div className="flex gap-2" role="radiogroup">
               {STATUS_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
@@ -196,7 +196,7 @@ export function PostFormModal({
                 </button>
               ))}
             </div>
-          </div>
+          </fieldset>
 
           {status === "scheduled" && (
             <div>
@@ -223,7 +223,7 @@ export function PostFormModal({
             </Button>
           </div>
         </form>
-      </div>
+      </dialog>
     </div>
   );
 }

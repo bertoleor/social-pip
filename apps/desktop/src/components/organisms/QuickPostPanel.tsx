@@ -28,7 +28,6 @@ export interface QuickPostPanelProps {
 
 export function QuickPostPanel({ className }: QuickPostPanelProps): React.ReactElement {
   const {
-    selectedTemplateId,
     selectedGroupIds,
     selectedAccountId,
     canPost,
@@ -64,19 +63,12 @@ export function QuickPostPanel({ className }: QuickPostPanelProps): React.ReactE
   // Update canPost when selection changes
   useEffect(() => {
     updateCanPost();
-  }, [
-    selectedTemplateId,
-    selectedGroupIds,
-    selectedAccountId,
-    cooldownUntil,
-    accountRiskLevel,
-    updateCanPost,
-  ]);
+  }, [updateCanPost]);
 
   // Calculate estimated time when groups change
   useEffect(() => {
     calculateEstimatedTime();
-  }, [selectedGroupIds, calculateEstimatedTime]);
+  }, [calculateEstimatedTime]);
 
   // Check account safety when account changes
   useEffect(() => {

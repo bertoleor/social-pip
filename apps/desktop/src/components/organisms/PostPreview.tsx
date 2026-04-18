@@ -58,11 +58,11 @@ export function PostPreview({ post, className }: PostPreviewProps): React.ReactE
 
         {hasPostMedia && !hasAttachedMedia && (
           <div className="grid grid-cols-2 gap-2">
-            {post.mediaUrls.slice(0, 4).map((url, index) => (
+            {post.mediaUrls.slice(0, 4).map((url) => (
               <img
-                key={`${url}-${index}`}
+                key={url}
                 src={url}
-                alt={`Media ${index + 1}`}
+                alt="Post media"
                 className="w-full h-24 object-cover rounded-lg"
               />
             ))}

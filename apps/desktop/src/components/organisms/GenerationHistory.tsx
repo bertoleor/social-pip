@@ -163,7 +163,13 @@ export const GenerationHistory: FC<GenerationHistoryProps> = ({
             key={item.id}
             className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 transition-colors"
           >
-            <div className="p-4 cursor-pointer" onClick={() => handleSelect(item)}>
+            <button
+              type="button"
+              className="p-4 w-full text-left cursor-pointer"
+              onClick={() => handleSelect(item)}
+              aria-expanded={expandedId === item.id}
+              aria-controls={`generation-details-${item.id}`}
+            >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
@@ -209,39 +215,37 @@ export const GenerationHistory: FC<GenerationHistoryProps> = ({
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="space-y-3">
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase">
+                      <span className="text-xs font-medium text-gray-500 uppercase">
                         Input Prompt
-                      </label>
+                      </span>
                       <p className="text-sm text-gray-700 mt-1">{item.inputPrompt}</p>
                     </div>
 
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase">Type</label>
+                      <span className="text-xs font-medium text-gray-500 uppercase">Type</span>
                       <p className="text-sm text-gray-700 mt-1 capitalize">{item.promptType}</p>
                     </div>
 
                     {item.tokensUsed !== undefined && (
                       <div>
-                        <label className="text-xs font-medium text-gray-500 uppercase">
+                        <span className="text-xs font-medium text-gray-500 uppercase">
                           Tokens Used
-                        </label>
+                        </span>
                         <p className="text-sm text-gray-700 mt-1">{item.tokensUsed} tokens</p>
                       </div>
                     )}
 
                     {item.latencyMs !== undefined && (
                       <div>
-                        <label className="text-xs font-medium text-gray-500 uppercase">
-                          Latency
-                        </label>
+                        <span className="text-xs font-medium text-gray-500 uppercase">Latency</span>
                         <p className="text-sm text-gray-700 mt-1">{item.latencyMs}ms</p>
                       </div>
                     )}
 
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase">
+                      <span className="text-xs font-medium text-gray-500 uppercase">
                         Rate this generation
-                      </label>
+                      </span>
                       <div className="flex gap-1 mt-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <Button
@@ -275,7 +279,7 @@ export const GenerationHistory: FC<GenerationHistoryProps> = ({
                   </div>
                 </div>
               )}
-            </div>
+            </button>
           </li>
         ))}
       </ul>

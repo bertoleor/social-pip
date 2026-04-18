@@ -322,7 +322,7 @@ describe("Error Handling Flow", () => {
     it("network errors use exponential backoff", () => {
       const baseDelay = 5000;
       const attempts = [1, 2, 3];
-      const delays = attempts.map((attempt) => baseDelay * Math.pow(3, attempt - 1));
+      const delays = attempts.map((attempt) => baseDelay * 3 ** (attempt - 1));
 
       expect(delays[0]).toBe(5000);
       expect(delays[1]).toBe(15000);
