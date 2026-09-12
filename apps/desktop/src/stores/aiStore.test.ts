@@ -336,12 +336,12 @@ describe("useAIStore", () => {
     it("accepts all provider types", () => {
       const providers: AIProvider[] = ["nim", "openai", "anthropic"];
 
-      providers.forEach((provider) => {
+      for (const provider of providers) {
         act(() => {
           useAIStore.getState().setProvider(provider);
         });
         expect(useAIStore.getState().selectedProvider).toBe(provider);
-      });
+      }
     });
   });
 

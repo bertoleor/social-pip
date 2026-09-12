@@ -257,12 +257,12 @@ describe("useAI", () => {
 
       const providers: Array<"nim" | "openai" | "anthropic"> = ["nim", "openai", "anthropic"];
 
-      providers.forEach((provider) => {
+      for (const provider of providers) {
         act(() => {
           result.current.setProvider(provider);
         });
         expect(result.current.selectedProvider).toBe(provider);
-      });
+      }
     });
   });
 

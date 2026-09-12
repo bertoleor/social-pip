@@ -1,5 +1,5 @@
 import { type UnlistenFn, listen } from "@tauri-apps/api/event";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export const SHORTCUT_EVENTS = {
   NEW_POST: "shortcut:new-post",
@@ -40,20 +40,23 @@ export function useGlobalShortcuts(
 
   const [isListening, setIsListening] = useState(false);
 
-  const handlers: ShortcutHandlers = {
-    onNewPost: useCallback(() => {
-      onNewPost?.();
-    }, [onNewPost]),
-    onSave: useCallback(() => {
-      onSave?.();
-    }, [onSave]),
-    onQuit: useCallback(() => {
-      onQuit?.();
-    }, [onQuit]),
-    onSettings: useCallback(() => {
-      onSettings?.();
-    }, [onSettings]),
-  };
+  const handlers: ShortcutHandlers = useMemo(
+    () => ({
+      onNewPost: (): void => {
+        onNewPost?.();
+      },
+      onSave: (): void => {
+        onSave?.();
+      },
+      onQuit: (): void => {
+        onQuit?.();
+      },
+      onSettings: (): void => {
+        onSettings?.();
+      },
+    }),
+    [onNewPost, onSave, onQuit, onSettings],
+  );
 
   useEffect(() => {
     if (!enabled) {

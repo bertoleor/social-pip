@@ -5,6 +5,30 @@ export type PostingPlatform =
   | 'twitter'
   | 'linkedin'
 
+export type PlatformStatus = 'ACTIVE' | 'PENDING'
+
+export const ACTIVE_PLATFORMS = ['facebook_groups', 'facebook_pages'] as const
+export const PENDING_PLATFORMS = ['instagram', 'twitter', 'linkedin'] as const
+
+export type ActivePlatform = typeof ACTIVE_PLATFORMS[number]
+export type PendingPlatform = typeof PENDING_PLATFORMS[number]
+
+export const PLATFORM_STATUS: Record<PostingPlatform, PlatformStatus> = {
+  facebook_groups: 'ACTIVE',
+  facebook_pages: 'ACTIVE',
+  instagram: 'PENDING',
+  twitter: 'PENDING',
+  linkedin: 'PENDING',
+} as const satisfies Record<PostingPlatform, PlatformStatus>
+
+export function getPlatformStatus(platform: PostingPlatform): PlatformStatus {
+  return PLATFORM_STATUS[platform]
+}
+
+export function isPlatformActive(platform: PostingPlatform): boolean {
+  return getPlatformStatus(platform) === 'ACTIVE'
+}
+
 export const PLATFORM_PRIORITIES: Record<PostingPlatform, number> = {
   facebook_groups: 0,
   facebook_pages: 10,

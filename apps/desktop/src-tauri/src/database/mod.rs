@@ -11,15 +11,18 @@
 pub mod models;
 pub mod persistence;
 pub mod recovery;
+pub mod sqlite_store;
 
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use std::sync::OnceLock;
 use tokio::sync::Mutex;
 
 // Re-export main types for convenience
 pub use models::{PostSessionModel, PostJobModel, SessionStatus, JobStatus, ErrorCategory};
 pub use persistence::{InMemoryStore, InMemorySessionStore, InMemoryJobStore, SessionPersistence, JobPersistence};
 pub use recovery::{recover_pending_sessions, RecoveryResult, RecoverySummary};
+pub use sqlite_store::{SqliteSessionStore, SqliteJobStore};
 
 // ============================================
 // DATABASE CONNECTION TYPES
@@ -95,6 +98,34 @@ impl DatabasePool {
         let mut connected = self.connected.lock().await;
         *connected = false;
     }
+}
+
+// ============================================
+// SQLITE STORES LAZY INITIALIZATION
+// ============================================
+
+/// Global lazy-initialized SQLite stores
+/// Uses OnceLock for thread-safe lazy initialization
+static SQLITE_STORES: OnceLock<(SqliteSessionStore, SqliteJobStore)> = OnceLock::new();
+
+/// Initialize SQLite stores lazily
+/// Returns a reference to the initialized stores
+pub fn get_sqlite_stores() -> Option<&'static (SqliteSessionStore, SqliteJobStore)> {
+    SQLITE_STORES.get_or_init(|| {
+        let db_path = get_app_data_path()
+            .unwrap_or_else(|_| "social-pip.db".to_string());
+        (
+            SqliteSessionStore::new(db_path.clone()),
+            SqliteJobStore::new(db_path),
+        )
+    }).into()
+}
+
+/// Get the application data directory for database storage
+fn get_app_data_path() -> Result<String, String> {
+    dirs::data_local_dir()
+        .map(|p| p.join("social-pip").join("social-pip.db").to_string_lossy().to_string())
+        .ok_or_else(|| "Could not determine app data path".to_string())
 }
 
 // ============================================

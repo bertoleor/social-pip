@@ -10,18 +10,22 @@
 // ============================================================================
 
 export interface SelectorChain {
-  v1: string
-  v2?: string
-  v3?: string
+  v1: string;
+  v2?: string;
+  v3?: string;
 }
 
 export interface GroupSelectors {
-  groupName: SelectorChain
-  groupLink: SelectorChain
-  memberCount: SelectorChain
-  privacyBadge: SelectorChain
-  groupCard: SelectorChain
-  groupsContainer: SelectorChain
+  groupName: SelectorChain;
+  groupLink: SelectorChain;
+  memberCount: SelectorChain;
+  privacyBadge: SelectorChain;
+  groupCard: SelectorChain;
+  groupsContainer: SelectorChain;
+  // Aliases for test compatibility
+  groupItem: SelectorChain;
+  privacy: SelectorChain;
+  joinedGroupsSection: SelectorChain;
 }
 
 // ============================================================================
@@ -49,9 +53,9 @@ export const GROUP_SELECTORS: GroupSelectors = {
   },
 
   memberCount: {
-    v1: 'span[data-testid="member-count"]',
-    v2: 'div[role="main"] span:has-text("members")',
-    v3: 'a[href*="/groups/"] span:has-text("member")',
+    v1: '[data-testid="member-count"]',
+    v2: 'span[class*="member"]',
+    v3: 'div[class*="member"]',
   },
 
   privacyBadge: {
@@ -71,7 +75,26 @@ export const GROUP_SELECTORS: GroupSelectors = {
     v2: 'div[role="main"] > div > div',
     v3: 'div[id^="mount_"]',
   },
-}
+
+  // Aliases for test compatibility
+  groupItem: {
+    v1: 'div[data-testid="group-item"]',
+    v2: 'div[data-testid="group-card"]',
+    v3: 'div[role="article"]',
+  },
+
+  privacy: {
+    v1: 'span[data-testid="privacy-badge"]',
+    v2: 'span[aria-label*="Private"]',
+    v3: 'span[aria-label*="Public"]',
+  },
+
+  joinedGroupsSection: {
+    v1: 'div[data-testid="joined-groups"]',
+    v2: 'div[data-testid="groups-container"]',
+    v3: 'div[role="main"] > div',
+  },
+};
 
 /**
  * POST_SELECTORS - Selectors for post form elements
@@ -94,7 +117,7 @@ export const POST_SELECTORS = {
     v2: 'div[contenteditable="true"][role="textbox"]',
     v3: 'textarea[name="message"]',
   },
-}
+};
 
 /**
  * RATE_LIMIT_SELECTORS - Selectors for rate limit detection
@@ -111,7 +134,7 @@ export const RATE_LIMIT_SELECTORS = {
     v2: 'div[role="alert"]:has-text("temporarily blocked")',
     v3: 'span:has-text("try again")',
   },
-}
+};
 
 // ============================================================================
 // Utility Functions
@@ -129,20 +152,19 @@ export const RATE_LIMIT_SELECTORS = {
  */
 export function queryWithFallback(
   selectors: string[],
-  root: Element | Document = document
+  root: Element | Document = document,
 ): Element | null {
   for (const selector of selectors) {
     try {
-      const element = root.querySelector(selector)
+      const element = root.querySelector(selector);
       if (element) {
-        return element
+        return element;
       }
     } catch {
       // Invalid selector, try next
-      continue
     }
   }
-  return null
+  return null;
 }
 
 /**
@@ -156,19 +178,19 @@ export function queryWithFallback(
  */
 export function queryAllWithFallback(
   selectors: string[],
-  root: Element | Document = document
+  root: Element | Document = document,
 ): NodeListOf<Element> {
   for (const selector of selectors) {
     try {
-      const elements = root.querySelectorAll(selector)
+      const elements = root.querySelectorAll(selector);
       if (elements.length > 0) {
-        return elements
+        return elements;
       }
     } catch {
-      continue
+      // Invalid selector, try next
     }
   }
-  return document.querySelectorAll('.__nonexistent__')
+  return document.querySelectorAll(".__nonexistent__");
 }
 
 /**
@@ -178,7 +200,7 @@ export function queryAllWithFallback(
  * @returns Array of selectors in version order
  */
 export function getSelectorsFromChain(chain: SelectorChain): string[] {
-  return [chain.v1, chain.v2, chain.v3].filter((s): s is string => s !== undefined)
+  return [chain.v1, chain.v2, chain.v3].filter((s): s is string => s !== undefined);
 }
 
 /**
@@ -188,7 +210,7 @@ export function getSelectorsFromChain(chain: SelectorChain): string[] {
  * @returns Text content or empty string if element is null
  */
 export function safeTextContent(element: Element | null): string {
-  return element?.textContent?.trim() ?? ''
+  return element?.textContent?.trim() ?? "";
 }
 
 /**
@@ -200,26 +222,29 @@ export function safeTextContent(element: Element | null): string {
  * @returns Numeric value or null if parsing fails
  */
 export function parseNumericText(text: string): number | null {
-  if (!text) return null
+  if (!text) return null;
 
-  const cleanText = text.toLowerCase().replace(/[^0-9.kmb\s]/g, '').trim()
-  if (!cleanText) return null
+  const cleanText = text
+    .toLowerCase()
+    .replace(/[^0-9.kmb\s]/g, "")
+    .trim();
+  if (!cleanText) return null;
 
-  const match = cleanText.match(/^([\d,.]+)\s*([kmb])?$/)
-  if (!match?.[1]) return null
+  const match = cleanText.match(/^([\d,.]+)\s*([kmb])?$/);
+  if (!match?.[1]) return null;
 
-  const numPart = parseFloat(match[1].replace(/,/g, ''))
-  if (isNaN(numPart)) return null
+  const numPart = Number.parseFloat(match[1].replace(/,/g, ""));
+  if (Number.isNaN(numPart)) return null;
 
-  const multiplier = match[2]
+  const multiplier = match[2];
   switch (multiplier) {
-    case 'k':
-      return Math.round(numPart * 1000)
-    case 'm':
-      return Math.round(numPart * 1_000_000)
-    case 'b':
-      return Math.round(numPart * 1_000_000_000)
+    case "k":
+      return Math.round(numPart * 1000);
+    case "m":
+      return Math.round(numPart * 1_000_000);
+    case "b":
+      return Math.round(numPart * 1_000_000_000);
     default:
-      return Math.round(numPart)
+      return Math.round(numPart);
   }
 }

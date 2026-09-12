@@ -1,5 +1,10 @@
 import { cn } from "@/lib/utils";
-import { type PlatformTarget, type PostingPlatform, getPlatformPriority } from "@social-pip/types";
+import {
+  type PlatformTarget,
+  type PostingPlatform,
+  getPlatformPriority,
+  isPlatformActive,
+} from "@social-pip/types";
 import { Check, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "./Button";
@@ -18,13 +23,18 @@ interface PlatformOption {
   label: string;
 }
 
-const PLATFORM_OPTIONS: PlatformOption[] = [
+const ALL_PLATFORM_OPTIONS: PlatformOption[] = [
   { platform: "facebook_groups", priority: 0, label: "Facebook Groups" },
   { platform: "facebook_pages", priority: 10, label: "Facebook Pages" },
   { platform: "instagram", priority: 20, label: "Instagram" },
   { platform: "twitter", priority: 30, label: "Twitter/X" },
   { platform: "linkedin", priority: 40, label: "LinkedIn" },
 ];
+
+// E1.8: Filter to only show ACTIVE platforms
+const PLATFORM_OPTIONS: PlatformOption[] = ALL_PLATFORM_OPTIONS.filter((option) =>
+  isPlatformActive(option.platform),
+);
 
 const PLATFORM_COLORS: Record<PostingPlatform, string> = {
   facebook_groups: "#1877F2",

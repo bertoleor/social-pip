@@ -250,6 +250,7 @@ export function Calendar({
       </nav>
 
       {/* Calendar Grid - role="grid" is correct per WAI-ARIA APG for interactive calendars */}
+      {/* biome-ignore lint/a11y/useSemanticElements: role="grid" on table is intentional per WAI-ARIA APG for interactive calendars */}
       <table role="grid" aria-label="Calendar" className="w-full border-collapse">
         <thead>
           <tr>

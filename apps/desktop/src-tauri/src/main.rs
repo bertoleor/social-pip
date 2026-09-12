@@ -15,6 +15,8 @@ mod secure_storage;
 mod tray;
 mod shortcuts;
 mod autostart;
+mod platform_gating;
+mod mcp_server;
 
 use commands::account::{
     get_accounts, get_account, create_account, update_account, delete_account,
@@ -66,7 +68,51 @@ use ai_service::{AIService, AIConfig, CaptionRequest, CaptionResponse, get_secto
 use anti_ban::{AntiBanEngine, AntiBanStats};
 use alert_system::{AlertEngine, Alert, AlertStats, AlertType};
 use error_handler::Severity;
-use shortcuts::{ShortcutId, ShortcutEvent, create_shortcut_event, get_all_shortcuts};
+use shortcuts::{create_shortcut_event, get_all_shortcuts};
+
+// ============================================
+// VAULT PASSWORD MANAGEMENT
+// ============================================
+
+/// Generate a random 32-byte hex string for vault password
+/// Uses ring::rand for cryptographically secure random generation
+fn generate_vault_password() -> String {
+    use rand::RngCore;
+    let mut bytes = [0u8; 32];
+    rand::thread_rng().fill_bytes(&mut bytes);
+    hex::encode(bytes)
+}
+
+/// Get or create the vault password from OS keyring
+/// Falls back to generating a new random password if keyring is unavailable
+fn get_or_create_vault_password() -> String {
+    let entry = keyring::Entry::new("social-pip", "vault-password");
+    match entry {
+        Ok(entry) => {
+            // Try to get existing password
+            match entry.get_password() {
+                Ok(password) => {
+                    log::info!("Retrieved vault password from OS keyring");
+                    password
+                }
+                Err(_) => {
+                    // No existing password, generate new one
+                    let password = generate_vault_password();
+                    if let Err(e) = entry.set_password(&password) {
+                        log::warn!("Failed to store password in keyring: {}", e);
+                    } else {
+                        log::info!("Stored vault password in OS keyring");
+                    }
+                    password
+                }
+            }
+        }
+        Err(e) => {
+            log::warn!("Keyring unavailable: {}, using ephemeral password", e);
+            generate_vault_password()
+        }
+    }
+}
 
 #[derive(Default)]
 pub struct AppState {
@@ -410,7 +456,17 @@ fn clear_old_alerts(days: u32, state: tauri::State<AppState>) -> Result<u32, Str
 fn main() {
     // Check for native messaging mode
     let args: Vec<String> = std::env::args().collect();
-    
+
+    // E2.15: Check for MCP server mode
+    if args.contains(&"--mcp".to_string()) {
+        if let Err(e) = mcp_server::run_mcp_server() {
+            log::error!("MCP server error: {}", e);
+            eprintln!("MCP server error: {}", e);
+            std::process::exit(1);
+        }
+        return;
+    }
+
     if args.contains(&"--native-messaging".to_string()) {
         // Run as native messaging host for Chrome extension
         run_native_messaging_mode();
@@ -433,23 +489,19 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_notification::init())
-        // Stronghold plugin for secure credential storage
+// Stronghold plugin for secure credential storage
         // The closure receives the password and should return a hashed key (Vec<u8>)
-        // In production, use Argon2, Blake2b, or similar secure hashing
-.plugin(tauri_plugin_stronghold::Builder::new(|password| {
-// SECURITY NOTE: In production, replace this with proper password hashing:
-// 1. Use Argon2id with proper parameters (time_cost: 10, mem_cost: 10000)
-// 2. Derive salt from user-specific data or hardware identifier
-// 3. Consider using tauri-plugin-keyring for master password storage
-//
-// For development only - uses simple SHA-256 based derivation:
-use sha2::{Sha256, Digest};
-let mut hasher = Sha256::new();
-hasher.update(b"social-pip-dev-salt-change-in-production");
-hasher.update(password.as_bytes());
-let result = hasher.finalize();
-result.to_vec()
-}).build())
+        // Uses OS keyring for secure password storage with fallback to random generation
+        .plugin(tauri_plugin_stronghold::Builder::new(|_password| {
+            let vault_password = get_or_create_vault_password();
+            // Hash the password for Stronghold key derivation
+            use sha2::{Sha256, Digest};
+            let mut hasher = Sha256::new();
+            hasher.update(b"social-pip-vault-key");
+            hasher.update(vault_password.as_bytes());
+            let result = hasher.finalize();
+            result.to_vec()
+        }).build())
 // Global keyboard shortcuts plugin
     .plugin(tauri_plugin_global_shortcut::Builder::new().build())
     // Autostart plugin for launch at login
@@ -588,11 +640,11 @@ Ok(())
 /// - Click handler to show/hide window
 /// - Menu event handler for actions
 fn setup_system_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-use tauri::{
-menu::{MenuBuilder, MenuItemBuilder},
-tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-Manager,
-};
+    use tauri::{
+        menu::{MenuBuilder, MenuItemBuilder},
+        tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+        Emitter, Manager,
+    };
 
 // Create menu items
 let open_item = MenuItemBuilder::with_id("open", "Abrir Social-Pip").build(app)?;
@@ -618,10 +670,14 @@ let _ = window.unminimize();
 let _ = window.set_focus();
 }
 }
-"settings" => {
-// TODO: Navigate to settings page
-log::info!("Settings menu item clicked");
-}
+                "settings" => {
+                    if let Some(window) = app.get_webview_window("main") {
+                        let _ = window.show();
+                        let _ = window.unminimize();
+                        let _ = window.set_focus();
+                        let _ = window.emit("navigate-to", "/settings");
+                    }
+                }
 "quit" => {
 // Exit the application
 app.exit(0);
@@ -671,7 +727,7 @@ Ok(())
 /// Emits events to the frontend which handles the actual actions
 fn setup_global_shortcuts(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 use tauri::{Emitter, Manager};
-use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
+use tauri_plugin_global_shortcut::GlobalShortcutExt;
 
 // Register each shortcut with its handler
 for (id, _key_combo) in get_all_shortcuts() {
@@ -744,32 +800,29 @@ Ok(Shortcut::new(Some(modifiers), code))
 fn perform_startup_recovery() -> Result<database::RecoverySummary, String> {
     use database::{InMemoryStore, recover_pending_sessions};
 
-    // Create in-memory store for recovery check
-    // In production, this would use the actual SQLite connection
-    let store = InMemoryStore::new();
-
-    // Attempt recovery
-    let result = recover_pending_sessions(&store.sessions, &store.jobs);
-
-    // Log recovery results
-    match &result {
-        Ok(summary) => {
-            if summary.sessions_recovered > 0 {
-                log::info!(
-                    "Startup recovery complete: {} sessions, {} pending jobs",
-                    summary.sessions_recovered,
-                    summary.total_pending_jobs
-                );
-            } else {
-                log::info!("Startup recovery: no interrupted sessions found");
+    // Try SQLite first for production recovery
+    if let Some(stores) = database::get_sqlite_stores() {
+        let result = recover_pending_sessions(&stores.0, &stores.1);
+        match &result {
+            Ok(summary) => {
+                if summary.sessions_recovered > 0 {
+                    log::info!(
+                        "Recovered {} sessions from SQLite database",
+                        summary.sessions_recovered
+                    );
+                }
+            }
+            Err(e) => {
+                log::warn!("SQLite recovery failed: {}, falling back to in-memory", e);
             }
         }
-        Err(e) => {
-            log::error!("Startup recovery failed: {}", e);
-        }
+        return result;
     }
 
-    result
+    // Fallback to in-memory (empty) for v1
+    log::warn!("SQLite stores not available, using empty in-memory store for recovery");
+    let store = InMemoryStore::new();
+    recover_pending_sessions(&store.sessions, &store.jobs)
 }
 
 /// Run in native messaging mode for Chrome extension communication

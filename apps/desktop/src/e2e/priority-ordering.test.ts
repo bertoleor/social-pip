@@ -275,9 +275,9 @@ describe("E2E: Priority Ordering Validation", () => {
 
       expect(state.jobs.map((j) => j.groupId)).toEqual(creationOrder);
 
-      state.jobs.forEach((job) => {
+      for (const job of state.jobs) {
         expect(job.priority).toBe(0);
-      });
+      }
     });
 
     it("should validate mixed priority jobs sort correctly", async () => {

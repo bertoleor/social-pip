@@ -578,8 +578,11 @@ export {
   PLATFORM_PRIORITIES,
   getPlatformPriority,
   isPostingPlatform,
+  PLATFORM_STATUS,
+  getPlatformStatus,
+  isPlatformActive,
 } from './platform'
-export type { PostingPlatform, PlatformTarget } from './platform'
+export type { PostingPlatform, PlatformTarget, PlatformStatus } from './platform'
 
 export type { StartMultiPlatformSessionInput } from './posting'
 

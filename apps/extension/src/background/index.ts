@@ -1,9 +1,9 @@
 // Social-Pip Chrome Extension - Service Worker
 // Maneja comunicación con Desktop App via Native Messaging
 
-const NATIVE_HOST = 'com.social_pip.app';
-const TASK_QUEUE_KEY = 'socialpip_task_queue';
-const ACCOUNT_PROFILE_KEY = 'socialpip_current_profile';
+const NATIVE_HOST = "com.social_pip.app";
+const TASK_QUEUE_KEY = "socialpip_task_queue";
+const ACCOUNT_PROFILE_KEY = "socialpip_current_profile";
 
 interface TaskMessage {
   id: string;
@@ -39,7 +39,7 @@ async function addTaskToQueue(task: TaskMessage): Promise<void> {
 
 async function removeTaskFromQueue(taskId: string): Promise<void> {
   const queue = await getTaskQueue();
-  const filtered = queue.filter(t => t.id !== taskId);
+  const filtered = queue.filter((t) => t.id !== taskId);
   await chrome.storage.local.set({ [TASK_QUEUE_KEY]: filtered });
 }
 
@@ -47,26 +47,26 @@ async function removeTaskFromQueue(taskId: string): Promise<void> {
 async function sendToDesktop(message: object): Promise<unknown> {
   try {
     const port = chrome.runtime.connectNative(NATIVE_HOST);
-    
+
     return new Promise((resolve, reject) => {
       port.onMessage.addListener((response) => {
         resolve(response);
         port.disconnect();
       });
-      
+
       port.onDisconnect.addListener(() => {
-        reject(new Error('Native messaging disconnected'));
+        reject(new Error("Native messaging disconnected"));
       });
-      
+
       port.postMessage(message);
-      
+
       setTimeout(() => {
-        reject(new Error('Native messaging timeout'));
+        reject(new Error("Native messaging timeout"));
         port.disconnect();
       }, 30000);
     });
   } catch (error) {
-    console.error('Failed to send to desktop:', error);
+    console.error("Failed to send to desktop:", error);
     throw error;
   }
 }
@@ -74,27 +74,27 @@ async function sendToDesktop(message: object): Promise<unknown> {
 // Detectar perfil actual via cookies
 async function detectCurrentProfile(): Promise<string | null> {
   try {
-    const facebookCookies = await chrome.cookies.getAll({ 
-      url: 'https://www.facebook.com',
-      name: 'c_user'
+    const facebookCookies = await chrome.cookies.getAll({
+      url: "https://www.facebook.com",
+      name: "c_user",
     });
-    
-    if (facebookCookies.length > 0) {
+
+    if (facebookCookies.length > 0 && facebookCookies[0]?.value) {
       return `fb_${facebookCookies[0].value}`;
     }
 
     const instagramCookies = await chrome.cookies.getAll({
-      url: 'https://www.instagram.com',
-      name: 'sessionid'
+      url: "https://www.instagram.com",
+      name: "sessionid",
     });
 
-    if (instagramCookies.length > 0) {
+    if (instagramCookies.length > 0 && instagramCookies[0]?.value) {
       return `ig_${instagramCookies[0].value.substring(0, 20)}`;
     }
 
     return null;
   } catch (error) {
-    console.error('Failed to detect profile:', error);
+    console.error("Failed to detect profile:", error);
     return null;
   }
 }
@@ -104,64 +104,65 @@ async function executeTask(task: TaskMessage): Promise<TaskResult> {
   try {
     // Verificar anti-ban primero
     const canPost = await sendToDesktop({
-      type: 'check_can_post',
+      type: "check_can_post",
       platform: task.platform,
-      action: task.action
+      action: task.action,
     });
 
     if (!canPost) {
       return {
         taskId: task.id,
         success: false,
-        error: 'Rate limit exceeded - anti-ban blocking'
+        error: "Rate limit exceeded - anti-ban blocking",
       };
     }
 
     // Obtener delay
-    const delay = await sendToDesktop({
-      type: 'get_next_delay',
-      platform: task.platform
-    }) as number;
+    const delay = (await sendToDesktop({
+      type: "get_next_delay",
+      platform: task.platform,
+    })) as number;
 
     // Enviar comando a content script para ejecutar
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
-    if (!tab.id) {
+
+    const tabId = tab?.id;
+    if (!tabId) {
       return {
         taskId: task.id,
         success: false,
-        error: 'No active tab'
+        error: "No active tab",
       };
     }
 
     // Enviar a content script para ejecutar la acción
-    const result = await chrome.tabs.sendMessage(tab.id, {
+    const result = await chrome.tabs.sendMessage(tabId, {
       action: task.action,
       content: task.content,
       mediaUrls: task.mediaUrls,
-      target: task.target
+      target: task.target,
     });
 
     // Registrar acción en anti-ban engine
     await sendToDesktop({
-      type: 'record_post_action',
+      type: "record_post_action",
       platform: task.platform,
       action: task.action,
       success: result.success,
-      delay_used_ms: delay
+      delay_used_ms: delay,
     });
 
     return {
       taskId: task.id,
       success: result.success,
       postUrl: result.postUrl,
-      platformPostId: result.platformPostId
+      platformPostId: result.platformPostId,
     };
   } catch (error) {
     return {
       taskId: task.id,
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
@@ -169,43 +170,47 @@ async function executeTask(task: TaskMessage): Promise<TaskResult> {
 // Processar cola de tareas
 async function processTaskQueue(): Promise<void> {
   const queue = await getTaskQueue();
-  
+
   if (queue.length === 0) {
     return;
   }
 
   const task = queue[0];
-  
+
+  if (!task) {
+    return;
+  }
+
   // Obtener delay antes de ejecutar
-  const delay = await sendToDesktop({
-    type: 'get_next_delay',
-    platform: task.platform
-  }) as number;
+  const delay = (await sendToDesktop({
+    type: "get_next_delay",
+    platform: task.platform,
+  })) as number;
 
   // Esperar el delay
-  await new Promise(resolve => setTimeout(resolve, delay));
+  await new Promise((resolve) => setTimeout(resolve, delay));
 
   // Verificar si debe hacer break
-  const shouldBreak = await sendToDesktop({
-    type: 'should_break',
-    platform: task.platform
-  }) as boolean;
+  const shouldBreak = (await sendToDesktop({
+    type: "should_break",
+    platform: task.platform,
+  })) as boolean;
 
   if (shouldBreak) {
-    console.log('Taking batch break...');
-    await new Promise(resolve => setTimeout(resolve, 20 * 60 * 1000)); // 20 min break
+    console.log("Taking batch break...");
+    await new Promise((resolve) => setTimeout(resolve, 20 * 60 * 1000)); // 20 min break
   }
 
   // Ejecutar tarea
   const result = await executeTask(task);
-  
+
   // Remover de cola
   await removeTaskFromQueue(task.id);
 
   // Notificar resultado
   await sendToDesktop({
-    type: 'task_result',
-    result
+    type: "task_result",
+    result,
   });
 
   // Continuar con siguiente tarea
@@ -217,8 +222,8 @@ async function processTaskQueue(): Promise<void> {
 // Event Listeners
 
 // Message handler - recibe mensajes de content scripts y popup
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'add_task') {
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === "add_task") {
     addTaskToQueue(message.task).then(() => {
       sendResponse({ success: true });
       processTaskQueue();
@@ -226,15 +231,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  if (message.type === 'get_status') {
-    getTaskQueue().then(queue => {
+  if (message.type === "get_status") {
+    getTaskQueue().then((queue) => {
       sendResponse({ queueLength: queue.length });
     });
     return true;
   }
 
-  if (message.type === 'detect_profile') {
-    detectCurrentProfile().then(profile => {
+  if (message.type === "detect_profile") {
+    detectCurrentProfile().then((profile) => {
       sendResponse({ profile });
     });
     return true;
@@ -245,20 +250,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Install/update handler
 chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === 'install') {
-    console.log('Social-Pip Extension installed');
-    
+  if (details.reason === "install") {
+    console.log("Social-Pip Extension installed");
+
     chrome.storage.local.set({
       [TASK_QUEUE_KEY]: [],
-      [ACCOUNT_PROFILE_KEY]: null
+      [ACCOUNT_PROFILE_KEY]: null,
     });
   }
 });
 
 // Startup handler
 chrome.runtime.onStartup.addListener(() => {
-  console.log('Social-Pip Extension starting');
+  console.log("Social-Pip Extension starting");
   processTaskQueue();
 });
 
-console.log('Social-Pip Service Worker initialized');
+console.log("Social-Pip Service Worker initialized");

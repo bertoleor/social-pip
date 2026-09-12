@@ -54,6 +54,7 @@
       "dist",
       "coverage",
       "src-tauri/target",
+      "src-tauri/gen",
       "*.snap",
       "__snapshots__",
       "playwright.config.ts",

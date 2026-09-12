@@ -1,22 +1,19 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { crx } from '@crxjs/vite-plugin'
-import path from 'path'
+import path from "node:path";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { crx } from "@crxjs/vite-plugin";
+import manifest from "./manifest.config";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    crx({
-      manifestXmlPath: './public/manifest.xml',
-    }),
-  ],
-  build: {
-    outDir: 'dist',
-    emptyDirFirst: true,
-  },
+  plugins: [react(), crx({ manifest })],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+  server: {
+    cors: {
+      origin: [/chrome-extension:\/\//],
+    },
+  },
+});

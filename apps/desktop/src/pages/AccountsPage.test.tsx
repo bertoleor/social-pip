@@ -27,11 +27,15 @@ vi.mock("@/components/organisms/AccountList", () => ({
       {accounts.map((account: Account) => (
         <div key={account.id} data-testid={`account-${account.id}`}>
           <span>{account.name}</span>
-          <button onClick={() => onEdit(account.id)}>Edit</button>
-          <button onClick={() => onDelete(account.id)}>Delete</button>
+          <button type="button" onClick={() => onEdit(account.id)}>
+            Edit
+          </button>
+          <button type="button" onClick={() => onDelete(account.id)}>
+            Delete
+          </button>
         </div>
       ))}
-      <button onClick={onAdd} data-testid="add-button">
+      <button type="button" onClick={onAdd} data-testid="add-button">
         Add
       </button>
     </div>
@@ -50,10 +54,11 @@ vi.mock("@/components/organisms/AccountFormModal", () => ({
     if (!isOpen) return null;
     return (
       <div data-testid="form-modal" data-mode={mode}>
-        <button onClick={onCancel} data-testid="cancel-button">
+        <button type="button" onClick={onCancel} data-testid="cancel-button">
           Cancel
         </button>
         <button
+          type="button"
           onClick={() => onSubmit({ platform: "facebook", name: "Test" })}
           data-testid="submit-button"
         >
@@ -70,7 +75,11 @@ interface MockButtonProps {
 }
 
 vi.mock("@/components/atoms/Button", () => ({
-  Button: ({ children, onClick }: MockButtonProps) => <button onClick={onClick}>{children}</button>,
+  Button: ({ children, onClick }: MockButtonProps) => (
+    <button type="button" onClick={onClick}>
+      {children}
+    </button>
+  ),
 }));
 
 import { useAccounts } from "@/hooks/useAccounts";

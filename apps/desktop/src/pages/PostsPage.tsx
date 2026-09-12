@@ -1,10 +1,12 @@
 import { Button } from "@/components/atoms/Button";
+import { Skeleton } from "@/components/atoms/Skeleton";
+import { EmptyState } from "@/components/molecules/EmptyState";
 import { PostFormModal } from "@/components/organisms/PostFormModal";
 import { PostList } from "@/components/organisms/PostList";
 import { usePosts } from "@/hooks/usePosts";
 import { useAccountsStore } from "@/stores/accountsStore";
 import type { CreatePostInput, UpdatePostInput } from "@social-pip/types";
-import { Plus } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function PostsPage(): React.ReactElement {
@@ -42,10 +44,8 @@ export default function PostsPage(): React.ReactElement {
     <div data-testid="page-posts" className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Posts</h1>
-          <p className="text-gray-500 text-sm">
-            Manage your social media posts across all platforms
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">Posts</h1>
+          <p className="text-muted text-sm">Manage your social media posts across all platforms</p>
         </div>
         <Button onClick={() => setShowModal(true)} disabled={selectedAccount === undefined}>
           <Plus className="h-4 w-4 mr-2" />
@@ -53,13 +53,31 @@ export default function PostsPage(): React.ReactElement {
         </Button>
       </div>
 
-      <PostList
-        posts={posts}
-        loading={loading}
-        onEdit={handleEdit}
-        onDelete={deletePost}
-        onAdd={() => setShowModal(true)}
-      />
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Skeleton variant="card" />
+          <Skeleton variant="card" />
+          <Skeleton variant="card" />
+        </div>
+      ) : posts.length === 0 ? (
+        <EmptyState
+          icon={FileText}
+          title="No posts yet"
+          description="Create your first post to get started"
+          action={{
+            label: "New Post",
+            onClick: () => setShowModal(true),
+          }}
+        />
+      ) : (
+        <PostList
+          posts={posts}
+          loading={loading}
+          onEdit={handleEdit}
+          onDelete={deletePost}
+          onAdd={() => setShowModal(true)}
+        />
+      )}
 
       {showModal && selectedAccount !== undefined && (
         <PostFormModal

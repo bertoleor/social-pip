@@ -1,7 +1,10 @@
 import { Calendar } from "@/components/Schedule/Calendar";
 import { DayModal } from "@/components/Schedule/DayModal";
+import { Skeleton } from "@/components/atoms/Skeleton";
+import { EmptyState } from "@/components/molecules/EmptyState";
 import { useSchedule } from "@/hooks/useSchedule";
 import type { Schedule } from "@social-pip/types";
+import { Calendar as CalendarIcon } from "lucide-react";
 /**
  * @fileoverview Schedule page - calendar view of scheduled posts
  */
@@ -17,7 +20,7 @@ export default function SchedulePage(): React.ReactElement {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Use the schedule hook
-  const { schedules, cancelSchedule } = useSchedule();
+  const { schedules, cancelSchedule, loading } = useSchedule();
 
   // Handle day click from calendar
   const handleDayClick = useCallback((date: Date, daySchedules: Schedule[]): void => {
@@ -51,8 +54,8 @@ export default function SchedulePage(): React.ReactElement {
   return (
     <div data-testid="page-schedule" className="p-6">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold">Schedule</h1>
-        <p className="text-muted-foreground mt-2">
+        <h1 className="text-2xl font-bold text-foreground">Schedule</h1>
+        <p className="text-muted mt-2">
           View and manage your scheduled posts. Click on a day to see details.
         </p>
       </header>
@@ -81,12 +84,40 @@ export default function SchedulePage(): React.ReactElement {
 
       {/* Calendar */}
       <div className="bg-white rounded-lg shadow p-4">
-        <Calendar
-          schedules={schedules}
-          currentMonth={currentMonth}
-          onDayClick={handleDayClick}
-          onMonthChange={handleMonthChange}
-        />
+        {loading ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Skeleton variant="line" className="w-32" />
+              <div className="flex gap-2">
+                <Skeleton variant="circle" size={32} />
+                <Skeleton variant="circle" size={32} />
+              </div>
+            </div>
+            <div className="grid grid-cols-7 gap-2">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <Skeleton key={`day-${i}`} variant="line" className="h-8" />
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-2">
+              {Array.from({ length: 35 }).map((_, i) => (
+                <Skeleton key={`cell-${i}`} variant="line" className="h-24" />
+              ))}
+            </div>
+          </div>
+        ) : schedules.length === 0 ? (
+          <EmptyState
+            icon={CalendarIcon}
+            title="No schedules yet"
+            description="Schedule your first post to see it here"
+          />
+        ) : (
+          <Calendar
+            schedules={schedules}
+            currentMonth={currentMonth}
+            onDayClick={handleDayClick}
+            onMonthChange={handleMonthChange}
+          />
+        )}
       </div>
 
       {/* Day Modal */}

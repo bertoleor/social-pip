@@ -73,7 +73,7 @@ export const test = base.extend<MyFixtures, MyWorkerFixtures>({
    * - Handles cleanup on worker shutdown
    */
   tauriApp: [
-    async ({}, use) => {
+    async (_options, use) => {
       // Build Tauri app in debug mode
       buildTauriApp();
 

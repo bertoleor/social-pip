@@ -369,6 +369,11 @@ pub struct AntiBanStats {
 }
 
 pub fn get_platform_config(platform: &str) -> AntiBanConfig {
+    // E1.7: Skip pending platforms — return Facebook defaults for backward compatibility
+    if !crate::platform_gating::is_platform_active(platform) {
+        return AntiBanConfig::default();
+    }
+
     match platform {
         "facebook_groups" => AntiBanConfig {
             platform: platform.to_string(),

@@ -1,19 +1,24 @@
+/**
+ * U3.3: Badge with semantic color variants
+ * default, success, warning, error, info — mapped to semantic tokens
+ */
 import { cn } from "@/lib/utils";
 import type { HTMLAttributes, ReactNode } from "react";
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: "success" | "warning" | "error" | "info" | "neutral";
+  variant?: "default" | "success" | "warning" | "error" | "info" | "neutral";
   size?: "sm" | "md";
   children: ReactNode;
   className?: string;
 }
 
 const variantStyles = {
-  success: "bg-green-100 text-green-700",
-  warning: "bg-yellow-100 text-yellow-700",
-  error: "bg-red-100 text-red-700",
-  info: "bg-blue-100 text-blue-700",
-  neutral: "bg-gray-100 text-gray-700",
+  default: "bg-muted/20 text-foreground dark:bg-muted/30",
+  success: "bg-success/10 text-success dark:bg-success/20",
+  warning: "bg-warning/10 text-warning dark:bg-warning/20",
+  error: "bg-error/10 text-error dark:bg-error/20",
+  info: "bg-info/10 text-info dark:bg-info/20",
+  neutral: "bg-muted/40 text-muted-foreground dark:bg-muted/50",
 };
 
 const sizeStyles = {
@@ -22,7 +27,7 @@ const sizeStyles = {
 };
 
 export function Badge({
-  variant = "neutral",
+  variant = "default",
   size = "md",
   children,
   className,

@@ -1,10 +1,12 @@
 import { Button } from "@/components/atoms/Button";
+import { Skeleton } from "@/components/atoms/Skeleton";
+import { EmptyState } from "@/components/molecules/EmptyState";
 import { AccountFormModal } from "@/components/organisms/AccountFormModal";
 import { AccountList } from "@/components/organisms/AccountList";
 import { MainLayout } from "@/components/templates/MainLayout";
 import { useAccounts } from "@/hooks/useAccounts";
 import type { AccountFormData } from "@/lib/schemas/account";
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 /**
  * @fileoverview AccountsPage - account management page with CRUD UI
  */
@@ -72,8 +74,8 @@ export default function AccountsPage(): React.ReactElement {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Accounts</h1>
-            <p className="text-sm text-gray-500 mt-1">Manage your social media accounts</p>
+            <h1 className="text-2xl font-bold text-foreground">Accounts</h1>
+            <p className="text-sm text-muted mt-1">Manage your social media accounts</p>
           </div>
 
           <Button onClick={handleAddClick} variant="primary">
@@ -84,13 +86,31 @@ export default function AccountsPage(): React.ReactElement {
 
         {/* Account list */}
         <div className="flex-1">
-          <AccountList
-            accounts={accounts}
-            loading={loading}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteClick}
-            onAdd={handleAddClick}
-          />
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Skeleton variant="card" />
+              <Skeleton variant="card" />
+              <Skeleton variant="card" />
+            </div>
+          ) : accounts.length === 0 ? (
+            <EmptyState
+              icon={Users}
+              title="No accounts yet"
+              description="Add your first social media account to get started"
+              action={{
+                label: "Add Account",
+                onClick: handleAddClick,
+              }}
+            />
+          ) : (
+            <AccountList
+              accounts={accounts}
+              loading={loading}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteClick}
+              onAdd={handleAddClick}
+            />
+          )}
         </div>
 
         {/* Form modal */}

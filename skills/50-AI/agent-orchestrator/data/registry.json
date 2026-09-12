@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-09-12T00:18:04.487734",
+  "skills_root": "E:\\social-pip\\skills\\50-AI",
+  "skills": [
+    {
+      "name": "agent-memory-systems",
+      "description": "Memory is the cornerstone of intelligent agents. Without it, every interaction starts from zero. This skill covers the architecture of agent memory: short-term (context window), long-term (vector stores), and the cognitive architectures that organize them.",
+      "version": "",
+      "location": "E:\\social-pip\\skills\\50-AI\\agent-memory-systems",
+      "skill_md": "E:\\social-pip\\skills\\50-AI\\agent-memory-systems\\SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [
+        "context-management"
+      ],
+      "triggers": [
+        "context",
+        "context window",
+        "memory"
+      ],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-04-08T20:06:25.512388"
+    },
+    {
+      "name": "ai-agent-development",
+      "description": "AI agent development workflow for building autonomous agents, multi-agent systems, and agent orchestration with CrewAI, LangGraph, and custom agents.",
+      "version": "",
+      "location": "E:\\social-pip\\skills\\50-AI\\ai-agent-development",
+      "skill_md": "E:\\social-pip\\skills\\50-AI\\ai-agent-development\\SKILL.md",
+      "registered": false,
+      "has_scripts": false,
+      "has_references": false,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "none",
+      "status": "active",
+      "last_modified": "2026-04-08T20:06:25.537372"
+    },
+    {
+      "name": "prompt-engineering-patterns",
+      "description": "Master advanced prompt engineering techniques to maximize LLM performance, reliability, and controllability.",
+      "version": "",
+      "location": "E:\\social-pip\\skills\\50-AI\\prompt-engineering-patterns",
+      "skill_md": "E:\\social-pip\\skills\\50-AI\\prompt-engineering-patterns\\SKILL.md",
+      "registered": false,
+      "has_scripts": true,
+      "has_references": true,
+      "has_data": false,
+      "capabilities": [],
+      "triggers": [],
+      "language": "python",
+      "status": "active",
+      "last_modified": "2026-04-08T20:06:30.406752"
+    }
+  ]
+}

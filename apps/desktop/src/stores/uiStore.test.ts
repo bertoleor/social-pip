@@ -7,6 +7,7 @@ describe("useUIStore", () => {
     // Reset store to initial state before each test
     useUIStore.setState({
       sidebarOpen: true,
+      sidebarCollapsed: false,
       theme: "system",
     });
   });
@@ -15,6 +16,11 @@ describe("useUIStore", () => {
     it("has sidebarOpen set to true by default", () => {
       const state = useUIStore.getState();
       expect(state.sidebarOpen).toBe(true);
+    });
+
+    it("has sidebarCollapsed set to false by default", () => {
+      const state = useUIStore.getState();
+      expect(state.sidebarCollapsed).toBe(false);
     });
 
     it("has theme set to system by default", () => {
@@ -59,6 +65,26 @@ describe("useUIStore", () => {
         useUIStore.getState().toggleSidebar();
       });
       expect(useUIStore.getState().sidebarOpen).toBe(false);
+    });
+  });
+
+  describe("setSidebarCollapsed", () => {
+    it("sets sidebarCollapsed to true", () => {
+      act(() => {
+        useUIStore.getState().setSidebarCollapsed(true);
+      });
+
+      expect(useUIStore.getState().sidebarCollapsed).toBe(true);
+    });
+
+    it("sets sidebarCollapsed to false", () => {
+      useUIStore.setState({ sidebarCollapsed: true });
+
+      act(() => {
+        useUIStore.getState().setSidebarCollapsed(false);
+      });
+
+      expect(useUIStore.getState().sidebarCollapsed).toBe(false);
     });
   });
 

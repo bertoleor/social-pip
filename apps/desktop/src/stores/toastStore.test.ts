@@ -59,14 +59,14 @@ describe("useToastStore", () => {
         "warning",
       ];
 
-      types.forEach((type) => {
+      for (const type of types) {
         act(() => {
           useToastStore.getState().addToast({
             type,
             message: `${type} message`,
           });
         });
-      });
+      }
 
       const toasts = useToastStore.getState().toasts;
       expect(toasts).toHaveLength(4);

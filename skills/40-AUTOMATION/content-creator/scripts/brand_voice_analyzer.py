@@ -3,9 +3,9 @@
 Brand Voice Analyzer - Analyzes content to establish and maintain brand voice consistency
 """
 
-import re
-from typing import Dict, List, Tuple
 import json
+import re
+
 
 class BrandVoiceAnalyzer:
     def __init__(self):
@@ -24,7 +24,7 @@ class BrandVoiceAnalyzer:
             }
         }
     
-    def analyze_text(self, text: str) -> Dict:
+    def analyze_text(self, text: str) -> dict:
         """Analyze text for brand voice characteristics"""
         text_lower = text.lower()
         word_count = len(text.split())
@@ -92,7 +92,7 @@ class BrandVoiceAnalyzer:
         
         return max(1, syllable_count)
     
-    def _analyze_sentences(self, text: str) -> Dict:
+    def _analyze_sentences(self, text: str) -> dict:
         """Analyze sentence structure"""
         sentences = re.split(r'[.!?]+', text)
         sentences = [s.strip() for s in sentences if s.strip()]
@@ -117,7 +117,7 @@ class BrandVoiceAnalyzer:
             'count': len(sentences)
         }
     
-    def _generate_recommendations(self, analysis: Dict) -> List[str]:
+    def _generate_recommendations(self, analysis: dict) -> list[str]:
         """Generate recommendations based on analysis"""
         recommendations = []
         
@@ -147,24 +147,24 @@ def analyze_content(content: str, output_format: str = 'json') -> str:
     else:
         # Human-readable format
         output = [
-            f"=== Brand Voice Analysis ===",
+            "=== Brand Voice Analysis ===",
             f"Word Count: {results['word_count']}",
             f"Readability Score: {results['readability_score']:.1f}/100",
-            f"",
-            f"Voice Profile:"
+            "",
+            "Voice Profile:"
         ]
         
         for dimension, profile in results['voice_profile'].items():
             output.append(f"  {dimension.title()}: {profile['dominant']}")
         
         output.extend([
-            f"",
-            f"Sentence Analysis:",
+            "",
+            "Sentence Analysis:",
             f"  Average Length: {results['sentence_analysis']['average_length']} words",
             f"  Variety: {results['sentence_analysis']['variety']}",
             f"  Total Sentences: {results['sentence_analysis']['count']}",
-            f"",
-            f"Recommendations:"
+            "",
+            "Recommendations:"
         ])
         
         for rec in results['recommendations']:
@@ -174,11 +174,17 @@ def analyze_content(content: str, output_format: str = 'json') -> str:
 
 if __name__ == "__main__":
     import sys
-    
-    if len(sys.argv) > 1:
-        with open(sys.argv[1], 'r') as f:
-            content = f.read()
-        
+
+    if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help"):
+        print("Usage: python brand_voice_analyzer.py <file> [json|text]")
+    elif len(sys.argv) > 1:
+        try:
+            with open(sys.argv[1], 'r') as f:
+                content = f.read()
+        except FileNotFoundError:
+            print(f"Error: file not found: {sys.argv[1]}")
+            raise SystemExit(1)
+
         output_format = sys.argv[2] if len(sys.argv) > 2 else 'text'
         print(analyze_content(content, output_format))
     else:

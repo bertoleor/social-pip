@@ -3,22 +3,8 @@
   "name": "Social-Pip Extension",
   "version": "1.0.0",
   "description": "Automatización de redes sociales - Browser automation para posting",
-  "permissions": [
-    "activeTab",
-    "tabs",
-    "storage",
-    "nativeMessaging"
-  ],
-  "host_permissions": [
-    "*://*.facebook.com/*",
-    "*://*.instagram.com/*",
-    "*://*.twitter.com/*",
-    "*://*.tiktok.com/*",
-    "*://*.linkedin.com/*",
-    "*://*.threads.net/*",
-    "*://*.telegram.org/*",
-    "*://*.whatsapp.com/*"
-  ],
+  "permissions": ["activeTab", "tabs", "storage", "nativeMessaging"],
+  "host_permissions": ["*://*.facebook.com/*"],
   "background": {
     "service_worker": "src/background/index.js",
     "type": "module"
@@ -27,16 +13,6 @@
     {
       "matches": ["*://*.facebook.com/*"],
       "js": ["src/content/facebook/index.js"],
-      "run_at": "document_idle"
-    },
-    {
-      "matches": ["*://*.instagram.com/*"],
-      "js": ["src/content/instagram/index.js"],
-      "run_at": "document_idle"
-    },
-    {
-      "matches": ["*://*.twitter.com/*", "*://*.x.com/*"],
-      "js": ["src/content/twitter/index.js"],
       "run_at": "document_idle"
     }
   ],

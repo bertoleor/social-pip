@@ -1,9 +1,13 @@
+/**
+ * U3.4: Card with hover elevation and dark mode support
+ */
 import { cn } from "@/lib/utils";
 import type { HTMLAttributes, ReactNode } from "react";
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: "none" | "sm" | "md" | "lg";
   shadow?: "none" | "sm" | "md" | "lg";
+  hoverable?: boolean;
   children: ReactNode;
   className?: string;
 }
@@ -25,6 +29,7 @@ const shadowStyles = {
 export function Card({
   padding = "md",
   shadow = "sm",
+  hoverable = false,
   children,
   className,
   ...props
@@ -32,9 +37,11 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-white rounded-lg border border-gray-200",
+        "bg-surface rounded-lg border border-border",
+        "dark:bg-surface-elevated dark:border-border",
         paddingStyles[padding],
         shadowStyles[shadow],
+        hoverable && "hover:shadow-lg transition-shadow cursor-pointer",
         className,
       )}
       {...props}

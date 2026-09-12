@@ -138,6 +138,7 @@ describe("Accessibility Tests", () => {
   describe("ARIA Attributes", () => {
     it("loading states have proper ARIA live regions", async () => {
       const { container } = render(
+        // biome-ignore lint/a11y/useSemanticElements: Testing ARIA live region pattern
         <div role="status" aria-live="polite">
           <span className="sr-only">Loading...</span>
           <div className="animate-spin">Spinner</div>
@@ -157,6 +158,7 @@ describe("Accessibility Tests", () => {
       const { container } = render(
         <div>
           <Button variant="primary">Focus Test</Button>
+          {/* biome-ignore lint/a11y/useValidAnchor: Testing focus styles on anchor element */}
           <a href="#" className="focus:outline-none focus:ring-2">
             Link
           </a>

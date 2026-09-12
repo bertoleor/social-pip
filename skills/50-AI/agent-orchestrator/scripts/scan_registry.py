@@ -17,13 +17,13 @@ Usage:
     python scan_registry.py --force      # Full re-scan ignoring hashes
 """
 
-import os
-import sys
-import json
 import hashlib
+import json
+import os
 import re
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # ── Configuration ──────────────────────────────────────────────────────────
 
@@ -439,7 +439,7 @@ def print_status(registry: dict):
         return
 
     print(f"\n{'='*80}")
-    print(f"  Agent Orchestrator - Skill Registry Status")
+    print("  Agent Orchestrator - Skill Registry Status")
     print(f"  Scanned at: {registry.get('generated_at', 'N/A')}")
     print(f"  Root: {registry.get('skills_root', 'N/A')}")
     print(f"{'='*80}\n")

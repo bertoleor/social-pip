@@ -17,45 +17,44 @@ describe("Badge", () => {
   });
 
   describe("status variants", () => {
-    it("renders success variant with green color", () => {
+    it("renders success variant with success colors", () => {
       render(<Badge variant="success">Success</Badge>);
       const badge = screen.getByText("Success");
-      expect(badge).toHaveClass("bg-green-100");
-      expect(badge).toHaveClass("text-green-700");
+      expect(badge).toHaveClass("bg-success/10");
+      expect(badge).toHaveClass("text-success");
     });
 
-    it("renders warning variant with yellow color", () => {
+    it("renders warning variant with warning colors", () => {
       render(<Badge variant="warning">Warning</Badge>);
       const badge = screen.getByText("Warning");
-      expect(badge).toHaveClass("bg-yellow-100");
-      expect(badge).toHaveClass("text-yellow-700");
+      expect(badge).toHaveClass("bg-warning/10");
+      expect(badge).toHaveClass("text-warning");
     });
 
-    it("renders error variant with red color", () => {
+    it("renders error variant with error colors", () => {
       render(<Badge variant="error">Error</Badge>);
       const badge = screen.getByText("Error");
-      expect(badge).toHaveClass("bg-red-100");
-      expect(badge).toHaveClass("text-red-700");
+      expect(badge).toHaveClass("bg-error/10");
+      expect(badge).toHaveClass("text-error");
     });
 
-    it("renders info variant with blue color", () => {
+    it("renders info variant with info colors", () => {
       render(<Badge variant="info">Info</Badge>);
       const badge = screen.getByText("Info");
-      expect(badge).toHaveClass("bg-blue-100");
-      expect(badge).toHaveClass("text-blue-700");
+      expect(badge).toHaveClass("bg-info/10");
+      expect(badge).toHaveClass("text-info");
     });
 
-    it("renders neutral variant with gray color", () => {
-      render(<Badge variant="neutral">Neutral</Badge>);
-      const badge = screen.getByText("Neutral");
-      expect(badge).toHaveClass("bg-gray-100");
-      expect(badge).toHaveClass("text-gray-700");
+    it("renders default variant", () => {
+      render(<Badge variant="default">Default</Badge>);
+      const badge = screen.getByText("Default");
+      expect(badge).toHaveClass("bg-muted/20");
     });
 
-    it("defaults to neutral variant", () => {
+    it("defaults to default variant", () => {
       render(<Badge>Default</Badge>);
       const badge = screen.getByText("Default");
-      expect(badge).toHaveClass("bg-gray-100");
+      expect(badge).toHaveClass("bg-muted/20");
     });
   });
 
@@ -88,7 +87,7 @@ describe("Badge", () => {
       render(<Badge className="custom-badge">Custom</Badge>);
       const badge = screen.getByText("Custom");
       expect(badge).toHaveClass("custom-badge");
-      expect(badge).toHaveClass("bg-gray-100"); // still has default
+      expect(badge).toHaveClass("bg-muted/20");
     });
   });
 });

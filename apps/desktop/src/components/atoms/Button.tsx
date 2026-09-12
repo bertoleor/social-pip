@@ -1,9 +1,13 @@
+/**
+ * U3.1: Button with semantic tokens and dark mode support
+ * Variants: primary (bg-primary-600), secondary (bg-surface), outline, ghost, danger (bg-error)
+ */
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   disabled?: boolean;
   loading?: boolean;
@@ -12,10 +16,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles = {
-  primary: "bg-primary text-white hover:bg-primary/90",
-  secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200",
-  outline: "border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-50",
-  ghost: "bg-transparent text-gray-700 hover:bg-gray-100",
+  primary:
+    "bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600",
+  secondary:
+    "bg-surface text-foreground border border-border hover:bg-muted/50 dark:bg-surface-elevated dark:hover:bg-muted/30",
+  outline:
+    "border border-border bg-transparent text-foreground hover:bg-muted/50 dark:border-border dark:hover:bg-muted/30",
+  ghost: "bg-transparent text-foreground hover:bg-muted/50 dark:hover:bg-muted/30",
+  danger: "bg-error text-white hover:bg-error/90 dark:bg-error dark:hover:bg-error/80",
 };
 
 const sizeStyles = {
@@ -42,7 +50,7 @@ export function Button({
       disabled={isDisabled}
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors",
-        "focus:outline-none focus:ring-2 focus:ring-primary/50",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
         variantStyles[variant],
         sizeStyles[size],
         isDisabled && "opacity-50 cursor-not-allowed",

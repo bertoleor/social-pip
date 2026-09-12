@@ -10,7 +10,9 @@ vi.mock("@/hooks/useSettings", () => ({
 
 vi.mock("@/components/atoms/Button", () => ({
   Button: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
-    <button onClick={onClick}>{children}</button>
+    <button type="button" onClick={onClick}>
+      {children}
+    </button>
   ),
 }));
 

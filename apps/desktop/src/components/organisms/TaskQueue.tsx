@@ -83,6 +83,7 @@ function TaskCard({
           handleSelect();
         }
       }}
+      // biome-ignore lint/a11y/useSemanticElements: role="button" is intentional for custom styling requirements
       role="button"
       tabIndex={0}
       aria-selected={isSelected}
@@ -176,6 +177,7 @@ export function TaskQueue({
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: Loading skeletons are static and don't reorder
               key={i}
               className="h-24 bg-gray-100 animate-pulse rounded-lg border border-gray-200"
             />

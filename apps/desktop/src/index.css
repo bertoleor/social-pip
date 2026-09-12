@@ -1,25 +1,123 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --secondary: #64748b;
-  --accent: #f97316;
-  --success: #22c55e;
-  --warning: #eab308;
-  --error: #ef4444;
-  --muted: #f1f5f9;
+/* ========================================
+   U1.1: Design Tokens — Tailwind 4 @theme block
+   U1.2: Light mode CSS custom properties
+   U1.3: Dark mode CSS custom properties
+   ======================================== */
+
+@theme {
+  /* Primary color scale (Indigo) */
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+  --color-primary-950: #1e1b4b;
+
+  /* Accent — Facebook blue */
+  --color-accent: #1877f2;
+
+  /* Semantic status colors */
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Surface tokens (light defaults) */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #f8fafc;
+  --color-background: #f1f5f9;
+  --color-foreground: #0f172a;
+  --color-muted: #94a3b8;
+  --color-border: #e2e8f0;
+
+  /* Typography scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+
+  /* Font families */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+
+  /* Spacing scale */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+
+  /* Border radius scale */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Shadow scale */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --muted: #1e293b;
-  }
+/* ========================================
+   U1.2: Light mode CSS custom properties
+   ======================================== */
+
+:root {
+  --color-surface: #ffffff;
+  --color-surface-elevated: #f8fafc;
+  --color-background: #f1f5f9;
+  --color-foreground: #0f172a;
+  --color-muted: #94a3b8;
+  --color-border: #e2e8f0;
 }
+
+/* ========================================
+   U1.3: Dark mode CSS custom properties
+   Class-based switching on <html>
+   ======================================== */
+
+.dark {
+  --color-primary-50: #1e1b4b;
+  --color-primary-100: #312e81;
+  --color-primary-200: #3730a3;
+  --color-primary-300: #4338ca;
+  --color-primary-400: #4f46e5;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #818cf8;
+  --color-primary-700: #a5b4fc;
+  --color-primary-800: #c7d2fe;
+  --color-primary-900: #e0e7ff;
+  --color-primary-950: #eef2ff;
+
+  --color-surface: #1e293b;
+  --color-surface-elevated: #334155;
+  --color-background: #0f172a;
+  --color-foreground: #f1f5f9;
+  --color-muted: #64748b;
+  --color-border: #475569;
+}
+
+/* ========================================
+   Base styles
+   ======================================== */
 
 * {
   margin: 0;
@@ -32,10 +130,9 @@ body,
 #root {
   height: 100%;
   width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
-    sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
 button {
@@ -47,45 +144,22 @@ button {
   transition: all 0.2s ease;
 }
 
-button.primary {
-  background-color: var(--primary);
-  color: white;
-}
-
-button.primary:hover {
-  background-color: var(--primary-hover);
-}
-
-button.secondary {
-  background-color: var(--muted);
-  color: var(--foreground);
-}
-
-button.secondary:hover {
-  background-color: var(--secondary);
-}
-
 input,
 textarea,
 select {
   padding: 8px 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 14px;
   width: 100%;
   transition: border-color 0.2s ease;
+  background-color: var(--color-surface);
+  color: var(--color-foreground);
 }
 
 input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--primary);
-}
-
-.card {
-  background: white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary-500);
 }

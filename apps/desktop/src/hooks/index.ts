@@ -21,3 +21,4 @@ export {
   SHORTCUT_EVENTS,
 } from "./useGlobalShortcuts";
 export { useToast, type UseToastReturn } from "./useToast";
+export { useTheme, resolveTheme } from "./useTheme";

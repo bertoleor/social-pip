@@ -3,7 +3,7 @@
 //! This module provides the interface for persisting PostSessions and PostJobs
 //! to SQLite. Replaces the in-memory HashMaps in commands/posting.rs.
 
-use serde::{Deserialize, Serialize};
+// Note: serde derives not currently used in this file, re-add when needed
 use std::collections::HashMap;
 use std::sync::Mutex;
 

@@ -21,6 +21,7 @@ pub mod secure_storage;
 pub mod tray;
 pub mod shortcuts;
 pub mod autostart;
+pub mod platform_gating;
 
 // v2.0 Error Handling Modules
 pub mod outbox;

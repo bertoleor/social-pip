@@ -417,9 +417,9 @@ describe("MainLayout", () => {
       const links = screen.getAllByRole("link");
 
       // All links should be within the navigation
-      links.forEach((link) => {
+      for (const link of links) {
         expect(nav).toContainElement(link);
-      });
+      }
     });
   });
 });

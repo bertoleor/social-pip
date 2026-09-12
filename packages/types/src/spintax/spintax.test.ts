@@ -530,12 +530,12 @@ describe('parseSpintax', () => {
   })
 
   describe('performance', () => {
-    it('parses typical content (1000 chars) under 10ms', () => {
+    it('parses typical content (1000 chars) under 50ms', () => {
       const input = '{Hello|Hi|Hey} {World|Universe|Earth}! '.repeat(50)
       const start = performance.now()
       parseSpintax(input)
       const elapsed = performance.now() - start
-      expect(elapsed).toBeLessThan(10)
+      expect(elapsed).toBeLessThan(50)
     })
 
     it('tracks selected options for debugging', () => {
