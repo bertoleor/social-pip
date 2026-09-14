@@ -18,7 +18,7 @@ import numpy as np
 class TestCase:
     input: dict[str, Any]
     expected_output: str
-    metadata: dict[str, Any] = None
+    metadata: dict[str, Any] | None = None
 
 
 class PromptOptimizer:
@@ -32,7 +32,11 @@ class PromptOptimizer:
         """Shutdown the thread pool executor."""
         self.executor.shutdown(wait=True)
 
-    def evaluate_prompt(self, prompt_template: str, test_cases: list[TestCase] = None) -> dict[str, float]:
+    def evaluate_prompt(
+        self,
+        prompt_template: str,
+        test_cases: list[TestCase] | None = None,
+    ) -> dict[str, float]:
         """Evaluate a prompt template against test cases in parallel."""
         if test_cases is None:
             test_cases = self.test_suite
@@ -113,13 +117,16 @@ class PromptOptimizer:
             print(f"\nIteration {iteration + 1}/{max_iterations}")
 
             # Evaluate current prompt
-            # Bolt Optimization: Avoid re-evaluating if we already have metrics from previous iteration
+            # Bolt Optimization: Avoid re-evaluating when metrics already exist
+            # from a previous iteration
             if current_metrics:
                 metrics = current_metrics
             else:
                 metrics = self.evaluate_prompt(current_prompt)
 
-            print(f"Accuracy: {metrics['avg_accuracy']:.2f}, Latency: {metrics['avg_latency']:.2f}s")
+            accuracy = metrics['avg_accuracy']
+            latency = metrics['avg_latency']
+            print(f"Accuracy: {accuracy:.2f}, Latency: {latency:.2f}s")
 
             # Track results
             self.results_history.append({
@@ -254,10 +261,9 @@ def main():
             # Simulate LLM response
             if 'amazing' in prompt:
                 return 'Positive'
-            elif 'worst' in prompt.lower():
+            if 'worst' in prompt.lower():
                 return 'Negative'
-            else:
-                return 'Neutral'
+            return 'Neutral'
 
     optimizer = PromptOptimizer(MockLLMClient(), test_suite)
 

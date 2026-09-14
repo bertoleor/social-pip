@@ -74,7 +74,8 @@ CAPABILITY_KEYWORDS = {
     "legal": [
         "advogado", "direito", "juridico", "lei", "processo",
         "acao", "peticao", "recurso", "sentenca", "juiz",
-        "divorcio", "guarda", "alimentos", "pensao", "alimenticia", "inventario", "heranca", "partilha",
+        "divorcio", "guarda", "alimentos", "pensao", "alimenticia",
+        "inventario", "heranca", "partilha",
         "acidente de trabalho", "acidente",
         "familia", "criminal", "penal", "crime", "feminicidio", "maria da penha",
         "violencia domestica", "medida protetiva", "stalking",
@@ -132,9 +133,9 @@ def ensure_registry():
     """Run scan if registry doesn't exist."""
     if not REGISTRY_PATH.exists():
         subprocess.run(
-            [sys.executable, str(SCAN_SCRIPT)],
-            capture_output=True, text=True
-        )
+                    [sys.executable, str(SCAN_SCRIPT)],
+                    capture_output=True, text=True, check=False
+                )
 
 
 def load_registry() -> list[dict]:
@@ -145,8 +146,8 @@ def load_registry() -> list[dict]:
     try:
         data = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
         return data.get("skills", [])
-    except Exception:
-        return []
+    except (OSError, ValueError, TypeError):
+            return []
 
 
 def load_projects() -> dict:
@@ -155,8 +156,8 @@ def load_projects() -> dict:
         return {"projects": []}
     try:
         return json.loads(PROJECTS_PATH.read_text(encoding="utf-8"))
-    except Exception:
-        return {"projects": []}
+    except (OSError, ValueError, TypeError):
+            return {"projects": []}
 
 
 def get_project_skills(project_name: str) -> set:
@@ -191,7 +192,7 @@ def normalize(text: str) -> set[str]:
     return set(re.findall(r'[a-zA-ZÀ-ÿ]{3,}', text.lower()))
 
 
-def score_skill(skill: dict, query: str, project_skills: set = None) -> dict:
+def score_skill(skill: dict, query: str, project_skills: set | None = None) -> dict:
     """
     Score a skill's relevance to a query.
 
@@ -256,7 +257,7 @@ def score_skill(skill: dict, query: str, project_skills: set = None) -> dict:
     }
 
 
-def match(query: str, project: str = None, top_n: int = 5, threshold: int = 5) -> list[dict]:
+def match(query: str, project: str | None = None, top_n: int = 5, threshold: int = 5) -> list[dict]:
     """
     Match a query against all registered skills.
 
@@ -313,7 +314,9 @@ def main():
     }
 
     if len(results) == 0:
-        output["recommendation"] = "No skills matched. Operate without skills or suggest creating a new one."
+        output["recommendation"] = (
+            "No skills matched. Operate without skills or suggest creating a new one."
+        )
     elif len(results) == 1:
         output["recommendation"] = f"Single skill match: use '{results[0]['name']}' directly."
         output["action"] = "load_skill"

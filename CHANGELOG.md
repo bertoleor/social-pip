@@ -3,10 +3,29 @@
 Formato básico generado por auditoría (UNVERIFIED). Fuente: `git log`.
 
 ## [Unreleased]
-- Auditoría python-only: baseline ruff/pytest sobre `skills/*/scripts/*.py` (8 archivos).
-- Fixes chicos: `ruff --fix` (imports, `list`/`dict` modernos, f-strings); guards `--help` y
-  `FileNotFoundError` en `brand_voice_analyzer.py` y `seo_optimizer.py`.
-- Gaps abiertos: ver reporte `docs/audits/general-socialpip.md`.
+
+### Open source
+- Agregada `LICENSE` (MIT) y `CONTRIBUTING.md` con el flujo de contribución y requisitos de entorno.
+- Agregado `.pre-commit-config.yaml` con hooks de ruff, ruff-format, bandit y sanity genéricos.
+
+### Calidad de código (auxiliares Python en `skills/*/scripts/`)
+- Lint: `ruff --fix` (144 autofixes) y resolución manual de 63 incumplimientos en 8 archivos —
+  datetimes tz-aware, `Optional` explícitos, `except` ciegos acotados, `check=False` en `subprocess`,
+  `raise ... from`, y wrapping de líneas. `ruff check` queda en cero errores.
+- Guards: manejo de `--help` y `FileNotFoundError` en `brand_voice_analyzer.py` y `seo_optimizer.py`.
+- Config: agregados `ruff.toml` (reglas seleccionadas para baseline accionable) y `pytest.ini`
+  (scope de tests acotado, sin escaneo de `node_modules`).
+- Dependencias: agregados `requirements.txt` y `pyproject.toml` para los auxiliares Python —
+  declaran numpy/pyyaml (runtime) y los extras opcionales `api` (fastapi/uvicorn/pydantic[email]),
+  `optimize` (numpy) y `orchestrator` (pyyaml), cerrando el gap B6 del audit.
+- Tests: nueva suite de smoke tests en `tests/test_smoke_py_scripts.py` — compilación, `--help`,
+  runs reales de `seo_optimizer` y retornos JSON controlados de `orchestrate`/`match_skills`.
+
+### Documentación
+- `docs/general-socialpip.md`: entrada técnica principal (arquitectura, capas, flujo de datos).
+- `docs/product-one-pager.md`: propuesta de valor, audiencia y hoja de ruta de producto.
+- `docs/audits/`: análisis de producto y reporte de estilo/marketing.
+- `plan-accion-2026-09-12.md`: plan de acción por fases (open source, producto, conversión).
 
 ## 2026-04-18 — 0926c27
 - fix: resolve extended scope lint warnings.

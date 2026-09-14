@@ -12,7 +12,8 @@ Patterns:
 - primary_support: One skill leads, others provide supporting data
 
 Usage:
-    python orchestrate.py --skills web-scraper,whatsapp-cloud-api --query "monitorar precos e enviar alerta"
+    python orchestrate.py --skills web-scraper,whatsapp-cloud-api \\
+        --query "monitorar precos e enviar alerta"
     python orchestrate.py --match-result '{"skills": [...]}' --query "query"
 """
 
@@ -45,7 +46,7 @@ def load_registry() -> dict[str, dict]:
     try:
         data = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
         return {s["name"]: s for s in data.get("skills", [])}
-    except Exception:
+    except (OSError, ValueError, TypeError):
         return {}
 
 
@@ -63,9 +64,9 @@ def get_skill_role(skill: dict) -> str:
     # If skill has both producer and consumer caps, use the dominant one
     if producer_count > consumer_count:
         return "producer"
-    elif consumer_count > producer_count:
+    if consumer_count > producer_count:
         return "consumer"
-    elif producer_count > 0 and consumer_count > 0:
+    if producer_count > 0 and consumer_count > 0:
         # Equal weight - check if core name suggests a role
         name = skill.get("name", "").lower()
         if any(kw in name for kw in ["scraper", "extract", "collect", "data", "junta"]):
@@ -73,8 +74,7 @@ def get_skill_role(skill: dict) -> str:
         if any(kw in name for kw in ["whatsapp", "instagram", "messenger", "notify"]):
             return "consumer"
         return "hybrid"
-    else:
-        return "hybrid"
+    return "hybrid"
 
 
 def classify_pattern(skills: list[dict], query: str) -> str:
@@ -130,7 +130,7 @@ def generate_plan(skills: list[dict], query: str, pattern: str) -> dict:
             "data_flow": "user_query -> result",
         }
 
-    elif pattern == "sequential":
+    if pattern == "sequential":
         # Order: producers first, then consumers
         producers = [s for s in skills if get_skill_role(s) in ("producer", "hybrid")]
         consumers = [s for s in skills if get_skill_role(s) == "consumer"]
@@ -166,7 +166,7 @@ def generate_plan(skills: list[dict], query: str, pattern: str) -> dict:
             })
 
         flow_parts = [s["skill"] for s in steps]
-        data_flow = " -> ".join(["user_query"] + flow_parts + ["result"])
+        data_flow = " -> ".join(["user_query", *flow_parts, "result"])
 
         return {
             "pattern": "sequential",
@@ -175,14 +175,15 @@ def generate_plan(skills: list[dict], query: str, pattern: str) -> dict:
             "data_flow": data_flow,
         }
 
-    elif pattern == "parallel":
+    if pattern == "parallel":
         steps = []
-        for i, skill in enumerate(skills):
+        for _i, skill in enumerate(skills):
+            caps = ", ".join(skill.get("capabilities", []))
             steps.append({
                 "order": 1,  # All run at the same "order" level
                 "skill": skill["name"],
                 "skill_md": skill.get("skill_md", skill.get("location", "")),
-                "action": f"Handle independently: aspect of '{query}' related to {', '.join(skill.get('capabilities', []))}",
+                "action": f"Handle independently: aspect of '{query}' related to {caps}",
                 "input": "user_query",
                 "output": f"{skill['name']}.output",
             })
@@ -195,7 +196,7 @@ def generate_plan(skills: list[dict], query: str, pattern: str) -> dict:
             "aggregation": "Combine results from all skills into a unified response.",
         }
 
-    elif pattern == "primary_support":
+    if pattern == "primary_support":
         primary = skills[0]  # Highest score
         support = skills[1:]
 
@@ -211,22 +212,27 @@ def generate_plan(skills: list[dict], query: str, pattern: str) -> dict:
             }
         ]
 
-        for i, skill in enumerate(support):
+        for _i, skill in enumerate(support):
+            caps = ", ".join(skill.get("capabilities", []))
             steps.append({
                 "order": 2,
                 "skill": skill["name"],
                 "skill_md": skill.get("skill_md", skill.get("location", "")),
-                "action": f"Support: provide {', '.join(skill.get('capabilities', []))} data if needed",
+                "action": f"Support: provide {caps} data if needed",
                 "input": "user_query",
                 "output": f"{skill['name']}.output",
                 "role": "support",
             })
 
+        support_names = ", ".join(s["name"] for s in support)
         return {
             "pattern": "primary_support",
-            "description": f"Primary: '{primary['name']}'. Support: {', '.join(s['name'] for s in support)}.",
+            "description": f"Primary: '{primary['name']}'. Support: {support_names}.",
             "steps": steps,
-            "data_flow": f"user_query -> {primary['name']} (primary) + support skills as needed -> result",
+            "data_flow": (
+                f"user_query -> {primary['name']} (primary) "
+                "+ support skills as needed -> result"
+            ),
         }
 
     return {"pattern": "unknown", "steps": [], "data_flow": ""}
@@ -234,7 +240,7 @@ def generate_plan(skills: list[dict], query: str, pattern: str) -> dict:
 
 # ── CLI Entry Point ────────────────────────────────────────────────────────
 
-def main():
+def main():  # noqa: PLR0912
     args = sys.argv[1:]
     skill_names = []
     query = ""
@@ -294,7 +300,8 @@ def main():
         skill_md = step.get("skill_md", "")
         if skill_md:
             plan["instructions"].append(
-                f"Step {step['order']}: Read {skill_md} and follow its workflow for: {step['action']}"
+                f"Step {step['order']}: Read {skill_md} and "
+                f"follow its workflow for: {step['action']}"
             )
 
     print(json.dumps(plan, indent=2, ensure_ascii=False))

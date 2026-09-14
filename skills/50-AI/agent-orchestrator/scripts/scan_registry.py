@@ -22,7 +22,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 # ── Configuration ──────────────────────────────────────────────────────────
@@ -79,7 +79,8 @@ CAPABILITY_MAP = {
     "legal": [
         "advogado", "direito", "juridico", "lei", "processo",
         "acao", "peticao", "recurso", "sentenca", "juiz",
-        "divorcio", "guarda", "alimentos", "pensao", "alimenticia", "inventario", "heranca", "partilha",
+        "divorcio", "guarda", "alimentos", "pensao", "alimenticia",
+        "inventario", "heranca", "partilha",
         "acidente de trabalho", "acidente",
         "familia", "criminal", "penal", "crime", "feminicidio", "maria da penha",
         "violencia domestica", "medida protetiva", "stalking",
@@ -133,8 +134,8 @@ CAPABILITY_MAP = {
 # ── Utility Functions ──────────────────────────────────────────────────────
 
 def md5_file(path: Path) -> str:
-    """Compute MD5 hash of a file."""
-    h = hashlib.md5()
+    """Compute MD5 hash of a file (cache key only, not cryptographic)."""
+    h = hashlib.md5()  # noqa: S324 - checksum for cache invalidation
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
             h.update(chunk)
@@ -143,9 +144,11 @@ def md5_file(path: Path) -> str:
 
 def parse_yaml_frontmatter(path: Path) -> dict:
     """Extract YAML frontmatter from a SKILL.md file."""
+    import yaml  # noqa: PLC0415 - optional dependency, loaded lazily
+
     try:
         text = path.read_text(encoding="utf-8")
-    except Exception:
+    except (OSError, UnicodeError):
         return {}
 
     match = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
@@ -153,9 +156,8 @@ def parse_yaml_frontmatter(path: Path) -> dict:
         return {}
 
     try:
-        import yaml
         return yaml.safe_load(match.group(1)) or {}
-    except Exception:
+    except yaml.YAMLError:
         # Fallback: manual parsing for name/description
         result = {}
         block = match.group(1)
@@ -264,9 +266,6 @@ def assess_status(skill_dir: Path) -> str:
     if not skill_md.exists():
         return "missing"
 
-    has_scripts = (skill_dir / "scripts").exists()
-    has_refs = (skill_dir / "references").exists()
-
     # Parse frontmatter to check for required fields
     meta = parse_yaml_frontmatter(skill_md)
     has_name = bool(meta.get("name"))
@@ -282,9 +281,9 @@ def is_registered(skill_dir: Path) -> bool:
     claude_skills = SKILLS_ROOT / ".claude" / "skills"
     try:
         skill_dir.relative_to(claude_skills)
-        return True
     except ValueError:
         return False
+    return True
 
 
 # ── Main Logic ─────────────────────────────────────────────────────────────
@@ -294,7 +293,7 @@ def load_hashes() -> dict:
     if HASHES_PATH.exists():
         try:
             return json.loads(HASHES_PATH.read_text(encoding="utf-8"))
-        except Exception:
+        except (OSError, ValueError, TypeError):
             pass
     return {}
 
@@ -310,7 +309,7 @@ def load_registry() -> dict:
     if REGISTRY_PATH.exists():
         try:
             return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
-        except Exception:
+        except (OSError, ValueError, TypeError):
             pass
     return {"generated_at": None, "skills_root": str(SKILLS_ROOT), "skills": []}
 
@@ -318,7 +317,7 @@ def load_registry() -> dict:
 def save_registry(registry: dict):
     """Save registry.json."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    registry["generated_at"] = datetime.now().isoformat()
+    registry["generated_at"] = datetime.now(UTC).isoformat()
     REGISTRY_PATH.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
@@ -351,7 +350,7 @@ def build_skill_entry(skill_md_path: Path) -> dict:
         "language": detect_language(skill_dir),
         "status": assess_status(skill_dir),
         "last_modified": datetime.fromtimestamp(
-            skill_md_path.stat().st_mtime
+            skill_md_path.stat().st_mtime, tz=UTC
         ).isoformat(),
     }
 
@@ -425,9 +424,8 @@ def scan(force: bool = False) -> dict:
         save_registry(registry)
         save_hashes(new_hashes)
         return registry
-    else:
-        # Nothing changed, return existing
-        return registry
+    # Nothing changed, return existing
+    return registry
 
 
 def print_status(registry: dict):

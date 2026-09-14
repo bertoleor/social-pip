@@ -1,0 +1,17 @@
+# Dependencias Python de los scripts auxiliares en skills/*/scripts/.
+#
+# El producto runtime es TS/Rust (ver package.json); este archivo cubre SOLO
+# los auxiliares Python. La mayoria corre con stdlib; las dependencias de
+# terceros son opcionales y se cargan de forma perezosa o en templates:
+#
+#   fastapi / uvicorn / pydantic[email]  -> skills/20-PLATFORM/api-design-principles/assets/rest-api-template.py
+#   numpy                                -> skills/50-AI/prompt-engineering-patterns/scripts/optimize-prompt.py
+#   pyyaml                               -> skills/50-AI/agent-orchestrator/scripts/scan_registry.py (lazy)
+#
+# Instalacion minima para correr la suite y los scripts de runtime:
+#   pip install -r requirements.txt
+# Para el template REST (fastapi) completo:
+#   pip install -r requirements.txt fastapi "uvicorn[standard]" "pydantic[email]"
+
+numpy>=1.26
+pyyaml>=6.0

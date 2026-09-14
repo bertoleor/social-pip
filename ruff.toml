@@ -1,0 +1,58 @@
+# Ruff config — SOCIAL-PIP (scripts python auxiliares en skills/*/scripts/)
+# El producto runtime es TS/Rust; esto cubre solo los auxiliares python.
+#
+# Reglas elegidas para que el baseline sea ACCIONABLE (no ruido):
+# coincide con el triaje A/B del audit general-socialpip.md —
+# except ciegos (BLE001), try-except-pass (S110), subprocess sin check (PLW1510),
+# datetime naive (DTZ), Optional implícito (RUF013), vars sin uso (F841),
+# + pyflakes/pycodestyle/isort/pyupgrade/bugbear/bandit base.
+
+target-version = "py311"
+
+# Alcance: solo scripts de skills y tests, nunca node_modules / vault
+extend-exclude = [
+    "node_modules",
+    ".git",
+    "target",
+    "dist",
+    "build",
+    "skills/99-VAULT",   # vault = NOT source of truth (solo lectura inventario)
+]
+
+line-length = 100
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "S",   # flake8-bandit
+    "DTZ", # flake8-datetimez
+    "RUF", # ruff-specific
+    "RET", # flake8-return (RET501/505 superfluos)
+    "PL",  # pylint (PLW1510 subprocess sin check, PLR1711)
+    "TRY", # tryceratops (raise-from)
+    "BLE", # flake8-blind-except
+]
+
+# Templates/ejemplo: no tipar a ciegas; B008 Query() es template FastAPI
+ignore = [
+    "B008",   # llamada en default de función (Query() en rest-api-template)
+    "S101",   # assert en tests es válido
+    "S603",   # subprocess sin shell=True se audita por PLW1510
+    "PLR2004",# magic-value-comparison: ruido en scripts de scoring
+]
+
+[lint.per-file-ignores]
+# Templates no corren: imports sin uso (Depends) pueden ser intencionales
+"**/rest-api-template.py" = ["F401"]
+# Tests: asserts son legítimos
+"tests/**" = ["S101"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true

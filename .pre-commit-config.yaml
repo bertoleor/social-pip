@@ -1,0 +1,52 @@
+# Pre-commit hooks — SOCIAL-PIP
+# Repos: TS/Rust es el producto runtime; estos hooks cubren python (auxiliares)
+# + sanity genéricos. No hay node/biome hooks acá por alcance (ver docs).
+
+repos:
+  # ── Python (ruff + pytest) ──────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        name: ruff-check
+        args: [--fix]
+      - id: ruff-format
+        name: ruff-format
+
+  # Bandit extra de seguridad sobre scripts (opcional pero barato)
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        name: bandit-security-scan
+        args: [--exclude, "skills/99-VAULT", -ll]
+
+  # ── Sanity genérico (todo el repo) ──────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: "pnpm-lock.yaml|package-lock.json"
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: mixed-line-ending
+        args: [--fix=lf]
+        exclude: "\\.bat$"
+      - id: no-commit-to-branch
+        args: [--branch, main, --branch, master, --branch, develop]
+
+  # ── TOML/JSON/YAML generales (usados en el repo) ────────────────────────
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.13.0
+    hooks:
+      - id: pretty-format-yaml
+        args: [--autofix, --indent, "2"]
+        exclude: "pnpm-lock.yaml|package-lock.json"
+
+# Python: no numpy import deplement en optimize-prompt (lib no declarada)
+# El hook de ruff ya corre tests/ y skills/*/scripts/*.py
