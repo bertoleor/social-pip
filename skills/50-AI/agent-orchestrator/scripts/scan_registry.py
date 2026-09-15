@@ -19,6 +19,7 @@ Usage:
 
 import hashlib
 import json
+import logging
 import os
 import re
 import sys
@@ -41,6 +42,8 @@ SEARCH_PATHS = [
     SKILLS_ROOT,                           # top-level standalone
 ]
 MAX_DEPTH = 3  # max directory depth for SKILL.md search
+
+logger = logging.getLogger(__name__)
 
 # Capability keyword mapping (PT + EN)
 CAPABILITY_MAP = {
@@ -293,8 +296,8 @@ def load_hashes() -> dict:
     if HASHES_PATH.exists():
         try:
             return json.loads(HASHES_PATH.read_text(encoding="utf-8"))
-        except (OSError, ValueError, TypeError):
-            pass
+        except (OSError, ValueError, TypeError) as exc:
+            logger.warning("Ignoring corrupt hashes file %s: %s", HASHES_PATH, exc)
     return {}
 
 
@@ -309,8 +312,8 @@ def load_registry() -> dict:
     if REGISTRY_PATH.exists():
         try:
             return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
-        except (OSError, ValueError, TypeError):
-            pass
+        except (OSError, ValueError, TypeError) as exc:
+            logger.warning("Ignoring corrupt registry file %s: %s", REGISTRY_PATH, exc)
     return {"generated_at": None, "skills_root": str(SKILLS_ROOT), "skills": []}
 
 
