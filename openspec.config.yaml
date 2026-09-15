@@ -1,0 +1,31 @@
+# openspec.config.yaml — contrato de calibración SDD Init (GATE-CFG-01/02/03)
+# Generado 2026-09-15 por inspección del repo. Si cambia el stack o aparecen
+# nuevos runners, re-calibrar antes de arrancar cualquier cambio.
+proyecto: SOCIAL-PIP
+stack:
+  - turborepo
+  - pnpm-workspaces
+  - vite
+  - react-19
+  - tauri-2
+  - prisma-5
+  - sqlite
+  - typescript
+  - nodejs
+  - pnpm
+runners:
+  unit: pnpm test
+  coverage: pnpm test:coverage
+  e2e: pnpm test:e2e
+  typecheck: pnpm typecheck
+  lint: pnpm lint
+strict_tdd: true
+convenciones:
+  - typescript-strict
+  - zod-3
+  - tailwind-4
+  - zustand
+  - tanstack-query
+  - biome
+  - testing-library
+  - prisma
