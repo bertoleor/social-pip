@@ -25,7 +25,7 @@ Formato básico generado por auditoría (UNVERIFIED). Fuente: `git log`.
 - `docs/general-socialpip.md`: entrada técnica principal (arquitectura, capas, flujo de datos).
 - `docs/product-one-pager.md`: propuesta de valor, audiencia y hoja de ruta de producto.
 - `docs/audits/`: análisis de producto y reporte de estilo/marketing.
-- `plan-accion-2026-09-12.md`: plan de acción por fases (open source, producto, conversión).
+- `docs/plans/plan-accion-2026-09-12.md`: plan de acción por fases (open source, producto, conversión).
 
 ## 2026-04-18 — 0926c27
 - fix: resolve extended scope lint warnings.

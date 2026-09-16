@@ -37,7 +37,9 @@ docs/
 │   └── testing-strategy.md          # Estrategia de testing
 │
 ├── protocols/              # Protocolos de desarrollo
-│   └── gentleman-protocols.md      # Scope Rule, SDD, TDD, GGA
+│   ├── gentleman-protocols.md      # Scope Rule, SDD, TDD, GGA
+│   ├── PROMPT-SDD-AUTOMATICO.md    # Prompt SDD modo automático (base)
+│   └── PROMPT-SDD-COMPLETE.md      # Prompt SDD automático (base completa)
 │
 ├── mcp/                    # Configuración MCP
 │   ├── mcp-servers.md              # MCPs para OpenCode
@@ -64,7 +66,8 @@ docs/
 └── plans/                   # Planes
     ├── tech-stack.md
     ├── master-plan.md
-    └── visual-fallback-system.md
+    ├── visual-fallback-system.md
+    └── plan-accion-2026-09-12.md   # Plan de acción por fases (open source, producto, conversión)
 ```
 
 ---
