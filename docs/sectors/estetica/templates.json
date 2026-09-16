@@ -1,0 +1,89 @@
+{
+  "sector": "estetica",
+  "templates": [
+    {
+      "name": "Tratamiento",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Resultado esperado en primera persona o implícito",
+          "example": "El tratamiento que cambió cómo veo mis manos.",
+          "rules": "Testimonial tone, sin click-bait."
+        },
+        {
+          "type": "treatment",
+          "description": "Qué es y cómo funciona",
+          "example": "Hydrafacial para manos: limpieza profunda + hidratación intensiva + sérum con vitamina C.",
+          "rules": "Técnica concreta, pasos separados por '+'."
+        },
+        {
+          "type": "results",
+          "description": "Resultados esperados",
+          "example": "Resultados visibles desde la primera sesión: piel más luminosa, suave, joven.",
+          "rules": "Sin promesas absolutas. Plazos aproximados."
+        },
+        {
+          "type": "testimonial",
+          "description": "Testimonio (opcional)",
+          "example": "\"De verdad, mis manos parecen de otra persona. Y el precio es accesible.\" — María, clienta desde 2023",
+          "rules": "Solo testimonios reales. Nombre + antigüedad."
+        },
+        {
+          "type": "cta",
+          "description": "Acción",
+          "example": "📱 Reservá tu turno: [WhatsApp]\nPrimera sesión con 20% de descuento este mes.",
+          "rules": "Oferta con plazo explícito si existe."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#estetica #manos #hydrafacial #tratamiento #belleza",
+          "rules": "Máximo 5."
+        }
+      ],
+      "characterLimit": 500,
+      "emojiMax": 2
+    },
+    {
+      "name": "Producto",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Qué es el producto",
+          "example": "Crema con ácido hialurónico — textura liviana, absorbe en 30 segundos.",
+          "rules": "Activo principal + sensación concreta."
+        },
+        {
+          "type": "certifications",
+          "description": "Certificaciones / claims verificables",
+          "example": "Sin parabenos. Cruelty-free. Aprobado por ANMAT.",
+          "rules": "Solo certificaciones reales."
+        },
+        {
+          "type": "usage",
+          "description": "Modo de uso",
+          "example": "Para uso diario: mañana y noche. Adecuado para todo tipo de piel.",
+          "rules": "Frecuencia + tipo de piel."
+        },
+        {
+          "type": "price",
+          "description": "Precio",
+          "example": "💰 $8.500 ARS | Envíos a todo el país.",
+          "rules": "Moneda + alcance del envío."
+        },
+        {
+          "type": "cta",
+          "description": "Acción",
+          "example": "Pedila acá: [link]",
+          "rules": "Link directo."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#skincare #acidohialuronico #belleza #producto #cuidado",
+          "rules": "Máximo 5."
+        }
+      ]
+    }
+  ]
+}

@@ -26,3 +26,18 @@ completo: `docs/README.md`.
   `n8n-workflows/`, `configs/`, `protocols/`, `mcp/`, `setup/`, `anti-ban/`,
   `research/`, `plans/`, `audits/`, `automation/`, `data-management/`,
   `sectors/`, `templates/`, `testing/`.
+
+## Sectores (Fase 2 — plan-accion-2026-09-12)
+
+Templates JSON por sector en `docs/sectors/<sector>/templates.json`. Gate
+`6/6 JSONs` se verifica con `pytest tests/test_sector_templates.py`.
+
+- `inmobiliario/` — propiedades, inversión
+- `esoterismo/` — tarot, rituales
+- `digital/` — cursos, productos digitales
+- `gastronomia/` — platos signature, delivery/picadas
+- `estetica/` — tratamientos, productos
+- `productos/` — e-commerce genérico, regalos
+
+Fuente: `docs/templates/sector-templates.md` (narrativa) + JSON (forma
+máquina-amigable consumida por scripts/generadores).

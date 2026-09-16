@@ -1,0 +1,95 @@
+{
+  "sector": "productos",
+  "templates": [
+    {
+      "name": "Producto Genérico",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Problema que resuelve",
+          "example": "El accesorio que te falta en tu cocina.",
+          "rules": "Pain puntual. Sin 'revolucionario'."
+        },
+        {
+          "type": "product",
+          "description": "Qué es y características",
+          "example": "Organizador extensible para cajones: ajusta de 30 cm a 55 cm. Material: bamboo premium. Resistente al agua.",
+          "rules": "Medidas, material, resistencia — datos técnicos primero."
+        },
+        {
+          "type": "use",
+          "description": "Para qué sirve",
+          "example": "Mantené tu cocina ordenada: cubiertos, utensilios, servilletas.",
+          "rules": "Casos de uso concretos."
+        },
+        {
+          "type": "price",
+          "description": "Precio visible",
+          "example": "💲 $4.200 ARS (envío gratis a partir de $10.000)",
+          "rules": "Moneda + condiciones de envío."
+        },
+        {
+          "type": "cta",
+          "description": "Acción",
+          "example": "🛒 Comprar ahora: [link]",
+          "rules": "Link directo o WhatsApp."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#cocina #organizador #bamboo #hogar #producto",
+          "rules": "Máximo 5."
+        }
+      ],
+      "characterLimit": 400,
+      "emojiMax": 2
+    },
+    {
+      "name": "Regalo",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Ángulo regalo",
+          "example": "Regalo perfecto para el que tiene de todo.",
+          "rules": "Apuntar al comprador, no al usuario final."
+        },
+        {
+          "type": "product",
+          "description": "Qué incluye",
+          "example": "Set de herramientas para celular: destornilladores + imanes + pins + lupa. Compatible con iPhone, Samsung, Xiaomi.",
+          "rules": "Contenido exacto + compatibilidad."
+        },
+        {
+          "type": "use",
+          "description": "Uso",
+          "example": "Para el que le gusta arreglar sus cosas o simplemente tener el kit listo.",
+          "rules": "Sin exagerar."
+        },
+        {
+          "type": "logistics",
+          "description": "Logística",
+          "example": "📦 Envíos a todo el país.",
+          "rules": "Zona y plazo."
+        },
+        {
+          "type": "price",
+          "description": "Precio",
+          "example": "💲 $3.800 ARS",
+          "rules": "Moneda + precio."
+        },
+        {
+          "type": "cta",
+          "description": "Acción",
+          "example": "Comprar: [link]",
+          "rules": "Link directo."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#regalo #tecnologia #herramientas #gift #producto",
+          "rules": "Máximo 5."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "sector": "digital",
+  "templates": [
+    {
+      "name": "Curso Digital",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Resultado del curso",
+          "example": "De cero a freelancer en 8 semanas.",
+          "rules": "Resultado concreto y medible. Sin 'transformá tu vida' sin datos."
+        },
+        {
+          "type": "curriculum",
+          "description": "Lo que se aprende",
+          "example": "Módulos: cliente ideal, propuesta, pricing, cierre, portfolio. Clases en vivo, grupales, con feedback.",
+          "rules": "Lista concreta. Sin adjetivos vacíos."
+        },
+        {
+          "type": "duration",
+          "description": "Tiempo de inversión",
+          "example": "8 semanas | 2 hs/semana | Grabaciones incluidas.",
+          "rules": "Ser explícito con carga horaria y formato."
+        },
+        {
+          "type": "price",
+          "description": "Inversión",
+          "example": "Inversión: $45.000 ARS (3 cuotas sin interés).",
+          "rules": "Incluir moneda y condiciones de pago."
+        },
+        {
+          "type": "cta",
+          "description": "Acción",
+          "example": "📲 Cupos limitados. Escribinos para el programa completo.",
+          "rules": "CTA directo. Sin falsa escasez si no es real."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#freelancer #digital #trabajo #cursos #negocios",
+          "rules": "Máximo 5."
+        }
+      ],
+      "characterLimit": 500,
+      "emojiMax": 2
+    },
+    {
+      "name": "Producto Digital",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Problema que resuelve",
+          "example": "No más hojas de cálculo infinitas.",
+          "rules": "Pain point concreto, no genérico."
+        },
+        {
+          "type": "product",
+          "description": "Qué es y qué incluye",
+          "example": "Plantilla Notion para gestión de proyectos: dashboard automático, kanban integrado, reportes semanales.",
+          "rules": "Features concretos en bullets o lista."
+        },
+        {
+          "type": "proof",
+          "description": "Evidencia",
+          "example": "Descarga inmediata. Testeada por 200+ equipos.",
+          "rules": "Solo evidencia verificable. Sin inflar números."
+        },
+        {
+          "type": "price",
+          "description": "Precio",
+          "example": "💲 $15 USD (incluye actualizaciones).",
+          "rules": "Visibilidad total. Aclarar qué incluye."
+        },
+        {
+          "type": "cta",
+          "description": "Acción",
+          "example": "Descargar ahora: [link]",
+          "rules": "Link directo."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#notion #productividad #gestion #template #digital",
+          "rules": "Máximo 5."
+        }
+      ]
+    }
+  ]
+}

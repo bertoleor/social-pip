@@ -1,0 +1,77 @@
+{
+  "sector": "gastronomia",
+  "templates": [
+    {
+      "name": "Plato Signature",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Descripción sensorial concreta",
+          "example": "Costilla de cerdo braseada 4 hs, con reducción de bourbon y miel.",
+          "rules": "Tiempos, técnicas y sabor concretos. Sin 'vibrante experiencia culinaria'."
+        },
+        {
+          "type": "ingredients",
+          "description": "Acompañamiento y guarniciones",
+          "example": "Puré de batata ahumada + verdes asados.",
+          "rules": "Listar con '+', sin enumerar cada micro-elemento."
+        },
+        {
+          "type": "differentiator",
+          "description": "Por qué destacarlo",
+          "example": "La costilla se deshace sola. El bourbon le da ese toque dulce-ahumado que no se olvida.",
+          "rules": "Descripción de sabor/textura, no elogios vacíos. Sin 'maridaje perfecto'."
+        },
+        {
+          "type": "cta",
+          "description": "Acción",
+          "example": "🍽️ Reservá tu mesa: [WhatsApp]\nDelivery disponible por PedidosYa.",
+          "rules": "Mencionar canal de reserva y delivery si aplica."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#gastronomia #costilla #bbq #foodporn #bsas",
+          "rules": "Máximo 5. Mezclar genéricos + plato + ciudad."
+        }
+      ],
+      "characterLimit": 500,
+      "emojiMax": 2
+    },
+    {
+      "name": "Delivery / Picada",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Qué es el producto",
+          "example": "Picada para 4 personas: tabla de quesos (brie, azul, gouda), fiambres ahumados, frutos secos, miel.",
+          "rules": "Contenido detallado primero."
+        },
+        {
+          "type": "extras",
+          "description": "Qué más incluye",
+          "example": "Incluye: pan artesanal, crackers, dips.",
+          "rules": "Listar extras separados."
+        },
+        {
+          "type": "logistics",
+          "description": "Logística",
+          "example": "Pedila con 24 hs de anticipación. Entregamos en CABA y GBA.",
+          "rules": "Plazos y zonas explícitos."
+        },
+        {
+          "type": "cta",
+          "description": "Acción",
+          "example": "📱 [WhatsApp] para pedir.",
+          "rules": "Canal único y claro."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#picada #quesos #delivery #gastronomia #bsas",
+          "rules": "Máximo 5."
+        }
+      ]
+    }
+  ]
+}

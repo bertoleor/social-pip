@@ -1,0 +1,84 @@
+{
+  "sector": "inmobiliario",
+  "templates": [
+    {
+      "name": "Publicación de Propiedad",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Descripción breve de la propiedad",
+          "example": "USD 180.000 - PH de 3 ambientes en Villa Crespo",
+          "rules": "No usar 'vibrante', 'hermoso', 'increíble'. Usar datos concretos."
+        },
+        {
+          "type": "features",
+          "description": "Características principales",
+          "example": "2 dormitorios, 1 baño, cocina integrada, patio de 20m², orientación norte",
+          "rules": "Separar con comas. Usar abreviaturas comunes (amb., m², orient.)"
+        },
+        {
+          "type": "price",
+          "description": "Precio visible",
+          "example": "USD 180.000 (negociable)",
+          "rules": "Siempre incluir moneda. Puede indicar 'negociable' o 'contado'."
+        },
+        {
+          "type": "location",
+          "description": "Ubicación",
+          "example": "Villa Crespo, CABA. A 200m de subway línea B",
+          "rules": "Incluir barrio y referencia de transporte si aplica."
+        },
+        {
+          "type": "cta",
+          "description": "Llamado a la acción",
+          "example": "📱 Escribinos para visita: 11-1234-5678",
+          "rules": "Usar emoji de teléfono. Incluir WhatsApp si corresponde."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#inmobiliario #propiedad #inversion #bsas #villacrespo",
+          "rules": "Máximo 5 hashtags. Incluir ciudad si es relevante."
+        }
+      ],
+      "characterLimit": 500,
+      "emojiMax": 3,
+      "example": "USD 180.000 - PH de 3 ambientes en Villa Crespo\n\n2 dormitorios, 1 baño, cocina integrada, patio de 20m², orientación norte.\n\n📱 Escribinos para visita: 11-1234-5678\n\n#inmobiliario #propiedad #inversion #bsas #villacrespo"
+    },
+    {
+      "name": "Inversión Inmobiliaria",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "ROI / Tipo de propiedad",
+          "example": "Monoambiente en Palermo SOHO - USD 95.000",
+          "rules": "Precio primero. Sin promesas de rentabilidad garantizada."
+        },
+        {
+          "type": "rentability",
+          "description": "Renta estimada",
+          "example": "Renta promedio: USD 650/mes (6.8% anual)",
+          "rules": "Aclarar que es estimada. Fuente si es dato de mercado."
+        },
+        {
+          "type": "neighborhood_context",
+          "description": "Contexto del barrio",
+          "example": "Barrio en expansión: nuevos desarrollos, metro cercano, zona comercial.",
+          "rules": "Datos verificables, no adjetivos."
+        },
+        {
+          "type": "cta",
+          "description": "Siguiente paso",
+          "example": "Agendá una llamada de 15 min: [WhatsApp]",
+          "rules": "Sin urgencia falsa. Sin 'última oportunidad'."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#inversion #inmobiliaria #palermo #bsas",
+          "rules": "Máximo 5. Vinculados al barrio."
+        }
+      ]
+    }
+  ]
+}

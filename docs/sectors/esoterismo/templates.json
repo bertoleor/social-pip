@@ -1,0 +1,77 @@
+{
+  "sector": "esoterismo",
+  "templates": [
+    {
+      "name": "Servicio de Tarot",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Resultado o beneficio",
+          "example": "Las cartas no mienten: tu situación actual tiene una salida.",
+          "rules": "Sin dramatismo. Sin promesas de resultado específico. Evitar 'magia', 'poder oculto', 'encantamiento'."
+        },
+        {
+          "type": "method",
+          "description": "Cómo se realiza la sesión",
+          "example": "Lectura de tarot arcanos mayores (15 minutos). Revisión de tus 3 áreas: amor, trabajo, finanzas.",
+          "rules": "Describir la sesión con datos concretos (duración, formato). Preferir 'lectura', 'interpretación', 'orientación'."
+        },
+        {
+          "type": "results",
+          "description": "Qué obtiene el cliente",
+          "example": "Orientación práctica sobre tus próximos pasos en las tres áreas.",
+          "rules": "Sin promesas absolutas. Sin garantías de resultado."
+        },
+        {
+          "type": "cta",
+          "description": "Acción siguiente",
+          "example": "Sesión por videollamada o presencial en CABA. 📱 Reservá tu turno: [WhatsApp]",
+          "rules": "Formato y precio visible si aplica. CTA con WhatsApp o link de agenda."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#tarot #lectura #esoterismo #arcanos #espiritualidad",
+          "rules": "Máximo 5. Evitar 'magia', 'ritualdeamor' (hashtags de alto riesgo de shadow-ban)."
+        }
+      ],
+      "characterLimit": 400,
+      "emojiMax": 2
+    },
+    {
+      "name": "Ritual de Limpieza",
+      "structure": [
+        {
+          "type": "hook",
+          "description": "Abre con el problema sin dramatizar",
+          "example": "Tu espacio acumula energía que no te deja avanzar.",
+          "rules": "Sin miedo. Sin 'maldición' ni 'trabajos'."
+        },
+        {
+          "type": "protocol",
+          "description": "Qué incluye el ritual",
+          "example": "Ritual de limpieza con sal marina, romero y cantonera. Protocolo completo: preparación, ejecución, cierre.",
+          "rules": "Listar elementos y pasos. Sin recetas ocultas ni claims sobrenaturales."
+        },
+        {
+          "type": "timeline",
+          "description": "Plazo orientativo",
+          "example": "Resultados orientativos en 7 días.",
+          "rules": "Sin promesas fijas. Aclarar que varía."
+        },
+        {
+          "type": "cta",
+          "description": "Acción siguiente",
+          "example": "Enviános mensaje para detalle del proceso: [WhatsApp]",
+          "rules": "Pedido de información primero, cierre después."
+        },
+        {
+          "type": "hashtags",
+          "description": "Hashtags sector",
+          "example": "#limpiezaenergetica #esoterismo #energia #bienestar",
+          "rules": "Máximo 5. Sin hashtags prohibidos por plataforma."
+        }
+      ]
+    }
+  ]
+}
