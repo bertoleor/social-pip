@@ -167,3 +167,53 @@ jobs:
           if [ "$PASS" = false ]; then
             exit 1
           fi
+
+  sast-semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+  supply-sign:
+    name: SBOM sign (Sigstore keyless)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: SBOM CycloneDX
+        uses: aquasec/trivy-action@master
+        with:
+          scan-type: fs
+          path: .
+          format: cyclonedx-json
+          output: sbom.cdx.json
+          exit-code: 0
+      - name: Cosign install
+        uses: sigstore/cosign-installer@v3
+      - name: Sign SBOM
+        run: cosign sign-blob --yes sbom.cdx.json --output-signature sbom.cdx.sig --output-certificate sbom.cdx.pem
+
+  python-deps-audit:
+    name: Python deps audit (pip-audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pip-audit
+        run: pip install pip-audit
+      - name: Audit pinned aux python deps
+        # Audita requirements.txt (numpy/pyyaml pineados con ==, ver hallazgo DP-08)
+        run: pip-audit -r requirements.txt

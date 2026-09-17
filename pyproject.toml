@@ -25,9 +25,9 @@ dependencies = []
 # Template REST API (skills/20-PLATFORM/api-design-principles/assets)
 api = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "pydantic[email]>=2.6"]
 # Optimizador de prompts (skills/50-AI/prompt-engineering-patterns/scripts)
-optimize = ["numpy>=1.26"]
+optimize = ["numpy==1.26.4"]
 # Registry scan (skills/50-AI/agent-orchestrator/scripts)
-orchestrator = ["pyyaml>=6.0"]
+orchestrator = ["pyyaml==6.0.3"]
 # Todo junto + tooling de desarrollo (ruff/pytest ya configurados)
 dev = [
     "ruff>=0.5",

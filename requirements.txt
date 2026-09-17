@@ -8,10 +8,16 @@
 #   numpy                                -> skills/50-AI/prompt-engineering-patterns/scripts/optimize-prompt.py
 #   pyyaml                               -> skills/50-AI/agent-orchestrator/scripts/scan_registry.py (lazy)
 #
+# PINS (hallazgo DP-08): las deps auxiliares estan pineadas con == para que el
+# build sea reproducible y pip-audit en CI (job python-deps-audit) pueda auditar
+# versiones concretas. Bump deliberado = commit aparte + CI verifica.
+#
 # Instalacion minima para correr la suite y los scripts de runtime:
 #   pip install -r requirements.txt
 # Para el template REST (fastapi) completo:
 #   pip install -r requirements.txt fastapi "uvicorn[standard]" "pydantic[email]"
+# Para auditar en CI / local:
+#   pip install pip-audit && pip-audit -r requirements.txt
 
-numpy>=1.26
-pyyaml>=6.0
+numpy==1.26.4
+pyyaml==6.0.3
