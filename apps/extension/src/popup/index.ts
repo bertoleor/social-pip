@@ -27,9 +27,13 @@ openAppBtn.addEventListener("click", () => {
   chrome.runtime.sendMessage({ type: "open_app" });
 });
 
-// Open dashboard in browser
+// Open the desktop app's dashboard. FR-09: the Tauri app exposes no web
+// dashboard reachable from a browser tab (localhost:1420 is only the dev
+// server's devUrl). The real way to "open the dashboard" is to launch the
+// native app itself, so we reuse the open_app native messaging path instead of
+// opening a browser tab to a hardcoded dev URL.
 openDashboardBtn.addEventListener("click", () => {
-  chrome.tabs.create({ url: "http://localhost:1420" });
+  chrome.runtime.sendMessage({ type: "open_app" });
 });
 
 // Check connection on popup open

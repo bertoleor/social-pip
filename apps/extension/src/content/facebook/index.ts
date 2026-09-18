@@ -15,6 +15,38 @@ interface PostResult {
   error?: string;
 }
 
+// Authz gate (FR-08): only runtime messages that originate from our own
+// extension (sender.id === runtime.id) AND from a Facebook tab (sender.url
+// matches facebook.com) may drive actions in this content script. A page
+// context inyectado/comprometido that calls chrome.runtime.onMessage can only
+// reach this listener as an external sendMessage, which lacks our extension id
+// (and, if it had it, still would not match facebook.com unless the tab is
+// Facebook — the only context this script runs in). plus we refuse any action
+// outside the explicit allowlist.
+const FB_URL_RE = /^https?:\/\/([a-z0-9-]+\.)*facebook\.com(\/|$)/i;
+
+const ALLOWED_ACTIONS = ["post_group", "execute_post", "check_status"] as const;
+
+type AllowedAction = (typeof ALLOWED_ACTIONS)[number];
+
+function isTrustedSender(sender: chrome.runtime.MessageSender): boolean {
+  if (!sender.url) return false;
+  try {
+    if (!FB_URL_RE.test(sender.url)) return false;
+  } catch {
+    return false;
+  }
+  return sender.id === chrome.runtime.id;
+}
+
+function isAllowedAction(action: unknown): action is AllowedAction {
+  return typeof action === "string" && (ALLOWED_ACTIONS as readonly string[]).includes(action);
+}
+
+function unauthorizedResponse(): PostResult {
+  return { success: false, error: "Unauthorized message sender" };
+}
+
 // Selectores para Facebook Groups (actualizados Abril 2026)
 const SELECTORS = {
   // Post composer
@@ -314,8 +346,20 @@ function checkRateLimit(): boolean {
 }
 
 // Message handler
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // FR-08 authz gate: reject any message that is not from our own extension
+  // running on a Facebook tab, or whose action is not explicitly allowed.
+  if (!isTrustedSender(sender)) {
+    sendResponse(unauthorizedResponse());
+    return true;
+  }
+
   const { action, content, mediaUrls, target } = message as PostAction;
+
+  if (!isAllowedAction(action)) {
+    sendResponse(unauthorizedResponse());
+    return true;
+  }
 
   if (action === "post_group") {
     if (!isInGroup()) {
