@@ -217,3 +217,25 @@ jobs:
       - name: Audit pinned aux python deps
         # Audita requirements.txt (numpy/pyyaml pineados con ==, ver hallazgo DP-08)
         run: pip-audit -r requirements.txt
+
+  pnpm-audit:
+    name: JS deps audit (pnpm audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      # DP-07: gate supply-chain en PR temprano. Fallo rapido si hay dependencias
+      # con advisory HIGH/CRITICAL en el lockfile (npm registry audit endpoint).
+      - name: Audit dependencies (high+)
+        run: pnpm audit --audit-level=high
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
