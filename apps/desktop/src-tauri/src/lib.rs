@@ -85,6 +85,7 @@ pub use database::{
     DatabaseConfig, DatabasePool,
     PostSessionModel, PostJobModel, SessionStatus, JobStatus, ErrorCategory,
     InMemoryStore, InMemorySessionStore, InMemoryJobStore,
+    SqliteStore, SqliteSessionStore, SqliteJobStore,
     SessionPersistence, JobPersistence,
     recover_pending_sessions, RecoveryResult, RecoverySummary,
 };

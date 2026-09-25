@@ -4,47 +4,43 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
 	plugins: [react()],
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    pool: 'threads',
-    poolOptions: {
-      threads: {
-        minThreads: 2,
-        maxThreads: 4,
-      },
-    },
-    clearMocks: true,
-    restoreMocks: true,
-    mockReset: true,
-    snapshotFormat: {
-      escapeString: true,
-      printBasicPrototype: false,
-    },
-coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html', 'json', 'lcov', 'json-summary'],
-      include: ['src/**/*.{ts,tsx}'],
-      exclude: [
-        'node_modules/**',
-        'src/test/**',
-        'src/**/*.d.ts',
-        'src/**/*.config.*',
-        'src/main.tsx',
-        'src/e2e/**',
-      ],
-      thresholds: {
-        lines: 80,
-        branches: 75,
-        functions: 85,
-        statements: 80,
-        perFile: true,
-        autoUpdate: false,
-      },
-      reportOnFailure: true,
-    },
+	test: {
+		environment: 'jsdom',
+		globals: true,
+		setupFiles: ['./src/test/setup.ts'],
+		include: ['src/**/*.{test,spec}.{ts,tsx}'],
+		pool: 'threads',
+		minWorkers: 2,
+		maxWorkers: 4,
+		clearMocks: true,
+		restoreMocks: true,
+		mockReset: true,
+		snapshotFormat: {
+			escapeString: true,
+			printBasicPrototype: false,
+		},
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'html', 'json', 'lcov', 'json-summary'],
+			include: ['src/**/*.{ts,tsx}'],
+			exclude: [
+				'node_modules/**',
+				'src/test/**',
+				'src/**/*.d.ts',
+				'src/**/*.config.*',
+				'src/main.tsx',
+				'src/e2e/**',
+			],
+			thresholds: {
+				lines: 80,
+				branches: 75,
+				functions: 85,
+				statements: 80,
+				perFile: true,
+				autoUpdate: false,
+			},
+			reportOnFailure: true,
+		},
 	},
 	resolve: {
 		alias: {

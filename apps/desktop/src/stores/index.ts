@@ -1,4 +1,12 @@
 export { useUIStore, type UIState, type Theme } from "./uiStore";
+export {
+  useSessionStore,
+  type SessionState,
+  type SessionStatus,
+  SESSION_PROBE_COMMAND,
+  isAuthExpiryError,
+  classifyProbeError,
+} from "./sessionStore";
 export { useAccountsStore, type AccountsState } from "./accountsStore";
 export { usePostsStore, type PostsState } from "./postsStore";
 export { useScheduleStore, type ScheduleState } from "./scheduleStore";

@@ -16,7 +16,7 @@ use chrono::Utc;
 use uuid::Uuid;
 
 use crate::anti_ban::AntiBanEngine;
-use crate::database::{InMemoryStore, SessionPersistence, JobPersistence, PostSessionModel, PostJobModel};
+use crate::database::{SqliteStore, SessionPersistence, JobPersistence, PostSessionModel, PostJobModel};
 
 // ============================================
 // DOMAIN TYPES
@@ -255,8 +255,11 @@ pub struct SessionCompleteResult {
 // ============================================
 
 /// Global persistence store for sessions and jobs
-/// Replaces direct HashMap usage with proper persistence layer
-static PERSISTENCE_STORE: Lazy<InMemoryStore> = Lazy::new(InMemoryStore::new);
+/// Persists to SQLite via the shared connection (in-memory under tests).
+/// Replaces direct HashMap usage with proper persistence layer.
+static PERSISTENCE_STORE: Lazy<SqliteStore> = Lazy::new(|| {
+    SqliteStore::new(crate::database::default_db_path())
+});
 
 /// Session-specific anti-ban engines
 /// Each posting session has its own anti-ban engine for rate limiting
@@ -1585,7 +1588,7 @@ fn test_retry_failed_job_clears_error_fields() {
     // ========================================
 
     /// Helper to get persistence store for tests
-    fn get_persistence_store() -> &'static crate::database::InMemoryStore {
+    fn get_persistence_store() -> &'static crate::database::SqliteStore {
         &PERSISTENCE_STORE
     }
 

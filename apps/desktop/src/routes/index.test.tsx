@@ -1,49 +1,54 @@
+import { SessionGuard } from "@/components/route/SessionGuard";
 /**
  * @fileoverview Router configuration tests
- * Tests route setup and route definitions
+ * Tests route setup and route definitions, including the FR-10 session guard wrapper.
  */
 import { describe, expect, it } from "vitest";
-import { routes } from "./index";
+import { createAppRouter, routes } from "./index";
 
 describe("Router Configuration", () => {
-  describe("Route Definitions", () => {
-    it("defines the root route (/)", () => {
-      const rootRoute = routes.find((r) => r.path === "/");
+  describe("Session Guard (FR-10)", () => {
+    const guardRoute = routes[0];
+
+    it("wraps all application routes in an auth/session guard", () => {
+      expect(routes).toHaveLength(2); // guarded app + not-found fallback
+      expect(guardRoute.Component).toBe(SessionGuard);
+    });
+
+    it("exposes every protected page as a child of the guard", () => {
+      expect(guardRoute.children).toHaveLength(6);
+      const paths = guardRoute.children?.map((r) => r.path);
+      expect(paths).toEqual(["/", "/accounts", "/posts", "/schedule", "/analytics", "/settings"]);
+    });
+
+    it("keeps all guarded children lazy-loaded", () => {
+      const children = guardRoute.children ?? [];
+      expect(children.every((route) => typeof route.lazy === "function")).toBe(true);
+    });
+  });
+
+  describe("Route Definitions (under guarded layout)", () => {
+    const guardedChildren = routes[0]?.children ?? [];
+
+    it("defines the root route (/) under the guard", () => {
+      const rootRoute = guardedChildren.find((r) => r.path === "/");
       expect(rootRoute).toBeDefined();
       expect(rootRoute?.lazy).toBeDefined();
     });
 
-    it("defines the accounts route (/accounts)", () => {
-      const accountsRoute = routes.find((r) => r.path === "/accounts");
+    it("defines the accounts route (/accounts) under the guard", () => {
+      const accountsRoute = guardedChildren.find((r) => r.path === "/accounts");
       expect(accountsRoute).toBeDefined();
       expect(accountsRoute?.lazy).toBeDefined();
     });
 
-    it("defines the posts route (/posts)", () => {
-      const postsRoute = routes.find((r) => r.path === "/posts");
-      expect(postsRoute).toBeDefined();
-      expect(postsRoute?.lazy).toBeDefined();
+    it("defines the posts, schedule, analytics and settings routes under the guard", () => {
+      for (const p of ["/posts", "/schedule", "/analytics", "/settings"]) {
+        expect(guardedChildren.find((r) => r.path === p)?.lazy).toBeDefined();
+      }
     });
 
-    it("defines the schedule route (/schedule)", () => {
-      const scheduleRoute = routes.find((r) => r.path === "/schedule");
-      expect(scheduleRoute).toBeDefined();
-      expect(scheduleRoute?.lazy).toBeDefined();
-    });
-
-    it("defines the analytics route (/analytics)", () => {
-      const analyticsRoute = routes.find((r) => r.path === "/analytics");
-      expect(analyticsRoute).toBeDefined();
-      expect(analyticsRoute?.lazy).toBeDefined();
-    });
-
-    it("defines the settings route (/settings)", () => {
-      const settingsRoute = routes.find((r) => r.path === "/settings");
-      expect(settingsRoute).toBeDefined();
-      expect(settingsRoute?.lazy).toBeDefined();
-    });
-
-    it("defines a catch-all 404 route (*)", () => {
+    it("defines a catch-all 404 route (*) outside the guard", () => {
       const notFoundRoute = routes.find((r) => r.path === "*");
       expect(notFoundRoute).toBeDefined();
       expect(notFoundRoute?.lazy).toBeDefined();
@@ -51,19 +56,21 @@ describe("Router Configuration", () => {
   });
 
   describe("Route Structure", () => {
-    it("has exactly 7 routes defined", () => {
-      expect(routes).toHaveLength(7);
-    });
+    const guardedChildren = routes[0]?.children ?? [];
 
-    it("all routes use lazy loading", () => {
-      const allLazy = routes.every((route) => typeof route.lazy === "function");
+    it("all guarded routes use lazy loading", () => {
+      const allLazy = guardedChildren.every((route) => typeof route.lazy === "function");
       expect(allLazy).toBe(true);
     });
 
-    it("route paths are unique", () => {
-      const paths = routes.map((r) => r.path);
+    it("guarded route paths are unique", () => {
+      const paths = guardedChildren.map((r) => r.path);
       const uniquePaths = new Set(paths);
       expect(uniquePaths.size).toBe(paths.length);
+    });
+
+    it("router factory still builds from the guarded route tree", () => {
+      expect(createAppRouter).toBeDefined();
     });
   });
 });

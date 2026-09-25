@@ -1,5 +1,28 @@
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
+use url::Url;
+
+/// Base URLs de proveedor permitidos (hallazgo RS-03).
+/// NVIDIA se limita a hosts oficiales `api.nvidia.com`; Ollama solo a localhost.
+fn is_allowed_provider_base_url(provider: &AIProvider, base_url: &str) -> bool {
+    let Ok(parsed) = Url::parse(base_url) else {
+        return false;
+    };
+    let Some(host) = parsed.host_str() else {
+        return false;
+    };
+    let scheme = parsed.scheme();
+    match provider {
+        AIProvider::NvidiaNim => {
+            scheme == "https"
+                && (host == "api.nvidia.com" || host.ends_with(".api.nvidia.com"))
+        }
+        AIProvider::Ollama => {
+            (scheme == "http" || scheme == "https")
+                && matches!(host, "localhost" | "127.0.0.1" | "::1")
+        }
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum AIProvider {
@@ -193,12 +216,16 @@ let (caption, tokens) = match self.config.provider {
     }
 
     async fn call_ollama(&self, prompt: &str) -> Result<(String, Option<u32>), String> {
-        let url = self.config.ollama_url
+        let raw_url = self.config.ollama_url
             .as_ref()
             .ok_or("Ollama URL no configurada")?
             .clone();
 
-        let url = format!("{}/api/generate", url);
+        if !is_allowed_provider_base_url(&AIProvider::Ollama, &raw_url) {
+            return Err("URL de Ollama no permitida (solo localhost)".to_string());
+        }
+
+        let url = format!("{}/api/generate", raw_url);
 
         let request = OllamaRequest {
             model: self.config.model_name.clone(),
@@ -215,16 +242,16 @@ let (caption, tokens) = match self.config.provider {
             .json(&request)
             .send()
             .await
-            .map_err(|e| format!("Error conectando a Ollama: {}", e))?;
+            .map_err(|_| "Error conectando a Ollama".to_string())?;
 
         if !response.status().is_success() {
-            return Err(format!("Error de Ollama: {}", response.status()));
+            return Err("Error de Ollama".to_string());
         }
 
         let ollama_response: OllamaResponse = response
             .json()
             .await
-            .map_err(|e| format!("Error parseando respuesta: {}", e))?;
+            .map_err(|_| "Error parseando respuesta de Ollama".to_string())?;
 
         // Ollama no devuelve token count, devolvemos None
         Ok((ollama_response.response.trim().to_string(), None))
@@ -239,6 +266,10 @@ let (caption, tokens) = match self.config.provider {
         let endpoint = self.config.endpoint
             .clone()
             .unwrap_or_else(|| "https://integrate.api.nvidia.com/v1/chat/completions".to_string());
+
+        if !is_allowed_provider_base_url(&AIProvider::NvidiaNim, &endpoint) {
+            return Err("Endpoint de NVIDIA no permitido".to_string());
+        }
 
         let model = format!("meta/{}", self.config.model_name);
 
@@ -266,18 +297,16 @@ let (caption, tokens) = match self.config.provider {
             .json(&request)
             .send()
             .await
-            .map_err(|e| format!("Error conectando a NVIDIA: {}", e))?;
+            .map_err(|_| "Error conectando a NVIDIA".to_string())?;
 
         if !response.status().is_success() {
-            let status = response.status();
-            let error_text = response.text().await.unwrap_or_default();
-            return Err(format!("Error de NVIDIA ({}): {}", status, error_text));
+            return Err("Error de NVIDIA".to_string());
         }
 
         let nvidia_response: NvidiaResponse = response
             .json()
             .await
-            .map_err(|e| format!("Error parseando respuesta: {}", e))?;
+            .map_err(|_| "Error parseando respuesta de NVIDIA".to_string())?;
 
         let caption = nvidia_response.choices
             .first()
@@ -350,5 +379,29 @@ fn test_default_config() {
     fn test_sector_prompts() {
         assert!(get_sector_prompt("inmobiliario").contains("precio"));
         assert!(get_sector_prompt("digital").contains("features"));
+    }
+
+    #[test]
+    fn test_allowlist_nvidia() {
+        use AIProvider::*;
+        assert!(is_allowed_provider_base_url(&NvidiaNim, "https://integrate.api.nvidia.com/v1/chat/completions"));
+        assert!(is_allowed_provider_base_url(&NvidiaNim, "https://api.nvidia.com/v1"));
+        assert!(!is_allowed_provider_base_url(&NvidiaNim, "http://api.nvidia.com/v1")); // no https
+        assert!(!is_allowed_provider_base_url(&NvidiaNim, "https://evil.com"));
+        assert!(!is_allowed_provider_base_url(&NvidiaNim, "https://apitest.nvidia.com.evil.com"));
+        assert!(!is_allowed_provider_base_url(&NvidiaNim, "https://nvidia.com"));
+        assert!(!is_allowed_provider_base_url(&NvidiaNim, "not a url"));
+    }
+
+    #[test]
+    fn test_allowlist_ollama() {
+        use AIProvider::*;
+        assert!(is_allowed_provider_base_url(&Ollama, "http://localhost:11434"));
+        assert!(is_allowed_provider_base_url(&Ollama, "http://127.0.0.1:11434"));
+        assert!(is_allowed_provider_base_url(&Ollama, "https://localhost:11434"));
+        assert!(!is_allowed_provider_base_url(&Ollama, "http://evil.localhost:11434"));
+        assert!(!is_allowed_provider_base_url(&Ollama, "http://192.168.1.10:11434"));
+        assert!(!is_allowed_provider_base_url(&Ollama, "http://api.ollama.com"));
+        assert!(!is_allowed_provider_base_url(&Ollama, "not a url"));
     }
 }

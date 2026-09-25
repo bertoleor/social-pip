@@ -22,7 +22,7 @@ use tokio::sync::Mutex;
 pub use models::{PostSessionModel, PostJobModel, SessionStatus, JobStatus, ErrorCategory};
 pub use persistence::{InMemoryStore, InMemorySessionStore, InMemoryJobStore, SessionPersistence, JobPersistence};
 pub use recovery::{recover_pending_sessions, RecoveryResult, RecoverySummary};
-pub use sqlite_store::{SqliteSessionStore, SqliteJobStore};
+pub use sqlite_store::{SqliteSessionStore, SqliteJobStore, SqliteStore};
 
 // ============================================
 // DATABASE CONNECTION TYPES
@@ -104,21 +104,27 @@ impl DatabasePool {
 // SQLITE STORES LAZY INITIALIZATION
 // ============================================
 
-/// Global lazy-initialized SQLite stores
+/// Global lazy-initialized SQLite store
 /// Uses OnceLock for thread-safe lazy initialization
-static SQLITE_STORES: OnceLock<(SqliteSessionStore, SqliteJobStore)> = OnceLock::new();
+static SQLITE_STORE: OnceLock<SqliteStore> = OnceLock::new();
 
-/// Initialize SQLite stores lazily
-/// Returns a reference to the initialized stores
-pub fn get_sqlite_stores() -> Option<&'static (SqliteSessionStore, SqliteJobStore)> {
-    SQLITE_STORES.get_or_init(|| {
-        let db_path = get_app_data_path()
-            .unwrap_or_else(|_| "social-pip.db".to_string());
-        (
-            SqliteSessionStore::new(db_path.clone()),
-            SqliteJobStore::new(db_path),
-        )
-    }).into()
+/// Initialize SQLite store lazily
+/// Returns references to the initialized session and job stores (shared connection)
+pub fn get_sqlite_stores() -> Option<(&'static SqliteSessionStore, &'static SqliteJobStore)> {
+    let store = SQLITE_STORE.get_or_init(|| SqliteStore::new(default_db_path()));
+    Some((&store.sessions, &store.jobs))
+}
+
+/// Resolve the database file path used by the global stores.
+///
+/// Unit tests use an in-memory database so test runs stay isolated and
+/// deterministic; production builds persist to the OS app-data directory.
+pub fn default_db_path() -> String {
+    if cfg!(test) {
+        ":memory:".to_string()
+    } else {
+        get_app_data_path().unwrap_or_else(|_| "social-pip.db".to_string())
+    }
 }
 
 /// Get the application data directory for database storage
