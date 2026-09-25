@@ -16,7 +16,10 @@ export default defineManifest({
   version: `${major}.${minor}.${patch}.${label}`,
   version_name: version,
   description: "Automatización de redes sociales - Browser automation para posting",
-  permissions: ["activeTab", "tabs", "storage", "nativeMessaging", "cookies"],
+  // FR-03: `tabs` and `cookies` dropped. tab.url/sendMessage for the sole
+  // active facebook tab is granted by host_permissions below; nothing reads
+  // cookies (the cookie-based detect_current_profile RPC was removed).
+  permissions: ["activeTab", "storage", "nativeMessaging"],
   host_permissions: ["*://*.facebook.com/*"],
   background: {
     service_worker: "src/background/index.ts",
