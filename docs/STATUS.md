@@ -27,6 +27,11 @@ orden, más subcarpetas temáticas (`architecture/`, `setup/`, `workflows/`,
 `n8n-workflows/`, `mcp/`, `anti-ban/`, `research/`, `plans/`, `audits/`, etc.).
 Índice canónico: `docs/README.md`. Mapa: `docs/06-mapa-docs.md`.
 
+## División base → visión (ORN-188)
+`auto-poster-stealth` (`E:/sitios web E/`) es el código base en producción;
+este repo (social-pip) es la visión/docs. Declaración canónica:
+`docs/vision/base-vs-vision.md`.
+
 ## Hechos verificados en este turno (ORN-89)
 - Baseline `docs/00-*.md` … `docs/07-*.md` presente en working tree (stats de stack
   y módulos contrastados con `package.json` / `pyproject.toml` según lo declarado
