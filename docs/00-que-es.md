@@ -28,4 +28,4 @@ plataformas desde un solo lugar, sin depender de SaaS pagos (Buffer, Hootsuite, 
 ## Estado actual
 
 MVP en desarrollo (v1.0.0, licencia MIT). Cobertura CI exigida:
-80% líneas / 75% ramas / 85% funciones. Detalle de setup en `QUICKSTART.md`.
+80% líneas / 75% ramas / 85% funciones. Detalle de setup en `docs/QUICKSTART.md`.

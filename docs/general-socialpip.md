@@ -192,7 +192,7 @@ pnpm dev:extension
 ```
 
 En Windows podés usar `setup-dev.bat` para un montaje guiado. Guía rápida completa
-en `QUICKSTART.md` (incluye troubleshooting de puerto, Rust y DB).
+en `docs/QUICKSTART.md` (incluye troubleshooting de puerto, Rust y DB).
 
 ---
 
@@ -240,10 +240,10 @@ pytest               # scope limitado por pytest.ini a tests/ y skills/*/scripts
 | [platforms/platforms-automation.md](platforms/platforms-automation.md) | Automatización por plataforma. |
 | [audits/general-socialpip.md](audits/general-socialpip.md) | Log de auditoría interna (no es doc de producto). |
 | `../README.md` | Resumen de alto nivel y badges. |
-| `../CONTRIBUTING.md` | Cómo contribuir (requisitos, flujo de PR, reporte de issues). |
+| `docs/CONTRIBUTING.md` | Cómo contribuir (requisitos, flujo de PR, reporte de issues). |
 | `../LICENSE` | Licencia MIT. |
 | `../AGENTS.md` | Convenciones para agentes de desarrollo. |
-| `../QUICKSTART.md` | Arranque rápido en minutos. |
+| `docs/QUICKSTART.md` | Arranque rápido en minutos. |
 
 ---
 

@@ -22,24 +22,14 @@ describe("parseHostBoolean (check_can_post / should_break)", () => {
   });
 
   it("rejects a truthy string instead of coalescing", () => {
-    expect(() => parseHostBoolean("check_can_post", "true")).toThrow(
-      HostResponseError,
-    );
+    expect(() => parseHostBoolean("check_can_post", "true")).toThrow(HostResponseError);
   });
 
   it("rejects an object / number / null / undefined", () => {
-    expect(() => parseHostBoolean("check_can_post", {})).toThrow(
-      HostResponseError,
-    );
-    expect(() => parseHostBoolean("should_break", 1)).toThrow(
-      HostResponseError,
-    );
-    expect(() => parseHostBoolean("should_break", null)).toThrow(
-      HostResponseError,
-    );
-    expect(() => parseHostBoolean("should_break", undefined)).toThrow(
-      HostResponseError,
-    );
+    expect(() => parseHostBoolean("check_can_post", {})).toThrow(HostResponseError);
+    expect(() => parseHostBoolean("should_break", 1)).toThrow(HostResponseError);
+    expect(() => parseHostBoolean("should_break", null)).toThrow(HostResponseError);
+    expect(() => parseHostBoolean("should_break", undefined)).toThrow(HostResponseError);
   });
 
   it("throws HostResponseError with the message type", () => {
@@ -62,9 +52,7 @@ describe("parseHostDelayMs (get_next_delay)", () => {
 
   it("clamps a huge delay down to MAX_DELAY_MS", () => {
     expect(parseHostDelayMs("get_next_delay", 2 ** 53)).toBe(MAX_DELAY_MS);
-    expect(parseHostDelayMs("get_next_delay", 99_999_999_999)).toBe(
-      MAX_DELAY_MS,
-    );
+    expect(parseHostDelayMs("get_next_delay", 99_999_999_999)).toBe(MAX_DELAY_MS);
   });
 
   it("clamps a negative delay up to MIN_DELAY_MS", () => {
@@ -72,21 +60,15 @@ describe("parseHostDelayMs (get_next_delay)", () => {
   });
 
   it("rejects a numeric string instead of coercing", () => {
-    expect(() => parseHostDelayMs("get_next_delay", "5000")).toThrow(
-      HostResponseError,
-    );
+    expect(() => parseHostDelayMs("get_next_delay", "5000")).toThrow(HostResponseError);
   });
 
   it("rejects NaN / Infinity / non-number", () => {
-    expect(() => parseHostDelayMs("get_next_delay", NaN)).toThrow(
+    expect(() => parseHostDelayMs("get_next_delay", Number.NaN)).toThrow(HostResponseError);
+    expect(() => parseHostDelayMs("get_next_delay", Number.POSITIVE_INFINITY)).toThrow(
       HostResponseError,
     );
-    expect(() => parseHostDelayMs("get_next_delay", Infinity)).toThrow(
-      HostResponseError,
-    );
-    expect(() => parseHostDelayMs("get_next_delay", null)).toThrow(
-      HostResponseError,
-    );
+    expect(() => parseHostDelayMs("get_next_delay", null)).toThrow(HostResponseError);
   });
 
   it("keeps zero (valid floor) and returns it", () => {

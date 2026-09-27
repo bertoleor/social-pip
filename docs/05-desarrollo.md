@@ -11,7 +11,7 @@
 | Python | ≥ 3.11 | solo scripts aux |
 
 Windows: MSVC Build Tools + WebView2. macOS: Xcode CLT. Linux: prereqs Tauri.
-Guía completa: `QUICKSTART.md` y `docs/setup/`.
+Guía completa: `docs/QUICKSTART.md` y `docs/setup/`.
 
 ## Setup
 
@@ -48,5 +48,5 @@ pytest                             # suite raíz (pytest.ini)
 
 - **Scope Rule** + SDD/TDD/GGA: `docs/protocols/gentleman-protocols.md`.
 - Estructura de código: `docs/architecture/project-structure.md`.
-- Contribuir: `CONTRIBUTING.md`. Changelog: `CHANGELOG.md`.
+- Contribuir: `docs/CONTRIBUTING.md`. Changelog: `docs/CHANGELOG.md`.
 - Umbrales CI: 80% líneas / 75% ramas / 85% funciones / 80% statements.

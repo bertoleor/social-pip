@@ -5,7 +5,7 @@
 
 Este documento establece las **reglas gramaticales, léxicas y estilísticas** que debe seguir toda la generación de contenido textual en Social-Pip. El objetivo es evitar las "huellas verbales" características de la IA y producir textos que suenen genuinamente escritos por un humano hispanohablante.
 
-Este guide es de参考 para:
+Este guide es de referencia para:
 - `src-tauri/src/ai_service.rs` (generación de captions)
 - `workflows/templates-workflows.md` (Manual de Marca)
 - `workflows/social-pip-workflows.md` (content generation)
@@ -221,7 +221,7 @@ El punto y coma marca la pausa del pensador, no del robot.}
 |------------|---------------------|
 | **Hacer** | Ejecutar, desarrollar, implementar, crear, realizar, provocar, causar |
 | **Tener** | Poseer, albergrar, contener, experimentar, sentir, constar |
-| **Decir** | Exponer, manifestar, sostener,指出, indicar, afirmar, comunicar |
+| **Decir** | Exponer, manifestar, sostener, señalar, indicar, afirmar, comunicar |
 | **Poner** | Instalar, colocar, establecer, configurar, iniciar, disponer |
 | **Dar** | Otorgar, proporcionar, entregar, facilitar, conceder, aportar |
 | **Ver** | Observar, percibir, contemplar, examinar, revisar, constatar |
@@ -425,7 +425,7 @@ En conclusión, [repetición del resumen].
 | Para Social-Pip (Argentina/LATAM) | Regla |
 |----------------------------------|-------|
 | Pronombre | Usar "vos" (voseo) consistentemente |
-| Verbos | "Vos hacés", "Vos牠s", "Vos pensás" |
+| Verbos | "Vos hacés", "Vos sos", "Vos pensás" |
 | Léxico | Usar argentinismos cuando sea natural |
 | Vocabulario | "Computadora" (no "ordenador"), "celular" (no "móvil") |
 
@@ -448,7 +448,7 @@ En conclusión, [repetición del resumen].
 | Verbos | Terminación -ás, -és, -ís (vos hacés, vos ves) |
 | Pretérito | "Fui", "estuve", "tuve" (no "fuera") |
 | Imperativo | "Hacé", "Mirá", "Escuchá" |
-| Possessivos | "Tu" (no "tu" con tilde, solo en内蒙古) |
+| Possessivos | "Tu" (sin tilde; "tú" solo como pronombre sujeto) |
 
 ### 6.2 Vocabulario LATAM vs. Español
 

@@ -1,13 +1,13 @@
 // Social-Pip Chrome Extension - Service Worker
 // Maneja comunicación con Desktop App via Native Messaging
 
-// Security gate FR-07: queue functions are in-memory ONLY (see ./queue.ts) so
-// post content/mediaUrls are never written to chrome.storage.local.
-import { addTaskToQueue, getTaskQueue, removeTaskFromQueue } from "./queue";
 // Security gate FR-05: every native-host response is zod-validated and clamped
 // (see ./nativeHostSchema.ts) so a malicious/corrupt host cannot drive
 // arbitrary scheduling or bypass the rate-limit gate via a truthy cast.
 import { parseHostBoolean, parseHostDelayMs } from "./nativeHostSchema";
+// Security gate FR-07: queue functions are in-memory ONLY (see ./queue.ts) so
+// post content/mediaUrls are never written to chrome.storage.local.
+import { addTaskToQueue, getTaskQueue, removeTaskFromQueue } from "./queue";
 import { tabUrlMatchesTarget } from "./targetVerifier";
 import { ALLOWED_WEB_ORIGINS, type ValidatedTask, addTaskMessageSchema } from "./taskSchema";
 
@@ -284,9 +284,7 @@ async function handleRuntimeMessage(
       // with Pong { pong: true }; anything else (host not installed, app not
       // running, timeout) means the popup should show "disconnected".
       try {
-        const pong = (await sendToDesktop({ type: "ping" })) as
-          | { pong?: boolean }
-          | undefined;
+        const pong = (await sendToDesktop({ type: "ping" })) as { pong?: boolean } | undefined;
         return { success: pong?.pong === true };
       } catch {
         return { success: false };
@@ -299,9 +297,7 @@ async function handleRuntimeMessage(
       // registered for com.social_pip.app). Report success only when the host
       // actually responds, mirroring the popup dashboard button.
       try {
-        const pong = (await sendToDesktop({ type: "ping" })) as
-          | { pong?: boolean }
-          | undefined;
+        const pong = (await sendToDesktop({ type: "ping" })) as { pong?: boolean } | undefined;
         return { success: pong?.pong === true };
       } catch {
         return { success: false };

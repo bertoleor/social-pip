@@ -48,9 +48,7 @@ describe("facebookGroupPath", () => {
 
 describe("canonicalFacebookPath", () => {
   it("normalizes a group page path (lowercase, no trailing slash)", () => {
-    expect(canonicalFacebookPath("https://www.facebook.com/groups/123456/")).toBe(
-      "/groups/123456",
-    );
+    expect(canonicalFacebookPath("https://www.facebook.com/groups/123456/")).toBe("/groups/123456");
   });
 
   it("normalizes account page paths", () => {
@@ -100,10 +98,7 @@ describe("tabUrlMatchesTarget", () => {
 
   it("rejects when the tab is not a facebook url at all", () => {
     expect(
-      tabUrlMatchesTarget(
-        "https://www.google.com/",
-        "https://www.facebook.com/groups/123456",
-      ),
+      tabUrlMatchesTarget("https://www.google.com/", "https://www.facebook.com/groups/123456"),
     ).toBe(false);
   });
 });

@@ -115,7 +115,7 @@ Antes de abrir un PR, asegurate de que `pnpm lint`, `pnpm typecheck`,
 2. Hacé cambios enfocados: una PR resuelve un problema o añade una feature, no una mezcla.
 3. Corré el conjunto completo de calidad (tests, lint, typecheck, ruff) y confirmá que
    pasa localmente.
-4. Actualizá `CHANGELOG.md` si tu cambio es visible para usuarios.
+4. Actualizá `docs/CHANGELOG.md` si tu cambio es visible para usuarios.
 5. Abrí la PR contra `master` y describí: qué cambia, por qué, y cómo lo probaste.
 6. Vinculá issues relacionados si existen.
 

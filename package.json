@@ -28,8 +28,8 @@
     "db:studio": "cd packages/database && npm run prisma:studio"
   },
   "devDependencies": {
-    "turbo": "^2.3.0",
-    "typescript": "^5.7.0"
+    "turbo": "^2.11.4",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=20.0.0",
@@ -37,5 +37,10 @@
   },
   "packageManager": "pnpm@9.15.0",
   "author": "Social-Pip Team",
-  "license": "MIT"
+  "license": "MIT",
+  "pnpm": {
+    "overrides": {
+      "deepmerge-ts@<8.0.0": ">=8.0.0"
+    }
+  }
 }
