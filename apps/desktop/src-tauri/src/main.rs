@@ -802,7 +802,7 @@ fn perform_startup_recovery() -> Result<database::RecoverySummary, String> {
 
     // Try SQLite first for production recovery
     if let Some(stores) = database::get_sqlite_stores() {
-        let result = recover_pending_sessions(&stores.0, &stores.1);
+        let result = recover_pending_sessions(stores.0, stores.1);
         match &result {
             Ok(summary) => {
                 if summary.sessions_recovered > 0 {

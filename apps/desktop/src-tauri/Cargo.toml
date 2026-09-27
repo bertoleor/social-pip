@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Social-Pip - Automatización de redes sociales 100% gratuita"
 authors = ["Social-Pip Team"]
 edition = "2021"
-rust-version = "1.70"
+rust-version = "1.90"
 
 [lib]
 name = "social_pip_lib"
@@ -48,7 +48,7 @@ urlencoding = "2"
 keyring = "3"
 hex = "0.4"
 dirs = "5"
-rusqlite = { version = "0.31", features = ["bundled"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
 
 [dev-dependencies]
 tempfile = "3"
