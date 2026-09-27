@@ -1,4 +1,5 @@
 # Esquema de Base de Datos - Social-Pip
+> Parte de: [[README]] · Relacionados: [[ai-integration]] · [[main-architecture]] · [[n8n-rest-api]]
 
 ## Visión General
 

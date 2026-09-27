@@ -1,4 +1,5 @@
 # Protocolos Gentleman - Social-Pip
+> Parte de: [[README]] · Relacionados: [[PROMPT-SDD-AUTOMATICO]] · [[PROMPT-SDD-COMPLETE]]
 
 ## Visión General
 

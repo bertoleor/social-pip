@@ -1,4 +1,5 @@
 # Instalación de Social-Pip
+> Parte de: [[README]] · Relacionados: [[n8n-docker-compose]] · [[n8n-setup]] · [[notebooklm-setup]]
 
 ## Resumen
 

@@ -1,4 +1,5 @@
 # Social-Pip: Inventario de Repos Existentes y Plan de Implementación
+> Parte de: [[README]] · Relacionados: [[marketplace-argentina]] · [[media-specifications-2026]] · [[repositories-analysis]]
 
 ## Resumen Ejecutivo
 

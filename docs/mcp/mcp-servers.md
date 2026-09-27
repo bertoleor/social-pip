@@ -1,4 +1,5 @@
 # MCP Servers Configuration — Social-Pip
+> Parte de: [[README]] · Relacionados: [[opencode-config]] · [[skills]]
 
 This document details all Model Context Protocol (MCP) servers configured for the Social-Pip project. MCP servers extend OpenCode's capabilities by providing specialized tools for file system access, GitHub integration, database operations, browser automation, and web search.
 

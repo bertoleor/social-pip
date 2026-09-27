@@ -1,4 +1,5 @@
 # 04 — Funciones (qué hace el producto)
+> Parte de: [[README]] · Relacionados: [[00-que-es]] · [[03-modulos]]
 
 Funcionalidad a nivel producto. El detalle operativo vive en
 `docs/manual-operativo.md` y `docs/workflows/`.

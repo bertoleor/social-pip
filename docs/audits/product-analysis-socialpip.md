@@ -1,4 +1,5 @@
 # Análisis de producto — SOCIAL-PIP (adaptado)
+> Parte de: [[README]] · Relacionados: [[general-socialpip]] · [[ia-evals-auditoria-20260915]] · [[ia-propuesta-2026-09-14]]
 
 Estado: **UNVERIFIED / DRY-RUN** — lectura de docs + baseline python, nada commiteado, nada borrado.
 Fecha: sep 2026. Fuente: `docs/` + `docs/audits/general-socialpip.md` + `docs/plans/master-plan.md` + `docs/plans/tech-stack.md`.

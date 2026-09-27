@@ -1,4 +1,5 @@
 # Reporte — Producto, Marketing y Estilo — SOCIAL-PIP
+> Parte de: [[README]] · Relacionados: [[general-socialpip]] · [[ia-evals-auditoria-20260915]] · [[ia-propuesta-2026-09-14]]
 
 Estado: **UNVERIFIED / DRY-RUN** — lectura de docs, nada commiteado, nada borrado.
 Fecha: 12 de septiembre de 2026. Fuente: `docs/plans/master-plan.md`, `docs/plans/tech-stack.md`,

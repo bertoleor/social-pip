@@ -1,4 +1,5 @@
 # n8n Setup Guide
+> Parte de: [[README]] · Relacionados: [[installation]] · [[n8n-docker-compose]] · [[notebooklm-setup]]
 
 ## Resumen
 

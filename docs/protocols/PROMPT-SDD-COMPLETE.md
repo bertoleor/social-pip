@@ -1,4 +1,5 @@
 # PROMPT SDD AUTOMÁTICO - SOCIAL-PIP BASE COMPLETA
+> Parte de: [[README]] · Relacionados: [[PROMPT-SDD-AUTOMATICO]] · [[gentleman-protocols]]
 
 > Este prompt está diseñado para ejecutarse en MODO AUTOMÁTICO durante toda la noche.
 > Contempla: TDD, DDD, Scope controlado, y Auto-compactación.

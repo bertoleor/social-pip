@@ -1,4 +1,5 @@
 # Mejoras de Documentación - Social-Pip
+> Parte de: [[README]] · Relacionados: [[06-mapa-docs]]
 
 > Basado en análisis de NotebookLM: Architectural Guide to N8N Automation and AI Business Systems
 > Fecha: Abril 2026

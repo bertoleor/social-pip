@@ -1,4 +1,5 @@
 # Fallback Visual Gratuito — OpenCV + Tesseract
+> Parte de: [[README]] · Relacionados: [[PRD-social-pip-minimo]] · [[master-plan]] · [[plan-accion-2026-09-12]]
 
 ## El Problema
 

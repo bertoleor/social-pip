@@ -1,4 +1,5 @@
 # Social-Pip — One-pager
+> Parte de: [[README]] · Relacionados: [[product-one-pager]] · [[00-que-es]]
 
 > Documento único que resume qué es, stack, arquitectura y dónde seguir leyendo.
 > Índice completo: `docs/README.md`. Estado: `docs/STATUS.md`.

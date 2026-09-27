@@ -1,4 +1,5 @@
 # PROMPT PARA SDD AUTOMÁTICO - SOCIAL-PIP BASE
+> Parte de: [[README]] · Relacionados: [[PROMPT-SDD-COMPLETE]] · [[gentleman-protocols]]
 
 ## Copia y pega esto en una nueva sesión:
 

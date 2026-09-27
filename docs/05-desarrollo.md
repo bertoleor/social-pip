@@ -1,4 +1,5 @@
 # 05 — Desarrollo local
+> Parte de: [[README]] · Relacionados: [[01-stack]] · [[QUICKSTART]]
 
 ## Prerrequisitos
 

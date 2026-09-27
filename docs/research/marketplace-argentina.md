@@ -1,4 +1,5 @@
 # Facebook Marketplace — Consideraciones para Argentina/Latam
+> Parte de: [[README]] · Relacionados: [[complete-repos-inventory]] · [[media-specifications-2026]] · [[repositories-analysis]]
 
 ## Layout por Región
 

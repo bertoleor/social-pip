@@ -1,4 +1,5 @@
 # Auditoría — Evals y datasets mínimos IA (Propuesta 3)
+> Parte de: [[README]] · Relacionados: [[general-socialpip]] · [[ia-propuesta-2026-09-14]] · [[product-analysis-socialpip]]
 
 Estado: **VERIFIED (implementación base) / UNVERIFIED (adopción del flujo — espera LGTM humano)**
 Fecha: 15 de septiembre de 2026

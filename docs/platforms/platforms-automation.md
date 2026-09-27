@@ -1,4 +1,5 @@
 # Automatización de Plataformas - Social-Pip
+> Parte de: [[README]]
 
 ## ⚠️ Nota Importante
 

@@ -1,4 +1,5 @@
 # Error Handling Patterns - Social-Pip
+> Parte de: [[README]] · Relacionados: [[monitoring-alerts]]
 
 > Sistema robusto de manejo de errores para automatizaciones de redes sociales
 > Última actualización: Abril 2026

@@ -1,4 +1,5 @@
 # Propuesta IA — SOCIAL-PIP
+> Parte de: [[README]] · Relacionados: [[general-socialpip]] · [[ia-evals-auditoria-20260915]] · [[product-analysis-socialpip]]
 
 Estado: **UNVERIFIED / PROPUESTA** — no implementa nada, solo propone.
 Fecha: 14 de septiembre de 2026.

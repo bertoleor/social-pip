@@ -1,4 +1,5 @@
 # Tasks: Docs Healthcheck (docs-only)
+> Parte de: [[README]] · Relacionados: [[proposal]] · [[spec]]
 
 > Sin RED/GREEN ejecutable: no hay codigo. La "verificacion" es revision
 > humana con checklist. Estimacion total: 30-45 min de lectura.

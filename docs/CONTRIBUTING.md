@@ -1,4 +1,5 @@
 # Contribuyendo a Social-Pip
+> Parte de: [[README]] · Relacionados: [[05-desarrollo]]
 
 ¡Gracias por tu interés en contribuir! Social-Pip es una automatización de redes
 sociales 100% gratuita para Argentina/LATAM. Este documento describe cómo preparar

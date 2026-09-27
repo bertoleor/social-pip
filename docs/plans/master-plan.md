@@ -1,4 +1,5 @@
 # Plan Maestro — Social-Pip
+> Parte de: [[README]] · Relacionados: [[PRD-social-pip-minimo]] · [[plan-accion-2026-09-12]] · [[tech-stack]]
 
 ## Visión
 

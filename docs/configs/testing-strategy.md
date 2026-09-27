@@ -1,4 +1,5 @@
 # Testing Strategy - Social-Pip
+> Parte de: [[README]] · Relacionados: [[dev-config]]
 
 ## Resumen
 

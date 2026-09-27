@@ -1,4 +1,5 @@
 # OpenCode Configuration - Social-Pip
+> Parte de: [[README]] · Relacionados: [[mcp-servers]] · [[skills]]
 
 ## Resumen
 
@@ -98,8 +99,8 @@ Este documento contiene la configuración completa de OpenCode para el proyecto 
       "enabled": true,
       "description": "Búsqueda web + contenido completo (StackOverflow, GitHub Issues, Wikipedia) - usa Chromium para extraer full content",
       "env": {
-        "TAVILY_API_KEY": "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",
-        "SERPER_API_KEY": "04da2e537063beffd2ba5d04e2b9c78d2d56340301e3f4782b59fe3cee8394d4"
+        "TAVILY_API_KEY": "<your-tavily-api-key>",
+        "SERPER_API_KEY": "<your-serper-api-key>"
       }
     }
   },

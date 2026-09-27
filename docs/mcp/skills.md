@@ -1,4 +1,5 @@
 # Skills para OpenCode - Social-Pip
+> Parte de: [[README]] · Relacionados: [[mcp-servers]] · [[opencode-config]]
 
 ## Resumen
 

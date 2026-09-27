@@ -1,4 +1,5 @@
 # Especificaciones de Media por Plataforma (2026)
+> Parte de: [[README]] · Relacionados: [[complete-repos-inventory]] · [[marketplace-argentina]] · [[repositories-analysis]]
 
 ## Imagen Resumen
 

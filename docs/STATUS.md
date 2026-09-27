@@ -1,4 +1,5 @@
 # Social-Pip — Estado
+> Parte de: [[README]] · Relacionados: [[CHANGELOG]] · [[00-que-es]]
 
 > Fecha de cierre del reporte: sep-2026. Fuente: repo `E:/social-pip`.
 > Resumen de una página: `docs/ONE-PAGER.md`. Índice: `docs/README.md`.

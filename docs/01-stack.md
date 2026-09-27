@@ -1,4 +1,5 @@
 # 01 — Stack técnico
+> Parte de: [[README]] · Relacionados: [[02-arquitectura]] · [[05-desarrollo]]
 
 Verificado contra `package.json`, `apps/*/package.json`, `pyproject.toml`.
 

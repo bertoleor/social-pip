@@ -1,4 +1,5 @@
 # Sistema de Seguridad - Social-Pip
+> Parte de: [[README]] · Relacionados: [[ai-integration]] · [[database-schema]] · [[main-architecture]]
 
 ## Visión General
 

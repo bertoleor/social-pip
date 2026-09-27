@@ -1,4 +1,5 @@
 # n8n MCP Integration Setup
+> Parte de: [[README]] · Relacionados: [[mcp-servers]] · [[opencode-config]]
 
 ## Prerequisites
 - n8n v2.17.5+ (MCP support required)

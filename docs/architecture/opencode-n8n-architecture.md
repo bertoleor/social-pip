@@ -1,4 +1,5 @@
 # Arquitectura de Integración OpenCode + n8n para Social-Pip
+> Parte de: [[README]] · Relacionados: [[ai-integration]] · [[database-schema]] · [[main-architecture]]
 
 ## Resumen Ejecutivo
 

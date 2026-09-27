@@ -1,4 +1,5 @@
 # Monitoring & Alerting - Social-Pip
+> Parte de: [[README]] · Relacionados: [[error-handling]] · [[05-desarrollo]]
 
 > Sistema completo de monitoreo y alertas para automatizaciones de redes sociales
 > Última actualización: Abril 2026

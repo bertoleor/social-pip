@@ -1,4 +1,5 @@
 # Configuración de Desarrollo - Social-Pip
+> Parte de: [[README]] · Relacionados: [[testing-strategy]]
 
 ## Resumen
 

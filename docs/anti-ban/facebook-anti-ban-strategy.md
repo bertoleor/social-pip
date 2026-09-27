@@ -1,4 +1,5 @@
 # Estrategia Anti-Ban para Facebook — 2026
+> Parte de: [[README]]
 
 ## Cómo Detecta Facebook la Automatización
 

@@ -1,4 +1,5 @@
 # Social-Pip — One-Pager de Producto
+> Parte de: [[README]] · Relacionados: [[ONE-PAGER]] · [[00-que-es]]
 
 Automatización de publicación en redes sociales, 100% gratuita y de código abierto, para Argentina y LATAM.
 

@@ -1,4 +1,5 @@
 # Social-Pip — Documentación técnica general
+> Parte de: [[README]] · Relacionados: [[00-que-es]] · [[02-arquitectura]]
 
 > Entrada principal para quien quiera entender, correr o contribuir al proyecto.
 > Si venís por primera vez acá, leé este archivo de arriba a abajo y después saltá

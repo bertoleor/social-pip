@@ -1,4 +1,5 @@
 # Changelog — Social-Pip
+> Parte de: [[README]] · Relacionados: [[STATUS]]
 
 Formato básico generado por auditoría (UNVERIFIED). Fuente: `git log`.
 

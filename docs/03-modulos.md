@@ -1,4 +1,5 @@
 # 03 — Módulos del repo
+> Parte de: [[README]] · Relacionados: [[02-arquitectura]] · [[04-funciones]]
 
 Inventario verificado del árbol (raíz `E:/social-pip`).
 

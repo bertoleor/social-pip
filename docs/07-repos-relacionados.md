@@ -1,4 +1,5 @@
 # 07 — Repos relacionados
+> Parte de: [[README]] · Relacionados: [[00-que-es]]
 
 Relevamiento web (sep-2026) de proyectos open source afines: social auto-posters
 y tooling stealth para posting vía browser. Sirve para robar ideas y para

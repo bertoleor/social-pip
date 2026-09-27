@@ -1,4 +1,5 @@
 # 00 — Qué es Social-Pip
+> Parte de: [[README]] · Relacionados: [[04-funciones]] · [[product-one-pager]]
 
 **Social-Pip** es una herramienta de automatización de redes sociales 100% gratuita,
 orientada a Argentina/LATAM. Permite programar y publicar contenido en múltiples

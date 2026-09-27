@@ -1,4 +1,5 @@
 # Proposal: Docs Healthcheck (micro-feature docs-only de ejemplo)
+> Parte de: [[README]] · Relacionados: [[spec]] · [[tasks]]
 
 > Change de ejemplo para ejercitar la cadena SDD sin tocar codigo
 > productivo. Alcance 100% docs.

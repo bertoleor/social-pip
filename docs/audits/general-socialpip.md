@@ -1,4 +1,5 @@
 # Auditoría general — SOCIAL-PIP (python-only, nocturna, sin notificación)
+> Parte de: [[README]] · Relacionados: [[00-que-es]] · [[02-arquitectura]]
 
 Estado: **UNVERIFIED / DRY-RUN** — nada commiteado, nada notificado, nada borrado.
 Commit base: `0926c27` + working tree ya sucio antes de la corrida (73 archivos tocados,

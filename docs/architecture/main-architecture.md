@@ -1,4 +1,5 @@
 # Social-Pip: Arquitectura Principal
+> Parte de: [[README]] · Relacionados: [[ai-integration]] · [[database-schema]] · [[n8n-rest-api]]
 
 ## Visión General del Sistema
 

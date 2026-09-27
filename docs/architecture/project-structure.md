@@ -1,4 +1,5 @@
 # Estructura del Proyecto - Social-Pip
+> Parte de: [[README]] · Relacionados: [[ai-integration]] · [[database-schema]] · [[main-architecture]]
 
 ## Scope Rule
 

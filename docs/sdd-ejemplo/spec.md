@@ -1,4 +1,5 @@
 # Docs Healthcheck — Specification (docs-only)
+> Parte de: [[README]] · Relacionados: [[proposal]] · [[tasks]]
 
 ## Purpose
 

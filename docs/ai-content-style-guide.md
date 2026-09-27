@@ -1,4 +1,5 @@
 # Spanish Style Guide para Contenido Generado por IA
+> Parte de: [[README]] · Relacionados: [[prompts-structure]]
 
 ## Resumen
 

@@ -1,4 +1,5 @@
 # Prompt Engineering - Social-Pip
+> Parte de: [[README]] · Relacionados: [[ai-content-style-guide]]
 
 > Arquitectura y templates de prompts para generación de contenido con IA
 > Última actualización: Abril 2026

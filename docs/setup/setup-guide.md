@@ -1,4 +1,5 @@
 # Setup y Guía de Inicio - Social-Pip
+> Parte de: [[README]] · Relacionados: [[installation]] · [[n8n-docker-compose]] · [[n8n-setup]]
 
 ## Resumen
 

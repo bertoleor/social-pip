@@ -1,4 +1,5 @@
 # Stack Tecnológico — Social-Pip
+> Parte de: [[README]] · Relacionados: [[PRD-social-pip-minimo]] · [[master-plan]] · [[plan-accion-2026-09-12]]
 
 ## Principio: 100% Gratis y Open Source
 

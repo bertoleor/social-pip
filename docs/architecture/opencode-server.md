@@ -1,4 +1,5 @@
 # OpenCode Server - Referencia de APIs
+> Parte de: [[README]] · Relacionados: [[ai-integration]] · [[database-schema]] · [[main-architecture]]
 
 ## Resumen
 
@@ -400,8 +401,8 @@ GET /mcp
 Si tienes `OPENCODE_SERVER_PASSWORD` configurado:
 
 ```bash
-# Basic Auth
-curl -u opencode:password http://localhost:4096/global/health
+# Basic Auth — credenciales por variables de entorno, nunca hardcodeadas
+curl --user "$OPENCODE_USER:$OPENCODE_SERVER_PASSWORD" http://localhost:4096/global/health
 ```
 
 ### 9.2 Con API Key Personalizada

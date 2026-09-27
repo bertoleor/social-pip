@@ -1,4 +1,5 @@
 # Anti-Ban Patterns - Social-Pip
+> Parte de: [[README]] · Relacionados: [[facebook-anti-ban-strategy]]
 
 > Patrones probados para automatización de redes sociales sin ser bloqueado
 > Basado en: NotebookLM - Architectural Guide to N8N Automation

@@ -1,4 +1,5 @@
 # n8n REST API - Referencia Completa
+> Parte de: [[README]] · Relacionados: [[ai-integration]] · [[database-schema]] · [[main-architecture]]
 
 ## Resumen
 
@@ -29,9 +30,11 @@ curl -H "X-N8N-API-KEY: tu_api_key" \
 También puedes usar Basic Auth:
 
 ```bash
-curl -u "n8n_user:tu_password" \
+curl --user "$N8N_USER:$N8N_PASSWORD" \
      http://localhost:5678/rest/workflows
 ```
+
+> Credenciales por variables de entorno (`$N8N_USER`/`$N8N_PASSWORD`), nunca hardcodeadas en docs ni scripts (gitleaks-clean).
 
 ---
 

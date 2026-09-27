@@ -1,4 +1,5 @@
 # Manual Operativo - Social-Pip
+> Parte de: [[README]] · Relacionados: [[04-funciones]]
 
 > Guía de operación diaria y mantenimiento del sistema
 > Última actualización: Abril 2026

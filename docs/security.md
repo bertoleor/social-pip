@@ -1,4 +1,5 @@
 # Security Guidelines - Social-Pip
+> Parte de: [[README]] · Relacionados: [[security-system]]
 
 > Protocolos de seguridad para automatización de redes sociales
 > Última actualización: Abril 2026

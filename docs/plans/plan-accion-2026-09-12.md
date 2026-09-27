@@ -1,4 +1,5 @@
 # SOCIAL-PIP — Plan de acción 2026-09-12 (UNVERIFIED)
+> Parte de: [[README]] · Relacionados: [[PRD-social-pip-minimo]] · [[master-plan]] · [[tech-stack]]
 
 > Fuente: consolidado 2026-09-12 + `docs/audits/reporte-producto-marketing-estilo.md`. Visión/arquitectura documentada, sin producto corriendo verificado. Nada aplicado sin OK.
 

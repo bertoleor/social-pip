@@ -1,4 +1,5 @@
 # Social-Pip Quick Start Guide
+> Parte de: [[README]] · Relacionados: [[05-desarrollo]]
 
 Get up and running with Social-Pip in minutes.
 

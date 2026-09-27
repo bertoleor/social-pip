@@ -1,4 +1,5 @@
 # Investigación de Repositorios Open Source — Facebook Auto Poster
+> Parte de: [[README]] · Relacionados: [[complete-repos-inventory]] · [[marketplace-argentina]] · [[media-specifications-2026]]
 
 ## Resumen Ejecutivo
 
