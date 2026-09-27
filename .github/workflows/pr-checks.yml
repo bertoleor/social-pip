@@ -218,6 +218,22 @@ jobs:
         # Audita requirements.txt (numpy/pyyaml pineados con ==, ver hallazgo DP-08)
         run: pip-audit -r requirements.txt
 
+  lockfile-hygiene:
+    # DP-01: repo es pnpm-only. package-lock.json fue removido (commit 7874f6d);
+    # este gate impide que vuelva a trackearse (falsa señal en trivy/audit).
+    name: Lockfile hygiene (pnpm-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert package-lock.json stays untracked
+        run: |
+          if git ls-files --error-unmatch package-lock.json >/dev/null 2>&1; then
+            echo "::error::package-lock.json is tracked — repo is pnpm-only (DP-01). Remove it and keep pnpm-lock.yaml as the single lockfile."
+            exit 1
+          fi
+          echo "OK: package-lock.json is not tracked (pnpm-only repo)."
+
   pnpm-audit:
     name: JS deps audit (pnpm audit)
     runs-on: ubuntu-latest
