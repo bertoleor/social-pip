@@ -28,6 +28,14 @@ Formato básico generado por auditoría (UNVERIFIED). Fuente: `git log`.
 - `docs/audits/`: análisis de producto y reporte de estilo/marketing.
 - `docs/plans/plan-accion-2026-09-12.md`: plan de acción por fases (open source, producto, conversión).
 
+### 2026-09-28 — 677c545
+- docs: ORN-190 one-pagers alineados con ORN-188 (base-vs-vision): stack Prisma 6,
+  react-big-calendar fuera (DP-05, sin uso), secciones base-vs-vision en
+  `docs/ONE-PAGER.md` y `docs/product-one-pager.md`. Gates nuevos en
+  `tests/test_one_pager_orn190.py` (3 tests, TDD RED→GREEN, suite 80/80).
+- fix(docs): `docs/F0-2026-09-27.md` ref a `CHANGELOG.md` con prefijo `docs/` —
+  docs-hygiene rojo en HEAD (regresión del commit F0 83cbf81) → 80/80 verde (t_4705ebd5).
+
 ## 2026-04-18 — 0926c27
 - fix: resolve extended scope lint warnings.
 
