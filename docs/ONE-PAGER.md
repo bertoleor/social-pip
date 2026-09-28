@@ -16,15 +16,18 @@ Ver más: `00-que-es.md`.
 |---|---|
 | Desktop | Tauri 2 (Rust) + React 19 + TypeScript |
 | Estado/Build | Zustand 5 · Vite 6 · pnpm 9 · turbo |
-| Datos | Prisma + SQLite (local-first, sin backend SaaS) |
+| Datos | Prisma 6 + SQLite (local-first, sin backend SaaS) |
 | Extensión | Chrome MV3 (CRXJS), posting vía browser |
-| Formularios | Zod 3 · react-big-calendar · recharts |
+| Formularios | Zod 3 · recharts |
 | Orquestación | n8n workflows + agentes OpenCode/MCP |
 
 Ver detalle verificado: `01-stack.md`.
 
 ## Arquitectura (1 minuto)
 - **Local-first**: los datos quedan en la máquina (SQLite).
+- **Base vs visión (ORN-188):** el código en producción vive en
+  `auto-poster-stealth` (`E:/sitios web E/`); este repo es la visión/docs.
+  Declaración canónica: `vision/base-vs-vision.md`.
 - **Monorepo pnpm + turbo**: `apps/*` (desktop, extension) + `packages/*` (database, types).
 - **Dos vías de publicación**: adapter API oficial donde existe; extensión browser
   (content script + native messaging) donde no hay API o conviene stealth.

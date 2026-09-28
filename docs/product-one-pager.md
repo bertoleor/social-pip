@@ -43,4 +43,9 @@ Principio rector: cero costos. Gratis, open source, ejecutable en tu PC.
 
 ---
 
+## Dónde corre hoy (base vs visión)
+El código que ya produce está en **auto-poster-stealth** (repo base,
+production-ready). Este repo (social-pip) es la **visión**: roadmap, specs y
+arquitectura objetivo. Declaración canónica: [vision/base-vs-vision.md](vision/base-vs-vision.md).
+
 Para más detalle: [master-plan.md](plans/master-plan.md) · [general-socialpip.md](audits/general-socialpip.md) · [README](../README.md)
