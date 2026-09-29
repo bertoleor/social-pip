@@ -28,6 +28,20 @@ Formato básico generado por auditoría (UNVERIFIED). Fuente: `git log`.
 - `docs/audits/`: análisis de producto y reporte de estilo/marketing.
 - `docs/plans/plan-accion-2026-09-12.md`: plan de acción por fases (open source, producto, conversión).
 
+### 2026-09-29 — t_ac0b975e
+- feat(f2): `docs/baseline.md` creado con la tabla §8 del contrato de fases
+  (ORDEN-DE-TRABAJO-FASES-CONTRATOS.md §8) — salida F2 que estaba incumplida:
+  build/typecheck/tests (pytest 95 passed, tsc PASS), CVEs (pnpm audit --prod:
+  0 known vulnerabilities), estado SQLite y fecha+commit. Medición real, no
+  declarativa. Generado por `scripts/baseline_update.py` (TDD RED 8 errores →
+  GREEN 7/7, suite 95/95, ruff limpio). F0.a ahora puede computar delta y F4
+  tiene contra-qué auditar.
+- fix(tooling): `scripts/baseline_update.py` maneja `addopts=-q` de pytest.ini
+  (el -q duplicado suprimía el summary "N passed"), resuelve pnpm via
+  `shutil.which` + corepack fallback (shim global `.tools/pnpm/9.15.0` roto en
+  esta máquina) y usa `node node_modules/typescript/bin/tsc` directo (el shim
+  `.bin/tsc.CMD` via `cmd /c` contaminaba el exit code con el banner de Windows).
+
 ### 2026-09-28 — 677c545
 - docs: ORN-190 one-pagers alineados con ORN-188 (base-vs-vision): stack Prisma 6,
   react-big-calendar fuera (DP-05, sin uso), secciones base-vs-vision en
