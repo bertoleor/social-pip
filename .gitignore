@@ -60,3 +60,6 @@ apps/desktop/src-tauri/target/
 .turbo/
 .ruff_cache/
 .playwright-mcp/
+
+# rdd receipts (local)
+.rdd/
