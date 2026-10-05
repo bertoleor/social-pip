@@ -1,0 +1,63 @@
+# Sanación 2026-10-04 (kanban t_42d3adf0, 03-sre; hallazgo t_d88070a8, 34-auditor):
+# los 10 gitlinks (mode 160000) entraron SIN mapping en cc7471a (git add accidental
+# de clones ya populados). Sin .gitmodules, `git status --porcelain=2` corría status
+# DENTRO de cada submodule y moría en fatal/timeout 180s (FS lento E:) — colgaba a
+# cualquier agente que se orienta con git status.
+# Estos dirs son material de referencia de terceros ("skills/ — reference only",
+# AGENTS.md), NO runtime: ignore=all hace que git status/diff jamás escanee su
+# worktree (submodules de hasta 12k+ archivos).
+# NOTA: git mapea gitlink→sección por la clave `path`, NO por el nombre de sección
+# — sin `path = ...` el fatal persiste y `ignore` no se aplica (bug del primer
+# intento de sanación de este archivo, que solo tenía url + ignore).
+# Drift de pin auditable: `git submodule status` / `git ls-files -s | awk '$1==160000'`
+# Convertirlos a contenido regular fue descartado: +400 MB / +33k archivos en un repo de 3.32 MiB.
+
+[submodule "skills/00-CORE/specweave"]
+	path = skills/00-CORE/specweave
+	url = https://github.com/anton-abyzov/specweave.git
+	ignore = all
+
+[submodule "skills/10-STACK/vercel-labs"]
+	path = skills/10-STACK/vercel-labs
+	url = https://github.com/vercel-labs/agent-skills.git
+	ignore = all
+
+[submodule "skills/20-PLATFORM/dev-browser"]
+	path = skills/20-PLATFORM/dev-browser
+	url = https://github.com/SawyerHood/dev-browser.git
+	ignore = all
+
+[submodule "skills/20-PLATFORM/microck-tauri"]
+	path = skills/20-PLATFORM/microck-tauri
+	url = https://github.com/Microck/ordinary-claude-skills.git
+	ignore = all
+
+[submodule "skills/20-PLATFORM/n8n-skills"]
+	path = skills/20-PLATFORM/n8n-skills
+	url = https://github.com/czlonkowski/n8n-skills.git
+	ignore = all
+
+[submodule "skills/20-PLATFORM/rust-skills"]
+	path = skills/20-PLATFORM/rust-skills
+	url = https://github.com/actionbook/rust-skills.git
+	ignore = all
+
+[submodule "skills/60-SECURITY/paulrberg"]
+	path = skills/60-SECURITY/paulrberg
+	url = https://github.com/PaulRBerg/agent-skills.git
+	ignore = all
+
+[submodule "skills/99-VAULT/affaan-m"]
+	path = skills/99-VAULT/affaan-m
+	url = https://github.com/affaan-m/everything-claude-code.git
+	ignore = all
+
+[submodule "skills/99-VAULT/antigravity"]
+	path = skills/99-VAULT/antigravity
+	url = https://github.com/sickn33/antigravity-awesome-skills.git
+	ignore = all
+
+[submodule "skills/99-VAULT/davila7"]
+	path = skills/99-VAULT/davila7
+	url = https://github.com/davila7/claude-code-templates.git
+	ignore = all
