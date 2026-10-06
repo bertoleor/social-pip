@@ -1,7 +1,7 @@
-import { useToastStore } from "@/stores/toastStore";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { useToastStore } from "@/stores/toastStore";
 import { ToastContainer } from "./ToastContainer";
 
 describe("ToastContainer", () => {

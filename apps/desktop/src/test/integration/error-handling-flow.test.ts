@@ -1,5 +1,5 @@
-import { type PostJob, usePostingStore } from "@/stores/postingStore";
 import { invoke } from "@tauri-apps/api/core";
+import { type PostJob, usePostingStore } from "@/stores/postingStore";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),

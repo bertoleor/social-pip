@@ -1,3 +1,4 @@
+import { BarChart3, Eye, Heart, Share2 } from "lucide-react";
 import { Skeleton } from "@/components/atoms/Skeleton";
 /**
  * U7.4: Analytics Page Redesign
@@ -8,7 +9,6 @@ import { MetricCard } from "@/components/molecules/MetricCard";
 import { AntiBanHealthCard } from "@/components/organisms/AntiBanHealthCard";
 import { PostPerformance } from "@/components/organisms/PostPerformance";
 import { usePosts } from "@/hooks/usePosts";
-import { BarChart3, Eye, Heart, Share2 } from "lucide-react";
 
 export default function AnalyticsPage(): React.ReactElement {
   const { posts, loading } = usePosts();

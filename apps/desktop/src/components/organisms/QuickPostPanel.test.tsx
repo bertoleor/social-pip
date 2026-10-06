@@ -1,7 +1,7 @@
-import { INVALID_SIZE_FIXTURE, VALID_JPG_FIXTURE } from "@/__fixtures__/media";
 import type { Template } from "@social-pip/types";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { INVALID_SIZE_FIXTURE, VALID_JPG_FIXTURE } from "@/__fixtures__/media";
 import { QuickPostPanel } from "./QuickPostPanel";
 
 vi.mock("@/stores/quickPostStore", () => ({

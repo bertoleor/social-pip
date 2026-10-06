@@ -1,6 +1,6 @@
-import { usePostingStore } from "@/stores/postingStore";
 import { listen } from "@tauri-apps/api/event";
 import { act, renderHook } from "@testing-library/react";
+import { usePostingStore } from "@/stores/postingStore";
 import type { PostJobUpdateEvent, PostSessionCompleteEvent } from "./usePostingEvents";
 import { usePostingEvents } from "./usePostingEvents";
 

@@ -1,8 +1,9 @@
 /**
  * U3.2: Input with focus ring and dark mode support
  */
-import { cn } from "@/lib/utils";
+
 import type { ChangeEvent, InputHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   type?: "text" | "password" | "email" | "number";

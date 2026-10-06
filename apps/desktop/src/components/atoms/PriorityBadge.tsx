@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
 import { PLATFORM_PRIORITIES, type PostingPlatform } from "@social-pip/types";
 import type { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 export interface PriorityBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   priority: number;

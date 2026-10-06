@@ -1,4 +1,3 @@
-import { useSessionStore } from "@/stores/sessionStore";
 import { invoke } from "@tauri-apps/api/core";
 /**
  * @fileoverview Tests for SessionGuard route guard.
@@ -9,6 +8,7 @@ import { render, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useSessionStore } from "@/stores/sessionStore";
 import { SessionGuard } from "./SessionGuard";
 
 const mockedInvoke = vi.mocked(invoke);

@@ -1,5 +1,5 @@
+import { createBrowserRouter, type RouteObject } from "react-router-dom";
 import { SessionGuard } from "@/components/route/SessionGuard";
-import { type RouteObject, createBrowserRouter } from "react-router-dom";
 
 const DashboardPage = async () => ({
   Component: (await import("../pages/DashboardPage")).default,

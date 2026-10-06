@@ -1,3 +1,6 @@
+import type { CreatePostInput, UpdatePostInput } from "@social-pip/types";
+import { FileText, Plus } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Skeleton } from "@/components/atoms/Skeleton";
 import { EmptyState } from "@/components/molecules/EmptyState";
@@ -5,9 +8,6 @@ import { PostFormModal } from "@/components/organisms/PostFormModal";
 import { PostList } from "@/components/organisms/PostList";
 import { usePosts } from "@/hooks/usePosts";
 import { useAccountsStore } from "@/stores/accountsStore";
-import type { CreatePostInput, UpdatePostInput } from "@social-pip/types";
-import { FileText, Plus } from "lucide-react";
-import { useState } from "react";
 
 export default function PostsPage(): React.ReactElement {
   const [showModal, setShowModal] = useState(false);

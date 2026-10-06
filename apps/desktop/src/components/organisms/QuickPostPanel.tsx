@@ -1,3 +1,5 @@
+import type { Platform } from "@social-pip/types";
+import { useEffect } from "react";
 import { Button } from "@/components/atoms/Button";
 import { PostLimitIndicator } from "@/components/atoms/PostLimitIndicator";
 import { RiskBadge } from "@/components/atoms/RiskBadge";
@@ -11,8 +13,6 @@ import { useAccountsStore } from "@/stores/accountsStore";
 import { usePostingStore } from "@/stores/postingStore";
 import { useQuickPostStore } from "@/stores/quickPostStore";
 import { useTemplateStore } from "@/stores/templateStore";
-import type { Platform } from "@social-pip/types";
-import { useEffect } from "react";
 
 // ============================================================================
 // Types

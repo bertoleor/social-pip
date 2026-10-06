@@ -1,8 +1,9 @@
 /**
  * U3.4: Card with hover elevation and dark mode support
  */
-import { cn } from "@/lib/utils";
+
 import type { HTMLAttributes, ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: "none" | "sm" | "md" | "lg";

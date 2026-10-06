@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import type { Platform } from "@social-pip/types";
 import {
   Facebook,
@@ -11,6 +10,7 @@ import {
   Twitter,
 } from "lucide-react";
 import type { FC } from "react";
+import { cn } from "@/lib/utils";
 
 export type PlatformIconSize = "sm" | "md" | "lg";
 

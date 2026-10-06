@@ -1,6 +1,6 @@
-import { useTemplateStore } from "@/stores/templateStore";
 import { countVariations, parseSpintax, validateSpintax } from "@social-pip/types";
 import { invoke } from "@tauri-apps/api/core";
+import { useTemplateStore } from "@/stores/templateStore";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),

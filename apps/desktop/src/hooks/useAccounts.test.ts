@@ -1,7 +1,7 @@
+import { act, renderHook } from "@testing-library/react";
 import { confirm } from "@/lib/dialog";
 import { toast } from "@/lib/toast";
 import { useAccountsStore } from "@/stores/accountsStore";
-import { act, renderHook } from "@testing-library/react";
 /**
  * @fileoverview Tests for useAccounts hook
  */

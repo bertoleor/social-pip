@@ -1,8 +1,8 @@
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useAlertsStore } from "@/stores/alertsStore";
 import { useQuickPostStore } from "@/stores/quickPostStore";
 import { createPostFixture, createPostFixtures } from "@/test/fixtures/posts";
-import { act, renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("Performance", () => {
   beforeEach(() => {

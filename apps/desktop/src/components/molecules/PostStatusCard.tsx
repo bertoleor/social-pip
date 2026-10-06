@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils";
 /**
  * @fileoverview PostStatusCard - Card showing single job status
  */
 import { Check, Clock, ExternalLink, Loader2, Minus, X } from "lucide-react";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "../atoms/Button";
 
 export type PostJobStatus = "pending" | "posting" | "success" | "failed" | "skipped";

@@ -2,11 +2,12 @@
  * U6.2: AccountManagement organism
  * List of connected Facebook accounts with disconnect action
  */
+
+import { Users } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { EmptyState } from "@/components/molecules/EmptyState";
 import { useAccountsStore } from "@/stores/accountsStore";
-import { Users } from "lucide-react";
 
 export function AccountManagement(): React.ReactElement {
   const { accounts } = useAccountsStore();

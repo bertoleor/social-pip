@@ -1,3 +1,6 @@
+import type { Account } from "@social-pip/types";
+import { X } from "lucide-react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { FormField } from "@/components/molecules/FormField";
 import { useToast } from "@/hooks/useToast";
@@ -8,9 +11,6 @@ import {
   PLATFORMS,
 } from "@/lib/schemas/account";
 import { cn } from "@/lib/utils";
-import type { Account } from "@social-pip/types";
-import { X } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
 
 export interface AccountFormModalProps {
   isOpen: boolean;

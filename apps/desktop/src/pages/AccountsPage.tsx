@@ -1,3 +1,8 @@
+import { Plus, Users } from "lucide-react";
+/**
+ * @fileoverview AccountsPage - account management page with CRUD UI
+ */
+import { useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Skeleton } from "@/components/atoms/Skeleton";
 import { EmptyState } from "@/components/molecules/EmptyState";
@@ -6,11 +11,6 @@ import { AccountList } from "@/components/organisms/AccountList";
 import { MainLayout } from "@/components/templates/MainLayout";
 import { useAccounts } from "@/hooks/useAccounts";
 import type { AccountFormData } from "@/lib/schemas/account";
-import { Plus, Users } from "lucide-react";
-/**
- * @fileoverview AccountsPage - account management page with CRUD UI
- */
-import { useState } from "react";
 
 /**
  * AccountsPage component

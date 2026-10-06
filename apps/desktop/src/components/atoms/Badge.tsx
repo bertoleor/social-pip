@@ -2,8 +2,9 @@
  * U3.3: Badge with semantic color variants
  * default, success, warning, error, info — mapped to semantic tokens
  */
-import { cn } from "@/lib/utils";
+
 import type { HTMLAttributes, ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: "default" | "success" | "warning" | "error" | "info" | "neutral";

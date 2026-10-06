@@ -1,10 +1,10 @@
+import type { AIGenerationLog } from "@social-pip/types";
+import { ChevronDown, ChevronUp, Filter, History, Star, Trash2 } from "lucide-react";
+import { type FC, useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { useAI } from "@/hooks/useAI";
 import { cn } from "@/lib/utils";
-import type { AIGenerationLog } from "@social-pip/types";
-import { ChevronDown, ChevronUp, Filter, History, Star, Trash2 } from "lucide-react";
-import { type FC, useCallback, useEffect, useState } from "react";
 
 export interface GenerationHistoryProps {
   limit?: number;

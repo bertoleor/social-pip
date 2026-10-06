@@ -1,12 +1,12 @@
-import { cn } from "@/lib/utils";
 import {
-  type PlatformTarget,
-  type PostingPlatform,
   getPlatformPriority,
   isPlatformActive,
+  type PlatformTarget,
+  type PostingPlatform,
 } from "@social-pip/types";
 import { Check, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "./Button";
 
 export interface PlatformSelectorProps {
@@ -198,4 +198,4 @@ function SelectedPlatformChip({
   );
 }
 
-export { PLATFORM_OPTIONS, PLATFORM_COLORS };
+export { PLATFORM_COLORS, PLATFORM_OPTIONS };

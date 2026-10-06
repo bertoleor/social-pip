@@ -1,12 +1,10 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.0/schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
+  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "correctness": {
         "noUnusedImports": "error",
         "noEmptyPattern": "warn"
@@ -40,15 +38,16 @@
     }
   },
   "files": {
-    "ignore": [
-      "node_modules",
-      "dist",
-      "coverage",
-      "*.snap",
-      "__snapshots__",
-      "vite.config.ts",
-      "vitest.config.ts",
-      "tsconfig.json"
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/coverage",
+      "!**/*.snap",
+      "!**/__snapshots__",
+      "!**/vite.config.ts",
+      "!**/vitest.config.ts",
+      "!**/tsconfig.json"
     ]
   }
 }

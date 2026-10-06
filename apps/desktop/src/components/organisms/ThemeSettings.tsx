@@ -4,8 +4,8 @@
  */
 import { Card } from "@/components/molecules/Card";
 import { cn } from "@/lib/utils";
-import { useUIStore } from "@/stores/uiStore";
 import type { Theme } from "@/stores/uiStore";
+import { useUIStore } from "@/stores/uiStore";
 
 export function ThemeSettings(): React.ReactElement {
   const theme = useUIStore((s) => s.theme);
@@ -25,7 +25,6 @@ export function ThemeSettings(): React.ReactElement {
           <button
             key={opt.value}
             type="button"
-            // biome-ignore lint/a11y/useSemanticElements: custom radio styling requires button
             role="radio"
             aria-checked={theme === opt.value}
             onClick={() => setTheme(opt.value)}

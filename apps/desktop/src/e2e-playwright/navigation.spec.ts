@@ -18,15 +18,13 @@ import { SchedulePage } from "./schedule/schedule-page";
 import { SettingsPage } from "./settings/settings-page";
 
 test.describe("Navigation", () => {
-  test(
-    "navigates to Accounts page",
-    { tag: ["@critical", "@e2e", "@NAV-001"] },
-    async ({ tauriPage }) => {
-      const accountsPage = new AccountsPage(tauriPage);
-      await accountsPage.goto();
-      await accountsPage.verifyPageLoaded();
-    },
-  );
+  test("navigates to Accounts page", { tag: ["@critical", "@e2e", "@NAV-001"] }, async ({
+    tauriPage,
+  }) => {
+    const accountsPage = new AccountsPage(tauriPage);
+    await accountsPage.goto();
+    await accountsPage.verifyPageLoaded();
+  });
 
   test("navigates to Posts page", { tag: ["@e2e", "@NAV-002"] }, async ({ tauriPage }) => {
     const postsPage = new PostsPage(tauriPage);

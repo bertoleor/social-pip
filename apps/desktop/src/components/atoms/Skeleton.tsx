@@ -2,8 +2,9 @@
  * U3.5: Skeleton atom component
  * Pulsing placeholder with variants: line (default), circle, card
  */
-import { cn } from "@/lib/utils";
+
 import type { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
   /** Visual variant — line (default), circle, or card */

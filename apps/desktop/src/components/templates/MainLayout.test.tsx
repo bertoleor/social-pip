@@ -1,8 +1,8 @@
-import { useUIStore } from "@/stores/uiStore";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
+import { useUIStore } from "@/stores/uiStore";
 import { MainLayout } from "./MainLayout";
 
 // Wrapper for router context

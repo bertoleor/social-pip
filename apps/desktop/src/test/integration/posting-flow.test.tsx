@@ -1,12 +1,12 @@
+import { invoke } from "@tauri-apps/api/core";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QuickPostPanel } from "@/components/organisms/QuickPostPanel";
 import { useAccountsStore } from "@/stores/accountsStore";
 import { usePostingStore } from "@/stores/postingStore";
 import { useQuickPostStore } from "@/stores/quickPostStore";
 import { useTemplateStore } from "@/stores/templateStore";
-import { invoke } from "@tauri-apps/api/core";
-import { act, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),

@@ -1,14 +1,14 @@
-import { Calendar } from "@/components/Schedule/Calendar";
-import { DayModal } from "@/components/Schedule/DayModal";
-import { Skeleton } from "@/components/atoms/Skeleton";
-import { EmptyState } from "@/components/molecules/EmptyState";
-import { useSchedule } from "@/hooks/useSchedule";
 import type { Schedule } from "@social-pip/types";
 import { Calendar as CalendarIcon } from "lucide-react";
 /**
  * @fileoverview Schedule page - calendar view of scheduled posts
  */
 import { useCallback, useState } from "react";
+import { Skeleton } from "@/components/atoms/Skeleton";
+import { EmptyState } from "@/components/molecules/EmptyState";
+import { Calendar } from "@/components/Schedule/Calendar";
+import { DayModal } from "@/components/Schedule/DayModal";
+import { useSchedule } from "@/hooks/useSchedule";
 
 export default function SchedulePage(): React.ReactElement {
   const [currentMonth, setCurrentMonth] = useState<Date>(() => {

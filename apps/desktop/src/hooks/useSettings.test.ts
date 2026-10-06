@@ -1,6 +1,6 @@
-import { toast } from "@/lib/toast";
 import type { Settings } from "@social-pip/types";
 import { act, renderHook } from "@testing-library/react";
+import { toast } from "@/lib/toast";
 import { useSettings } from "./useSettings";
 
 vi.mock("@/lib/toast", () => ({

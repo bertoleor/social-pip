@@ -9,7 +9,7 @@ import { parseHostBoolean, parseHostDelayMs } from "./nativeHostSchema";
 // post content/mediaUrls are never written to chrome.storage.local.
 import { addTaskToQueue, getTaskQueue, removeTaskFromQueue } from "./queue";
 import { tabUrlMatchesTarget } from "./targetVerifier";
-import { ALLOWED_WEB_ORIGINS, type ValidatedTask, addTaskMessageSchema } from "./taskSchema";
+import { ALLOWED_WEB_ORIGINS, addTaskMessageSchema, type ValidatedTask } from "./taskSchema";
 
 const NATIVE_HOST = "com.social_pip.app";
 

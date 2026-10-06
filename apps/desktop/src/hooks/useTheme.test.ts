@@ -1,10 +1,10 @@
-import { useUIStore } from "@/stores/uiStore";
 /**
  * @fileoverview Tests for useTheme hook
  * Verifies theme synchronization with the DOM
  */
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useUIStore } from "@/stores/uiStore";
 import { useTheme } from "./useTheme";
 
 describe("useTheme", () => {

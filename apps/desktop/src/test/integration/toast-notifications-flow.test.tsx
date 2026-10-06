@@ -7,12 +7,12 @@
  * Flow: Trigger toast → Verify display → Dismiss
  */
 
-import { ToastContainer } from "@/components/molecules/ToastContainer";
-import { useToast } from "@/hooks/useToast";
-import { useToastStore } from "@/stores/toastStore";
 import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ToastContainer } from "@/components/molecules/ToastContainer";
+import { useToast } from "@/hooks/useToast";
+import { useToastStore } from "@/stores/toastStore";
 
 describe("E2E: Toast Notifications Flow", () => {
   beforeEach(() => {

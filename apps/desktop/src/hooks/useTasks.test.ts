@@ -1,6 +1,6 @@
-import { useTasksStore } from "@/stores/tasksStore";
 import type { CreateTaskInput, Platform, Task, TaskStatus } from "@social-pip/types";
 import { act, renderHook, waitFor } from "@testing-library/react";
+import { useTasksStore } from "@/stores/tasksStore";
 // removed unused import
 import { useTasks } from "./useTasks";
 
@@ -19,9 +19,9 @@ vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
 }));
 
+import { invoke } from "@tauri-apps/api/core";
 import { confirm } from "@/lib/dialog";
 import { toast } from "@/lib/toast";
-import { invoke } from "@tauri-apps/api/core";
 
 const mockInvoke = vi.mocked(invoke);
 const mockToast = vi.mocked(toast);

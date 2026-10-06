@@ -1,8 +1,8 @@
-export { renderWithProviders, render } from "./render";
+export { expect } from "./assertions";
+export { render, renderWithProviders } from "./render";
 export {
-  waitForStoreState,
+  sleep,
   waitForInvoke,
   waitForNextTick,
-  sleep,
+  waitForStoreState,
 } from "./waiters";
-export { expect } from "./assertions";

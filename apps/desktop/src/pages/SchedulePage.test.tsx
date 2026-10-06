@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { vi } from "vitest";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import SchedulePage from "./SchedulePage";
 
 vi.mock("@/hooks/useSchedule", () => ({

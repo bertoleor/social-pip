@@ -5,8 +5,8 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  type ScraperConfig,
   extractGroupData,
+  type ScraperConfig,
   scrapeJoinedGroups,
   scrollToLoadMore,
 } from "./group-scraper";

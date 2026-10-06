@@ -2,9 +2,10 @@
  * U7.1: MetricCard molecule
  * Card with icon, value, title, and change indicator
  */
+
+import type { LucideIcon } from "lucide-react";
 import { Card } from "@/components/molecules/Card";
 import { cn } from "@/lib/utils";
-import type { LucideIcon } from "lucide-react";
 
 export interface MetricCardProps {
   title: string;

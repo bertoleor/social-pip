@@ -2,6 +2,10 @@
  * U6.5: Settings Page Redesign
  * ThemeSettings, AccountManagement, AI Config, AppPreferences, About
  */
+
+import type { AIProvider } from "@social-pip/types";
+import { Eye, EyeOff, Save } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/molecules/Card";
 import { AboutSection } from "@/components/organisms/AboutSection";
@@ -9,9 +13,6 @@ import { AccountManagement } from "@/components/organisms/AccountManagement";
 import { AppPreferences } from "@/components/organisms/AppPreferences";
 import { ThemeSettings } from "@/components/organisms/ThemeSettings";
 import { useSettings } from "@/hooks/useSettings";
-import type { AIProvider } from "@social-pip/types";
-import { Eye, EyeOff, Save } from "lucide-react";
-import { useState } from "react";
 
 export default function SettingsPage(): React.ReactElement {
   const { settings, loading, error, updateSettings, updateAIConfig, toggleAntiBan } = useSettings();

@@ -2,9 +2,10 @@
  * U5.2: QuickActionCard molecule
  * Clickable card with icon, title, description
  */
+
+import type { LucideIcon } from "lucide-react";
 import { Card } from "@/components/molecules/Card";
 import { cn } from "@/lib/utils";
-import type { LucideIcon } from "lucide-react";
 
 export interface QuickActionCardProps {
   icon: LucideIcon;

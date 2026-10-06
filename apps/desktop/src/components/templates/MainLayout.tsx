@@ -2,8 +2,7 @@
  * U4: Layout Redesign — Sidebar icon-rail collapse, active indicator,
  * brand header, theme toggle
  */
-import { cn } from "@/lib/utils";
-import { useUIStore } from "@/stores/uiStore";
+
 import {
   BarChart3,
   Calendar,
@@ -19,6 +18,8 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { useUIStore } from "@/stores/uiStore";
 import { ToastContainer } from "../molecules/ToastContainer";
 
 export interface MainLayoutProps {

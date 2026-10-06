@@ -2,14 +2,15 @@
  * U5.3 + U5.4: Dashboard Page Redesign
  * WelcomeBanner, Quick Actions, Anti-Ban, Monitoring with empty states
  */
+
+import { BarChart3, Calendar, FileText, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { EmptyState } from "@/components/molecules/EmptyState";
 import { QuickActionCard } from "@/components/molecules/QuickActionCard";
 import { AntiBanDashboard } from "@/components/organisms/AntiBanDashboard";
 import { MonitoringDashboard } from "@/components/organisms/MonitoringDashboard";
 import { WelcomeBanner } from "@/components/organisms/WelcomeBanner";
 import { useAccountsStore } from "@/stores/accountsStore";
-import { BarChart3, Calendar, FileText, Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage(): React.ReactElement {
   const navigate = useNavigate();

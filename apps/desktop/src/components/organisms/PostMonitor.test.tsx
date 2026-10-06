@@ -1,8 +1,8 @@
-import { PostMonitor } from "@/components/organisms/PostMonitor";
-import * as postingStore from "@/stores/postingStore";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
+import { PostMonitor } from "@/components/organisms/PostMonitor";
+import * as postingStore from "@/stores/postingStore";
 
 vi.mock("@/hooks/usePostingEvents", () => ({
   usePostingEvents: vi.fn(() => ({

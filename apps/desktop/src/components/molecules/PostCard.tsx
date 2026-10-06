@@ -1,10 +1,10 @@
+import type { Post } from "@social-pip/types";
+import { Clock, Edit2, Trash2 } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
 import { PlatformIcon } from "@/components/atoms/PlatformIcon";
 import { PostStatusBadge } from "@/components/atoms/PostStatusBadge";
 import { Card } from "@/components/molecules/Card";
 import { cn } from "@/lib/utils";
-import type { Post } from "@social-pip/types";
-import { Clock, Edit2, Trash2 } from "lucide-react";
 
 export interface PostCardProps {
   post: Post;

@@ -2,9 +2,10 @@
  * U7.2: PostPerformance organism
  * Section with placeholder chart and summary metrics
  */
+
+import { Award, FileText, TrendingUp } from "lucide-react";
 import { Card } from "@/components/molecules/Card";
 import { MetricCard } from "@/components/molecules/MetricCard";
-import { Award, FileText, TrendingUp } from "lucide-react";
 
 export function PostPerformance(): React.ReactElement {
   return (

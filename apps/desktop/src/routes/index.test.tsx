@@ -1,9 +1,9 @@
-import { SessionGuard } from "@/components/route/SessionGuard";
 /**
  * @fileoverview Router configuration tests
  * Tests route setup and route definitions, including the FR-10 session guard wrapper.
  */
 import { describe, expect, it } from "vitest";
+import { SessionGuard } from "@/components/route/SessionGuard";
 import { createAppRouter, routes } from "./index";
 
 describe("Router Configuration", () => {

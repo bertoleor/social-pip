@@ -1,3 +1,6 @@
+import type { AntiBanStats } from "@social-pip/types";
+import { render } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { PostStatusBadge } from "@/components/atoms/PostStatusBadge";
@@ -5,9 +8,6 @@ import { AntiBanStatsCard } from "@/components/molecules/AntiBanStatsCard";
 import { Card } from "@/components/molecules/Card";
 import { PostCard } from "@/components/molecules/PostCard";
 import { createPostFixture } from "@/test/fixtures/posts";
-import type { AntiBanStats } from "@social-pip/types";
-import { render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
 
 describe("Visual Regression", () => {
   describe("Button snapshots", () => {

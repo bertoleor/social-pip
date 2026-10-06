@@ -1,6 +1,3 @@
-import { confirm } from "@/lib/dialog";
-import { toast } from "@/lib/toast";
-import { useAccountsStore } from "@/stores/accountsStore";
 import type {
   Account,
   AccountFilter,
@@ -11,6 +8,9 @@ import type {
  * @fileoverview useAccounts hook - wraps accountsStore with toast notifications
  */
 import { useCallback, useEffect } from "react";
+import { confirm } from "@/lib/dialog";
+import { toast } from "@/lib/toast";
+import { useAccountsStore } from "@/stores/accountsStore";
 
 export interface UseAccountsReturn {
   accounts: Account[];

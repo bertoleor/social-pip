@@ -1,9 +1,9 @@
-import { Button } from "@/components/atoms/Button";
-import { PostCard } from "@/components/molecules/PostCard";
-import { cn } from "@/lib/utils";
 import type { Post } from "@social-pip/types";
 import { Plus, Search } from "lucide-react";
 import { type ChangeEvent, useMemo, useState } from "react";
+import { Button } from "@/components/atoms/Button";
+import { PostCard } from "@/components/molecules/PostCard";
+import { cn } from "@/lib/utils";
 
 export interface PostListProps {
   posts: Post[];

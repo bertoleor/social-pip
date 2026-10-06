@@ -1,6 +1,3 @@
-import { Button } from "@/components/atoms/Button";
-import { PlatformIcon } from "@/components/atoms/PlatformIcon";
-import { cn } from "@/lib/utils";
 import type {
   CreatePostInput,
   Platform,
@@ -10,6 +7,9 @@ import type {
 } from "@social-pip/types";
 import { Calendar, Hash, X } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
+import { Button } from "@/components/atoms/Button";
+import { PlatformIcon } from "@/components/atoms/PlatformIcon";
+import { cn } from "@/lib/utils";
 
 export interface PostFormModalProps {
   post?: Post;

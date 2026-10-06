@@ -1,6 +1,6 @@
+import type { TaskStatus } from "@social-pip/types";
 import { Badge } from "@/components/atoms/Badge";
 import { cn } from "@/lib/utils";
-import type { TaskStatus } from "@social-pip/types";
 
 export interface TaskStatusIndicatorProps {
   status: TaskStatus;

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { PriorityBadge, getPriorityColor } from "./PriorityBadge";
+import { getPriorityColor, PriorityBadge } from "./PriorityBadge";
 
 describe("PriorityBadge", () => {
   describe("rendering", () => {

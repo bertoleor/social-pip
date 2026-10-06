@@ -1,9 +1,9 @@
-import { Button } from "@/components/atoms/Button";
-import { useAI } from "@/hooks/useAI";
-import { cn } from "@/lib/utils";
 import type { AICaptionTone, AIProvider, GenerateCaptionOutput, Platform } from "@social-pip/types";
 import { Check, Copy, Loader2, Sparkles } from "lucide-react";
 import { type ChangeEvent, type FC, type FormEvent, useCallback, useState } from "react";
+import { Button } from "@/components/atoms/Button";
+import { useAI } from "@/hooks/useAI";
+import { cn } from "@/lib/utils";
 
 export interface CaptionGeneratorProps {
   initialPlatform?: Platform;

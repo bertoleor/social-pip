@@ -1,8 +1,8 @@
+import { countVariations, parseSpintax } from "@social-pip/types";
+import { invoke } from "@tauri-apps/api/core";
 import { type PostJob, type PostSession, usePostingStore } from "@/stores/postingStore";
 import { useQuickPostStore } from "@/stores/quickPostStore";
 import { useTemplateStore } from "@/stores/templateStore";
-import { countVariations, parseSpintax } from "@social-pip/types";
-import { invoke } from "@tauri-apps/api/core";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),

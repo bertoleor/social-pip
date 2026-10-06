@@ -1,11 +1,11 @@
+import { render, screen } from "@testing-library/react";
+import { axe, toHaveNoViolations } from "jest-axe";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Button } from "@/components/atoms/Button";
 import { FormField } from "@/components/molecules/FormField";
 import { useAccountsStore } from "@/stores/accountsStore";
 import { useQuickPostStore } from "@/stores/quickPostStore";
 import { useTemplateStore } from "@/stores/templateStore";
-import { render, screen } from "@testing-library/react";
-import { axe, toHaveNoViolations } from "jest-axe";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 expect.extend(toHaveNoViolations);
 
@@ -138,7 +138,6 @@ describe("Accessibility Tests", () => {
   describe("ARIA Attributes", () => {
     it("loading states have proper ARIA live regions", async () => {
       const { container } = render(
-        // biome-ignore lint/a11y/useSemanticElements: Testing ARIA live region pattern
         <div role="status" aria-live="polite">
           <span className="sr-only">Loading...</span>
           <div className="animate-spin">Spinner</div>

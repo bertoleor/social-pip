@@ -1,11 +1,11 @@
-import { Badge } from "@/components/atoms/Badge";
-import { Button } from "@/components/atoms/Button";
-import { PlatformIcon } from "@/components/atoms/PlatformIcon";
-import { cn } from "@/lib/utils";
 import type { Account, AccountStatus } from "@social-pip/types";
 import { Edit2, Trash2 } from "lucide-react";
 import type { MouseEvent } from "react";
 import { useState } from "react";
+import { Badge } from "@/components/atoms/Badge";
+import { Button } from "@/components/atoms/Button";
+import { PlatformIcon } from "@/components/atoms/PlatformIcon";
+import { cn } from "@/lib/utils";
 
 export interface AccountCardProps {
   account: Account;

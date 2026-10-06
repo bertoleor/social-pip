@@ -5,9 +5,9 @@ import { invoke } from "@tauri-apps/api/core";
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  SESSION_PROBE_COMMAND,
   classifyProbeError,
   isAuthExpiryError,
+  SESSION_PROBE_COMMAND,
   useSessionStore,
 } from "./sessionStore";
 

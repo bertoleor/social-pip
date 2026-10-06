@@ -26,7 +26,7 @@ Verificado contra `package.json`, `apps/*/package.json`, `pyproject.toml`.
 
 | Uso | Herramienta |
 |---|---|
-| Lint/format | Biome 1.9 (`biome check`) |
+| Lint/format | Biome 2.5 (`biome check`) |
 | Unit tests | Vitest 2 + Testing Library + jsdom |
 | E2E | Playwright 1.49 (`apps/desktop`) |
 | A11y tests | jest-axe |

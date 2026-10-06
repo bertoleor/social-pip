@@ -1,10 +1,10 @@
+import type { Task } from "@social-pip/types";
+import { Clock, Play, RefreshCw, XCircle } from "lucide-react";
+import { type ChangeEvent, useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { PlatformIcon } from "@/components/atoms/PlatformIcon";
 import { TaskStatusIndicator } from "@/components/atoms/TaskStatusIndicator";
 import { cn } from "@/lib/utils";
-import type { Task } from "@social-pip/types";
-import { Clock, Play, RefreshCw, XCircle } from "lucide-react";
-import { type ChangeEvent, useState } from "react";
 
 export interface TaskQueueProps {
   tasks: Task[];
@@ -83,7 +83,6 @@ function TaskCard({
           handleSelect();
         }
       }}
-      // biome-ignore lint/a11y/useSemanticElements: role="button" is intentional for custom styling requirements
       role="button"
       tabIndex={0}
       aria-selected={isSelected}

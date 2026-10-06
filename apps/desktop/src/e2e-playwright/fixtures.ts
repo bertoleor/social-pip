@@ -12,13 +12,13 @@
  *   await expect(tauriPage.locator('nav')).toBeVisible()
  * })
  */
-import { type Page, test as base } from "@playwright/test";
+import { test as base, type Page } from "@playwright/test";
 import {
-  type TauriDriverProcess,
   buildTauriApp,
   setupShutdownHandler,
   startTauriDriver,
   stopTauriDriver,
+  type TauriDriverProcess,
 } from "./helpers";
 
 /**

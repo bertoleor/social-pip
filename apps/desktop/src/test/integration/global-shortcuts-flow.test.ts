@@ -7,9 +7,9 @@
  * Flow: Keyboard shortcut → Event emitted → Handler triggered
  */
 
-import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 
 // Mock Tauri event API - must be properly structured for hoisting
 const mockListen = vi.fn();

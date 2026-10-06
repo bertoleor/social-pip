@@ -1,5 +1,5 @@
-import { useToastStore } from "@/stores/toastStore";
 import { useCallback } from "react";
+import { useToastStore } from "@/stores/toastStore";
 
 export interface UseToastReturn {
   success: (message: string) => void;

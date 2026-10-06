@@ -1,9 +1,9 @@
-import { Button } from "@/components/atoms/Button";
-import { useSessionStore } from "@/stores/sessionStore";
 import { Loader2, ShieldAlert, WifiOff } from "lucide-react";
 import type { ReactElement } from "react";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { Button } from "@/components/atoms/Button";
+import { useSessionStore } from "@/stores/sessionStore";
 
 /**
  * SessionGuard — FR-10 route guard.

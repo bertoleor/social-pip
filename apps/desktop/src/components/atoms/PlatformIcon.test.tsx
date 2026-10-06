@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
  * @fileoverview Tests for PlatformIcon atom
  */
 import { describe, expect, it } from "vitest";
-import { PlatformIcon, getPlatformColor, getPlatformIconSize } from "./PlatformIcon";
+import { getPlatformColor, getPlatformIconSize, PlatformIcon } from "./PlatformIcon";
 
 describe("PlatformIcon", () => {
   describe("Facebook icon", () => {

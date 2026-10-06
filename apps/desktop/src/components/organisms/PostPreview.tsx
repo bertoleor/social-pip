@@ -1,11 +1,11 @@
+import type { Post } from "@social-pip/types";
+import { Clock, FileText } from "lucide-react";
 import { PlatformIcon } from "@/components/atoms/PlatformIcon";
 import { PostStatusBadge } from "@/components/atoms/PostStatusBadge";
 import { Card } from "@/components/molecules/Card";
 import { MediaPreview } from "@/components/molecules/MediaPreview";
 import { cn } from "@/lib/utils";
 import { usePostingStore } from "@/stores/postingStore";
-import type { Post } from "@social-pip/types";
-import { Clock, FileText } from "lucide-react";
 
 export interface PostPreviewProps {
   post?: Post;

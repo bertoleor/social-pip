@@ -1,7 +1,7 @@
-import { toast } from "@/lib/toast";
-import { useSettingsStore } from "@/stores/settingsStore";
 import type { Settings } from "@social-pip/types";
 import { useCallback, useEffect } from "react";
+import { toast } from "@/lib/toast";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 export interface UseSettingsReturn {
   settings: Settings | null;

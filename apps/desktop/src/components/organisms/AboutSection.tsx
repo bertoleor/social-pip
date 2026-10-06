@@ -2,8 +2,9 @@
  * U6.4: AboutSection organism
  * App name, version, build info, links
  */
-import { Card } from "@/components/molecules/Card";
+
 import { ExternalLink } from "lucide-react";
+import { Card } from "@/components/molecules/Card";
 
 export function AboutSection(): React.ReactElement {
   return (

@@ -1,7 +1,7 @@
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import type { Toast as ToastType } from "@/stores/toastStore";
 import { useToastStore } from "@/stores/toastStore";
-import { useEffect, useRef } from "react";
 import { Toast } from "../atoms/Toast";
 
 export interface ToastContainerProps {

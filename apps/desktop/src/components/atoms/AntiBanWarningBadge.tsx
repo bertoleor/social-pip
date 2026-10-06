@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils";
 import type { AntiBanStats } from "@social-pip/types";
 /**
  * @fileoverview AntiBanWarningBadge - Risk level indicator atom
  */
 import { AlertCircle, AlertTriangle, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export type RiskLevel = "low" | "medium" | "high";
 

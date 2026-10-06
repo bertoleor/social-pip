@@ -1,7 +1,7 @@
-import { useAlertsStore } from "@/stores/alertsStore";
 import { invoke } from "@tauri-apps/api/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useAlertsStore } from "@/stores/alertsStore";
 import { AlertList } from "./AlertList";
 
 vi.mock("@tauri-apps/api/core", () => ({

@@ -2,9 +2,10 @@
  * U3.6: EmptyState molecule component
  * Centered empty state with icon, title, description, and optional CTA
  */
+
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
 import { cn } from "@/lib/utils";
-import type { LucideIcon } from "lucide-react";
 
 export interface EmptyStateProps {
   /** Lucide icon component to display */

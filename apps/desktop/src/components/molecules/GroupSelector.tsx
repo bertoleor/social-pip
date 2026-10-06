@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { Badge } from "@/components/atoms/Badge";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 export interface GroupForSelection {
   id: string;

@@ -4,7 +4,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { type RateLimitStatus, detectRateLimitWarning } from "./rate-limit";
+import { detectRateLimitWarning, type RateLimitStatus } from "./rate-limit";
 
 describe("rate-limit", () => {
   beforeEach(() => {

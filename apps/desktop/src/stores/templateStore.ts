@@ -1,10 +1,10 @@
+import type { Template } from "@social-pip/types";
 import {
-  type SpintaxValidationResult,
   countVariations,
   parseSpintax,
+  type SpintaxValidationResult,
   validateSpintax,
 } from "@social-pip/types";
-import type { Template } from "@social-pip/types";
 import { invoke } from "@tauri-apps/api/core";
 /**
  * @fileoverview Template store - Zustand state management for template CRUD with spintax support

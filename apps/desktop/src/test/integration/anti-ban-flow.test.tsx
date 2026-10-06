@@ -1,8 +1,8 @@
-import { AntiBanDashboard } from "@/components/organisms/AntiBanDashboard";
-import { useAntiBanStore } from "@/stores/antiBanStore";
 import { invoke } from "@tauri-apps/api/core";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AntiBanDashboard } from "@/components/organisms/AntiBanDashboard";
+import { useAntiBanStore } from "@/stores/antiBanStore";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),

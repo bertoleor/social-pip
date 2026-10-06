@@ -1,7 +1,6 @@
 import type { Settings } from "@social-pip/types";
 import { render, screen } from "@testing-library/react";
-import { vi } from "vitest";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import SettingsPage from "./SettingsPage";
 
 vi.mock("@/hooks/useSettings", () => ({

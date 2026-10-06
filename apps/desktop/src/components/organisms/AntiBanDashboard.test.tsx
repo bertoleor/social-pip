@@ -1,8 +1,8 @@
-import { useAntiBanStore } from "@/stores/antiBanStore";
 import type { AntiBanStats } from "@social-pip/types";
 import { invoke } from "@tauri-apps/api/core";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useAntiBanStore } from "@/stores/antiBanStore";
 import { AntiBanDashboard } from "./AntiBanDashboard";
 
 // Mock Tauri invoke

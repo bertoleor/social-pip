@@ -1,4 +1,4 @@
-import { type UnlistenFn, listen } from "@tauri-apps/api/event";
+import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { useEffect, useMemo, useState } from "react";
 
 export const SHORTCUT_EVENTS = {

@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
-import type { ToastType } from "@/stores/toastStore";
 import { AlertTriangle, CheckCircle, Info, X, XCircle } from "lucide-react";
 import type { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+import type { ToastType } from "@/stores/toastStore";
 
 export interface ToastProps extends HTMLAttributes<HTMLDivElement> {
   id: string;

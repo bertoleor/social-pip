@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
 import { AlertCircle, AlertTriangle, Check, Clock } from "lucide-react";
 import type { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 type ValidationStatus = "pending" | "valid" | "invalid" | "warning";
 

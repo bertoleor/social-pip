@@ -3,9 +3,10 @@
  * Uses React Router v7 with lazy-loaded routes and MainLayout wrapper
  * U2.4: Integrates useTheme for global theme synchronization
  */
-import { useTheme } from "@/hooks/useTheme";
+
 import { useMemo } from "react";
 import { RouterProvider } from "react-router-dom";
+import { useTheme } from "@/hooks/useTheme";
 import { createAppRouter } from "./routes";
 
 function App(): React.ReactElement {

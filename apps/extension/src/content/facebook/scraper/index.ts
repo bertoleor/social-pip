@@ -4,54 +4,49 @@
  * Exports all scraper-related functionality.
  */
 
-// Selectors
+// Cache
 export {
-  GROUP_SELECTORS,
-  POST_SELECTORS,
-  RATE_LIMIT_SELECTORS,
-  queryWithFallback,
-  queryAllWithFallback,
-  getSelectorsFromChain,
-  safeTextContent,
-  parseNumericText,
-} from "./selectors";
-
-export type { SelectorChain, GroupSelectors } from "./selectors";
+  cacheGroups,
+  clearGroupCache,
+  getCacheAge,
+  getCachedGroups,
+  getCacheRemainingTTL,
+  isCacheStale,
+} from "./cache";
+export type {
+  GroupPrivacy,
+  GroupStatus,
+  ProgressCallback,
+  ScrapedGroup,
+  ScraperConfig,
+  ScraperProgress,
+  ScraperResult,
+} from "./group-scraper";
 
 // Scraper
 export {
   GroupScraper,
-  scrapeJoinedGroups,
   quickScrapeGroups,
+  scrapeJoinedGroups,
 } from "./group-scraper";
-
-export type {
-  ScrapedGroup,
-  ScraperConfig,
-  ScraperResult,
-  ScraperProgress,
-  GroupPrivacy,
-  GroupStatus,
-  ProgressCallback,
-} from "./group-scraper";
-
-// Cache
-export {
-  getCachedGroups,
-  cacheGroups,
-  clearGroupCache,
-  getCacheAge,
-  isCacheStale,
-  getCacheRemainingTTL,
-} from "./cache";
-
+export type { RateLimitStatus, RateLimitType } from "./rate-limit";
 // Rate Limit
 export {
-  detectRateLimitWarning,
-  isActionRisky,
-  getSuggestedWaitTime,
   createSafeDelay,
+  detectRateLimitWarning,
+  getSuggestedWaitTime,
+  isActionRisky,
   validatePageSafe,
 } from "./rate-limit";
-
-export type { RateLimitType, RateLimitStatus } from "./rate-limit";
+export type { GroupSelectors, SelectorChain } from "./selectors";
+// Selectors
+export {
+  GROUP_SELECTORS,
+  getSelectorsFromChain,
+  POST_SELECTORS,
+  parseNumericText,
+  queryAllWithFallback,
+  queryWithFallback,
+  RATE_LIMIT_SELECTORS,
+  safeTextContent,
+} from "./selectors";

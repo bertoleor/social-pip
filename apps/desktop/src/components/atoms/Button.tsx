@@ -2,9 +2,10 @@
  * U3.1: Button with semantic tokens and dark mode support
  * Variants: primary (bg-primary-600), secondary (bg-surface), outline, ghost, danger (bg-error)
  */
-import { cn } from "@/lib/utils";
+
 import { Loader2 } from "lucide-react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";

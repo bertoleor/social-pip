@@ -4,8 +4,7 @@
  * Detects Facebook rate limit warnings and blocks.
  */
 
-import { getSelectorsFromChain, queryWithFallback } from "./selectors";
-import { RATE_LIMIT_SELECTORS } from "./selectors";
+import { getSelectorsFromChain, queryWithFallback, RATE_LIMIT_SELECTORS } from "./selectors";
 
 // ============================================================================
 // Types

@@ -1,6 +1,6 @@
-import { useToastStore } from "@/stores/toastStore";
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useToastStore } from "@/stores/toastStore";
 import { useToast } from "./useToast";
 
 // Mock timers for auto-dismiss

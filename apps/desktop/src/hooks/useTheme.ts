@@ -5,8 +5,9 @@
  * the `.dark` class on document.documentElement.
  * Resolves "system" to actual mode via matchMedia.
  */
-import { useUIStore } from "@/stores/uiStore";
+
 import { useEffect } from "react";
+import { useUIStore } from "@/stores/uiStore";
 
 /**
  * Resolves the effective theme (light/dark) from the stored preference.

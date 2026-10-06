@@ -1,8 +1,8 @@
+import type { Template } from "@social-pip/types";
+import { useState } from "react";
 import { PlatformIcon } from "@/components/atoms/PlatformIcon";
 import { Card } from "@/components/molecules/Card";
 import { cn } from "@/lib/utils";
-import type { Template } from "@social-pip/types";
-import { useState } from "react";
 
 export interface TemplateSelectorProps {
   templates: Template[];

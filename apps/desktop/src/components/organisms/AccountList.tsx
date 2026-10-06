@@ -1,12 +1,12 @@
-import { Button } from "@/components/atoms/Button";
-import { AccountCard } from "@/components/molecules/AccountCard";
-import { cn } from "@/lib/utils";
 import type { Account } from "@social-pip/types";
 import { Plus, Search } from "lucide-react";
 /**
  * @fileoverview AccountList organism - responsive grid with filter and search
  */
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/atoms/Button";
+import { AccountCard } from "@/components/molecules/AccountCard";
+import { cn } from "@/lib/utils";
 
 export interface AccountListProps {
   accounts: Account[];

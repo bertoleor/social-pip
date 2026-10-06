@@ -1,8 +1,7 @@
 /**
  * @fileoverview AntiBanStatsCard - Stats display molecule
  */
-import type { Platform } from "@social-pip/types";
-import type { AntiBanStats } from "@social-pip/types";
+import type { AntiBanStats, Platform } from "@social-pip/types";
 import { AntiBanWarningBadge, type RiskLevel } from "../atoms/AntiBanWarningBadge";
 import { Card } from "./Card";
 
