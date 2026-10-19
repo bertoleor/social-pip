@@ -1,0 +1,9 @@
+# Semgrep SAST targets production code. Test/E2E specs hit http://localhost
+# stubs by design (no TLS on loopback) and would trigger insecure-request FPs.
+**/e2e/**
+**/test/**
+**/*.spec.ts
+**/*.test.ts
+**/mocks/**
+docs/
+docs/**

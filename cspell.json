@@ -1,0 +1,9 @@
+{
+  "version": "0.2",
+  "language": "en,es",
+  "import": ["@cspell/dict-es-es/cspell-ext.json"],
+  "useGitignore": true,
+  "files": ["**/*.md", "**/*.mdx", "README.md"],
+  "ignorePaths": ["node_modules/**", "**/.next/**", "CHANGELOG.md"],
+  "words": ["whatsapp", "supabase", "nextjs", "next-intl", "vercel", "vitest", "playwright", "jscpd", "cspell", "semgrep", "knip", "pragent", "tiptap", "mercadopago", "tailwind", "zod"]
+}

@@ -25,9 +25,17 @@
     "typecheck": "turbo run typecheck",
     "db:generate": "cd packages/database && npm run prisma:generate",
     "db:migrate": "cd packages/database && npm run prisma:migrate",
-    "db:studio": "cd packages/database && npm run prisma:studio"
+    "db:studio": "cd packages/database && npm run prisma:studio",
+    "knip": "knip",
+    "biome:scan": "npx -y @biomejs/biome lint apps/*/src packages/*/src",
+    "copy-paste:check": "jscpd apps packages",
+    "spell:check": "cspell README.md docs"
   },
   "devDependencies": {
+    "@cspell/dict-es-es": "^3.0.9",
+    "cspell": "^10.4.0",
+    "jscpd": "^5.4.1",
+    "knip": "^6.42.0",
     "turbo": "^2.3.0",
     "typescript": "^5.7.0"
   },

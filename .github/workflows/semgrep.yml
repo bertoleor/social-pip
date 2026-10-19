@@ -1,0 +1,25 @@
+name: Semgrep SAST
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep:
+    name: Semgrep scan
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - name: Semgrep scan (TS/JS/React rulesets)
+        run: semgrep --config p/typescript --config p/javascript --config p/react --config p/nextjs --error --skip-unknown-extensions apps packages
+      - name: Semgrep scan (security audit, non-blocking report)
+        if: always()
+        run: semgrep --config p/security-audit apps packages || true

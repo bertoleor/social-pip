@@ -1,0 +1,7 @@
+{
+  "threshold": 0,
+  "reporters": ["consoleFull"],
+  "format": ["typescript", "tsx", "css"],
+  "ignore": ["**/node_modules/**", "**/.next/**", "**/dist/**", "**/test/**", "**/e2e/**", "**/*.lock", "**/pnpm-lock.yaml", "**/.husky/**"],
+  "minTokens": 50
+}
